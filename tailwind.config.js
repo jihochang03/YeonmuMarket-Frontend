@@ -6,7 +6,11 @@ export default {
 		"./node_modules/flowbite/**/*.js",
   ],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        "main-frame": "360px"
+      }
+    },
   },
   plugins: [],
 }
