@@ -7,19 +7,23 @@ import MainPage from './routes/main/pages/main-page.jsx';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Header/> 
-      <body>
-        <div className='flex flex-col'>
-          <div className="flex-1">
-            <Routes>
-              <Route path="/" element={<MainPage />} />
-              <Route path="/login" element={<LoginPage />} />
-            </Routes>
+    <div className='min-h-screen bg-darker flex flex-col items-center'>
+      <BrowserRouter>
+      <div className='w-main-frame bg-white'>
+        <Header/> 
+        <body>
+          <div className='flex flex-col'>
+            <div className="flex-1">
+              <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/main" element={<MainPage />} />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </body>
-    </BrowserRouter>
+        </body>
+      </div>
+      </BrowserRouter>
+    </div>
   );
 };
 
