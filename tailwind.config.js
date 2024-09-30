@@ -16,6 +16,7 @@ export default {
       },
       colors: {
         "darker": "#F8F9FD",
+        "selected-menu": "#f0f0f0",
         "button": "#E8DEF8",
         "dark-button": "#2C2C2C",
         "status-done": "#CFF7D3",
