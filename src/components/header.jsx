@@ -1,20 +1,19 @@
 import React from "react"
 import { Link } from "react-router-dom";
+import logo from "../assets/logo.png"
 
 export const Header = () => {
   return (
-    <div className="w-full flex flex-row items-center justify-between h-[80px] px-[68px] z-[999]">
+    <div className="w-full max-w-main-frame h-header-height flex flex-row items-center justify-start px-4 py-3 z-[999] top-0 left-0 right-0 mx-auto">
       <Link
         to='/'
-        className="text-xl font-bold px-10 py-[17px]"
+        className="text-xl font-bold py-[17px]"
       >
-        연뮤마켓
-      </Link>
-      <Link
-        to='login'
-        className="text-xl font-bold px-10 py-[17px]"
-      >
-        로그인
+        <img
+          src={logo}
+          alt="연뮤마켓"
+          className="h-[60px]"
+        />
       </Link>
     </div>
   )
