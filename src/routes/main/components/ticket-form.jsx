@@ -129,7 +129,7 @@ export const TicketForm = () => {
 
         <div className="flex justify-around mt-1">
           <button type="button" className="bg-gray-800 text-white px-10 rounded-md">임시저장</button>
-          <button type="submit" className="bg-black text-white px-10 rounded-md">작성 완료</button>
+          <button href="/main" className="bg-black text-white px-10 rounded-md">작성 완료</button>
         </div>
 
       </form>
