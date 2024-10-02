@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Header } from './components/header.jsx';
 import LoginPage from './routes/login/pages/login-page.jsx';
 import MainPage from './routes/main/pages/main-page.jsx';
+import TermsPage from './routes/terms/pages/terms-page.jsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -20,6 +21,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/main" element={<MainPage selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/>} />
+                <Route path="/terms" element={<TermsPage />} />
               </Routes>
             </div>
           </div>
