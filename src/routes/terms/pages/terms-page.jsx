@@ -6,7 +6,7 @@ const TermsPage = () => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    navigate('/main');
+    navigate('/main/new');
   };
 
   return (

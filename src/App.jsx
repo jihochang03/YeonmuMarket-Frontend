@@ -8,19 +8,18 @@ import TermsPage from './routes/terms/pages/terms-page.jsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [selectedMenu, setSelectedMenu] = useState('');
 
   return (
     <div className='min-h-screen bg-darker flex flex-col items-center'>
       <BrowserRouter>
       <div className='w-main-frame bg-white'>
-        <Header isLoggedIn={isLoggedIn} setSelectedMenu={setSelectedMenu}/> 
+        <Header isLoggedIn={isLoggedIn} /> 
         <body>
           <div className='flex flex-col'>
             <div className="flex-1">
               <Routes>
                 <Route path="/" element={<LoginPage />} />
-                <Route path="/main" element={<MainPage selectedMenu={selectedMenu} setSelectedMenu={setSelectedMenu}/>} />
+                <Route path="/main/*" element={<MainPage />} />
                 <Route path="/terms" element={<TermsPage />} />
               </Routes>
             </div>

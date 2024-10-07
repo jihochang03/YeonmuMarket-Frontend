@@ -39,7 +39,7 @@ export const TicketForm = () => {
   };
 
   return (
-    <div className="max-w-lg p-1 border-2 border-gray-300 rounded-md mx-2">
+    <div className="max-w-lg p-1 border-2 border-gray-300 rounded-md mx-5 mt-4">
       <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
         <h1>양도글 작성</h1>
         <h3 className="text-gray-500 mb-8">양도할 티켓의 정보를 입력해주세요.</h3>
@@ -65,10 +65,10 @@ export const TicketForm = () => {
             </label>
           </div>
         </div>
-        <label className="block mb-2">공연 이름</label>
+        <label className="block mb-2 font-bold">공연 이름</label>
         <input type="text" placeholder="Value" className="border p-2 mb-4" />
 
-        <label className="block mb-2">공연 날짜</label>
+        <label className="block mb-2 font-bold">공연 날짜</label>
         <DatePicker
           selected={selectedDate}
           onChange={(date) => setSelectedDate(date)}
@@ -78,7 +78,7 @@ export const TicketForm = () => {
           placeholderText="날짜 선택"
           className="border p-2 w-full mb-4"
         />
-        <label className="block mb-2">공연 시간</label>
+        <label className="block mb-2 font-bold">공연 시간</label>
         <div className="flex gap-2 mb-4">
         <Select
           options={hours}
@@ -103,16 +103,16 @@ export const TicketForm = () => {
         />
         </div>
 
-        <label className="block mb-2">예매자명</label>
+        <label className="block mb-2 font-bold">예매자명</label>
         <input type="text" placeholder="Value" className="border p-2 mb-4" />
 
-        <label className="block mb-2">전화번호 마지막 4자리</label>
+        <label className="block mb-2 font-bold">전화번호 마지막 4자리</label>
         <input type="text" placeholder="Value" className="border p-2 mb-4" />
 
-        <label className="block mb-2">희망 판매 가격</label>
+        <label className="block mb-2 font-bold">희망 판매 가격</label>
         <input type="text" placeholder="Value" className="border p-2 mb-4" />
 
-        <label className="block mb-2">할인 정보</label>
+        <label className="block mb-2 font-bold">할인 정보</label>
         <input type="text" placeholder="Value" className="border p-2 mb-4" />
 
         <div className="flex items-center mb-4">
@@ -135,4 +135,4 @@ export const TicketForm = () => {
       </form>
     </div>
   )
-}
+};
