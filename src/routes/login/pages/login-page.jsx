@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoginForm } from '../components/login/login-form';
 import { SignUpForm } from '../components/signup/signup-form';
 import { Introducement } from '../../../components/introduce-section';
 
 const LoginPage = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   return (
     <div className="w-full h-main-height flex justify-center items-center">

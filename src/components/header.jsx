@@ -1,13 +1,16 @@
 import React from "react"
 import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
 import logo from "../assets/logo.png"
 import profileIcon from "../assets/icons/profile.png";
 
-export const Header = ({ isLoggedIn }) => {
+export const Header = () => {
+  const isLogin = useSelector((state) => state.user.isLogin);
+
   return (
     <div className="w-full max-w-main-frame h-header-height flex flex-row items-center justify-between px-4 py-3 z-[999] top-0 left-0 right-0 mx-auto">
       <Link
-        to={isLoggedIn ? '/main' : '/'}
+        to={isLogin ? '/main' : '/'}
         className="text-xl font-bold py-[17px]"
       >
         <img
@@ -16,7 +19,7 @@ export const Header = ({ isLoggedIn }) => {
           className="h-[60px]"
         />
       </Link>
-      {isLoggedIn && (
+      {isLogin && (
         <img
           src={profileIcon}
           alt="프로필"

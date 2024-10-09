@@ -5,15 +5,17 @@ import { Header } from './components/header.jsx';
 import LoginPage from './routes/login/pages/login-page.jsx';
 import MainPage from './routes/main/pages/main-page.jsx';
 import TermsPage from './routes/terms/pages/terms-page.jsx';
+import Auth from './routes/login/pages/auth.jsx';
+import { useSelector } from 'react-redux';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const isLogin = useSelector((state) => state.user.isLogin);
 
   return (
     <div className='min-h-screen bg-darker flex flex-col items-center'>
       <BrowserRouter>
       <div className='w-main-frame bg-white'>
-        <Header isLoggedIn={isLoggedIn} /> 
+        <Header isLogin={isLogin} /> 
         <body>
           <div className='flex flex-col'>
             <div className="flex-1">
@@ -21,6 +23,7 @@ function App() {
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/main/*" element={<MainPage />} />
                 <Route path="/terms" element={<TermsPage />} />
+                <Route path="/auth" element={<Auth />} />
               </Routes>
             </div>
           </div>
