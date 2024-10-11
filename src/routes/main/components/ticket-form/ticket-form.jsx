@@ -114,6 +114,9 @@ export const TicketForm = () => {
 
         {showAdditionalFields && (
           <>
+          <label className="block mb-2 font-bold">공연 장소</label>
+          <input type="text" placeholder="Value" className="border p-2 mb-4 rounded-md" />
+          
           <label className="block mb-2 font-bold">공연 날짜</label>
           <DatePicker
             selected={selectedDate}
