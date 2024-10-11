@@ -19,6 +19,7 @@ export default {
         "darker": "#F8F9FD",
         "selected-menu": "#f0f0f0",
         "button": "#E8DEF8",
+        "semi-dark-button": "#D9D9D9",
         "dark-button": "#2C2C2C",
         "status-done": "#CFF7D3",
         "status-ing": "#FFE8A3",
