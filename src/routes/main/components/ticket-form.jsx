@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -7,6 +7,7 @@ import { ko } from "date-fns/locale";
 
 export const TicketForm = () => {
   const navigate = useNavigate();
+  const [performanceName, setPerformanceName] = useState("");
   const [reservImage, setReservImage] = useState(null);
   const [seatImage, setSeatImage] = useState(null);
   const [reservFile, setReservFile] = useState(null); // Server-side file
@@ -23,6 +24,7 @@ export const TicketForm = () => {
   const [castingInfo, setCastingInfo] = useState(false);
   const [price, setPrice] = useState(false);
   const [discountInfo, setDiscountInfo] = useState(false);
+  const [lastFourDigits, setLastFourDigits] = useState("");
 
   const site = [
     { value: "인터파크", label: "인터파크" },
@@ -41,6 +43,78 @@ export const TicketForm = () => {
     { value: "AM", label: "AM" },
     { value: "PM", label: "PM" },
   ];
+
+  useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem("ticketFormData"));
+    if (savedData) {
+      setPerformanceName(savedData.performanceName || "");
+      if (savedData.reservImage) {
+        const img = new Image();
+        img.src = savedData.reservImage;
+
+        img.onload = () => {
+          setReservImage(savedData.reservImage); // 이미지가 유효하면 설정
+        };
+        img.onerror = () => {
+          setReservImage(null); // 이미지가 유효하지 않으면 null로 설정
+        };
+      } else {
+        setReservImage(null); // savedData에 값이 없으면 null로 설정
+      }
+
+      // seatImage 처리도 동일하게 적용
+      if (savedData.seatImage) {
+        const img = new Image();
+        img.src = savedData.seatImage;
+
+        img.onload = () => {
+          setSeatImage(savedData.seatImage); // 이미지가 유효하면 설정
+        };
+        img.onerror = () => {
+          setSeatImage(null); // 이미지가 유효하지 않으면 null로 설정
+        };
+      } else {
+        setSeatImage(null); // savedData에 값이 없으면 null로 설정
+      }
+      setSelectedSite(savedData.selectedSite || null);
+      setSelectedDate(new Date(savedData.selectedDate) || null);
+      setSelectedHour(savedData.selectedHour || null);
+      setSelectedMin(savedData.selectedMin || null);
+      setSelectedAmPm(savedData.selectedAmPm || null);
+      setTicketNumber(savedData.ticketNumber || "");
+      setSeatInfo(savedData.seatInfo || "");
+      setCastingInfo(savedData.castingInfo || "");
+      setPrice(savedData.price || "");
+      setDiscountInfo(savedData.discountInfo || "");
+      setTermsAccepted(savedData.termsAccepted || false);
+      setLastFourDigits(savedData.lastFourDigits || "");
+      setShowAdditionalFields(savedData.showAdditionalFields || false);
+    }
+  }, []);
+
+  // 임시 저장 (localStorage에 저장)
+  const handleTempSave = () => {
+    const formData = {
+      reservImage,
+      seatImage,
+      selectedSite,
+      selectedDate: selectedDate ? selectedDate.toISOString() : null,
+      selectedHour,
+      selectedMin,
+      selectedAmPm,
+      ticketNumber,
+      seatInfo,
+      castingInfo,
+      price,
+      discountInfo,
+      termsAccepted,
+      showAdditionalFields,
+      performanceName, // 공연 이름도 저장
+      lastFourDigits,
+    };
+    localStorage.setItem("ticketFormData", JSON.stringify(formData));
+    alert("임시저장 완료!");
+  };
 
   const handleReservUpload = (event) => {
     const file = event.target.files[0];
@@ -101,7 +175,7 @@ export const TicketForm = () => {
         setCastingInfo(responseData.cast_info || ""); // 캐스팅 정보 (responseData에 존재하는 경우)
         setPrice(responseData.total_amount || ""); // 가격
         setDiscountInfo(responseData.price_grade || ""); // 할인 정보
-
+        setLastFourDigits(savedData.lastFourDigits || "");
         setShowAdditionalFields(true);
       } else {
         console.error("Status Code:", response.status); // Log status
@@ -112,11 +186,44 @@ export const TicketForm = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (termsAccepted) {
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("title", performanceName);
+    formData.append("date", selectedDate.toISOString());
+    formData.append("seat", seatInfo);
+    formData.append("price", price);
+    formData.append("casting", castingInfo);
+    formData.append("booking_details", ticketNumber);
+    formData.append("uploaded_file", reservImage);
+    formData.append("uploaded_seat_image", seatImage);
+    formData.append("phone_last_digits", lastFourDigits);
+    formData.append("keyword", selectedSite ? selectedSite.value : "");
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/tickets/create/",
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            'Authorization': `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
+          },
+        }
+      );
+
+      // 응답 상태 코드가 200-299 범위에 있는지 확인
+      if (!response.ok) {
+        const errorText = await response.text(); // 응답이 JSON이 아닐 경우 대비
+        throw new Error(`Error ${response.status}: ${errorText}`);
+      }
+
+      // 응답이 JSON인지 확인하고 파싱
+      const data = await response.json();
+      alert("티켓 등록이 완료되었습니다.");
+      localStorage.removeItem("ticketFormData");
       navigate("/main/sold");
-    } else {
-      alert("약관에 동의해야합니다.");
+    } catch (error) {
+      console.error("Error submitting the form:", error);
     }
   };
 
@@ -131,6 +238,8 @@ export const TicketForm = () => {
         <label className="block mb-2 font-bold">공연 이름</label>
         <input
           type="text"
+          value={performanceName} // 상태값 바인딩
+          onChange={(e) => setPerformanceName(e.target.value)} // 입력 값 변경 시 상태 업데이트
           placeholder="Value"
           className="border p-2 mb-4 rounded-md"
         />
@@ -296,6 +405,8 @@ export const TicketForm = () => {
             </label>
             <input
               type="text"
+              value={lastFourDigits} // 상태값 바인딩
+              onChange={(e) => setLastFourDigits(e.target.value)} // 입력 값 변경 시 상태 업데이트
               placeholder="Value"
               className="border p-2 mb-4 rounded-md"
             />
@@ -321,6 +432,7 @@ export const TicketForm = () => {
               <button
                 type="button"
                 className="bg-gray-800 text-white px-10 rounded-md"
+                onClick={handleTempSave}
               >
                 임시저장
               </button>

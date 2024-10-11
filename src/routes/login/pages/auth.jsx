@@ -1,34 +1,33 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { kakaoSignIn } from '../../../apis/api';
-import { useDispatch } from 'react-redux';
-import { setLoginState, setUserProfile } from '../../../redux/user-slice';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { kakaoSignIn } from "../../../apis/api"; // Kakao 로그인 API 호출
 
 function Auth() {
   const navigate = useNavigate();
+
   const dispatch = useDispatch();
-  const getToken = async () => {
-    const token = new URL(window.location.href).searchParams.get('code');
-    console.log(token);
-    const res = await kakaoSignIn({ code: token });
-    return res;
-  };
 
   useEffect(() => {
     getToken()
       .then((res) => {
-        if (res === null) {
-          navigate('/main/sold');
+        console.log(res);
+        if (!res || res.status !== 200) {
+          navigate("/main/sold");
+        } else {
+          dispatch(setLoginState(true));
+          dispatch(setUserProfile(res.data));
+
+          // Redirect based on the URL received from the backend
+          const redirectUrl = res.data.redirect_url;
+          if (redirectUrl) {
+            window.location.href = redirectUrl; // Perform the redirection
+          }
         }
-        dispatch(setLoginState(true));
-        dispatch(setUserProfile(res));
-          
-        window.location.href = '/';
       })
       .catch((err) => console.log(err));
-  });
+  }, [navigate, dispatch]);
 
-  return <></>;
+  return null; // No UI is needed here
 }
 
 export default Auth;
