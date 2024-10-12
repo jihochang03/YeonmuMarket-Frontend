@@ -1,11 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: {
     isLogin: false,
     nickname: null,
+    kakao_email: null,
     isLocked: true,
+    accessToken: null, // Access token 필드 추가
   },
   reducers: {
     setLoginState: (state, action) => {
@@ -17,9 +19,10 @@ const userSlice = createSlice({
     },
     setLockState: (state, action) => {
       state.isLocked = action.payload;
-    }
+    },
   },
 });
 
-export const { setLoginState, setUserProfile, setLockState } = userSlice.actions;
+export const { setLoginState, setUserProfile, setLockState } =
+  userSlice.actions;
 export default userSlice.reducer;

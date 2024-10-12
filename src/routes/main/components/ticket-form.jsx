@@ -4,6 +4,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
+import { createTicket } from "../../../apis/api";
 
 export const TicketForm = () => {
   const navigate = useNavigate();
@@ -160,22 +161,25 @@ export const TicketForm = () => {
       if (response.ok) {
         const responseData = await response.json(); // Parse JSON
         console.log("Response Data:", responseData);
+
         const { 관람년도, 관람월, 관람일, 관람시간 } = responseData.date_info;
         const selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
         const selectedHour = 관람시간.시;
         const selectedMin = 관람시간.분;
         const selectedAmPm = selectedHour >= 12 ? "PM" : "AM";
 
-        setSelectedDate(selectedDate);
-        setSelectedHour(selectedHour % 12);
-        setSelectedMin(selectedMin);
-        setSelectedAmPm(selectedAmPm);
+        setSelectedDate(selectedDate || "");
+        setSelectedHour(selectedHour % 12 || "");
+        setSelectedMin(selectedMin || "");
+        setSelectedAmPm(selectedAmPm || "");
         setTicketNumber(responseData.ticket_number || ""); // 예매번호
         setSeatInfo(responseData.seat_number || ""); // 좌석 정보
         setCastingInfo(responseData.cast_info || ""); // 캐스팅 정보 (responseData에 존재하는 경우)
         setPrice(responseData.total_amount || ""); // 가격
         setDiscountInfo(responseData.price_grade || ""); // 할인 정보
-        setLastFourDigits(savedData.lastFourDigits || "");
+
+        // 수정된 부분: savedData 대신 lastFourDigits 사용
+        setLastFourDigits("");
         setShowAdditionalFields(true);
       } else {
         console.error("Status Code:", response.status); // Log status
@@ -188,10 +192,15 @@ export const TicketForm = () => {
 
   const handleSubmit = async () => {
     const formData = new FormData();
+
+    const formattedDate = selectedDate.toISOString().split("T")[0];
+
+    // 가격에서 콤마 제거
+    const formattedPrice = price.replace(/,/g, "");
     formData.append("title", performanceName);
-    formData.append("date", selectedDate.toISOString());
+    formData.append("date", formattedDate);
     formData.append("seat", seatInfo);
-    formData.append("price", price);
+    formData.append("price", formattedPrice);
     formData.append("casting", castingInfo);
     formData.append("booking_details", ticketNumber);
     formData.append("uploaded_file", reservImage);
@@ -200,29 +209,14 @@ export const TicketForm = () => {
     formData.append("keyword", selectedSite ? selectedSite.value : "");
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/tickets/create/",
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            'Authorization': `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
-          },
-        }
-      );
+      const response = await createTicket(formData); // 티켓 생성 API 호출
 
-      // 응답 상태 코드가 200-299 범위에 있는지 확인
-      if (!response.ok) {
-        const errorText = await response.text(); // 응답이 JSON이 아닐 경우 대비
-        throw new Error(`Error ${response.status}: ${errorText}`);
-      }
-
-      // 응답이 JSON인지 확인하고 파싱
-      const data = await response.json();
+      // 성공적으로 응답을 받으면 알림을 띄우고 페이지 이동
       alert("티켓 등록이 완료되었습니다.");
       localStorage.removeItem("ticketFormData");
       navigate("/main/sold");
     } catch (error) {
+      // 에러 로그 출력
       console.error("Error submitting the form:", error);
     }
   };
