@@ -3,8 +3,7 @@ import { fetchTransferredTickets } from "../../../../apis/api"; // 백엔드 API
 
 const statusMapping = {
   waiting: "양수자 대기",
-  transfer_intent: "양도중 - 양도 의사 확인",
-  transfer_payment: "양도중 - 입금 대기",
+  transfer_pending: "양도중 - 입금 대기",
   transfer_complete: "양도 완료",
 };
 
