@@ -6,6 +6,7 @@ import LoginPage from './routes/login/pages/login-page.jsx';
 import MainPage from './routes/main/pages/main-page.jsx';
 import TermsPage from './routes/terms/pages/terms-page.jsx';
 import Auth from './routes/login/pages/auth.jsx';
+import AccountAuthPage from './routes/account-auth/pages/account-auth-page.jsx';
 import { useSelector } from 'react-redux';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
                 <Route path="/main/*" element={<MainPage />} />
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/account-auth" element={<AccountAuthPage />} />
               </Routes>
             </div>
           </div>

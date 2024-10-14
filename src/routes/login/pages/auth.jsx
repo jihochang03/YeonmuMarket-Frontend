@@ -18,15 +18,23 @@ function Auth() {
     getToken()
       .then((res) => {
         if (res === null) {
-          navigate('/main/sold');
+          navigate('/');
+          return;
         }
         dispatch(setLoginState(true));
         dispatch(setUserProfile(res));
-          
-        window.location.href = '/';
+
+        if (!res.account_num) {
+          navigate('/account-auth');
+        } else {
+          navigate('/main/sold')
+        }
       })
-      .catch((err) => console.log(err));
-  });
+      .catch((err) => {
+        console.log(err);
+        navigate('/');
+    });
+  }, [dispatch, navigate]);
 
   return <></>;
 }

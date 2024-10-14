@@ -9,7 +9,7 @@ export const KakaoButton = ({ isLogin }) => {
   };
   return (
     <button
-      className="w-[380px] h-[58px] px-10 py-[13px] bg-[#fee502] rounded-xl justify-center items-center gap-[7px] inline-flex text-xl font-bold"
+      className="h-[58px] mx-4 px-16 py-[13px] bg-[#fee502] rounded-xl justify-center items-center gap-[7px] inline-flex text-xl font-bold"
       onClick={loginHandler}
     >
       <img
