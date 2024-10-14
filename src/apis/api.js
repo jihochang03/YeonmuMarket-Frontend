@@ -78,3 +78,50 @@ export const createTicket = async (formData) => {
     throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던짐
   }
 };
+
+export const fetchTransferredTickets = async () => {
+  try {
+    const response = await instanceWithToken.get("/tickets/transferred/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching transferred tickets:", error);
+    throw error;
+  }
+};
+
+export const fetchTicketPostDetail = async (ticketPostId) => {
+  try {
+    const response = await api.get(`/ticketpost/${ticketPostId}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching ticket post detail:", error);
+    throw error;
+  }
+};
+
+// 티켓 양도글 삭제
+export const deleteTicketPost = async (ticketPostId, username, password) => {
+  try {
+    const response = await api.delete(`/ticketpost/${ticketPostId}/`, {
+      data: {
+        username,
+        password,
+      },
+    });
+    return response.status;
+  } catch (error) {
+    console.error("Error deleting ticket post:", error);
+    throw error;
+  }
+};
+
+// 티켓 양도글 수정
+export const updateTicketPost = async (ticketPostId, updatedData) => {
+  try {
+    const response = await api.put(`/ticketpost/${ticketPostId}/`, updatedData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating ticket post:", error);
+    throw error;
+  }
+};

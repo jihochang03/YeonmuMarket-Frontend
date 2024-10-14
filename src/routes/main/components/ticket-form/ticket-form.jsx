@@ -4,7 +4,7 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
-import { createTicket } from "../../../apis/api";
+import { createTicket } from "../../../../apis/api";
 
 export const TicketForm = () => {
   const navigate = useNavigate();
@@ -48,37 +48,22 @@ export const TicketForm = () => {
   useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem("ticketFormData"));
     if (savedData) {
-      setPerformanceName(savedData.performanceName || "");
+      console.log("Restoring saved data:", savedData);
+
+      // 이미지 파일 복원
       if (savedData.reservImage) {
-        const img = new Image();
-        img.src = savedData.reservImage;
-
-        img.onload = () => {
-          setReservImage(savedData.reservImage); // 이미지가 유효하면 설정
-        };
-        img.onerror = () => {
-          setReservImage(null); // 이미지가 유효하지 않으면 null로 설정
-        };
-      } else {
-        setReservImage(null); // savedData에 값이 없으면 null로 설정
+        setReservImage(savedData.reservImage);
       }
-
-      // seatImage 처리도 동일하게 적용
       if (savedData.seatImage) {
-        const img = new Image();
-        img.src = savedData.seatImage;
-
-        img.onload = () => {
-          setSeatImage(savedData.seatImage); // 이미지가 유효하면 설정
-        };
-        img.onerror = () => {
-          setSeatImage(null); // 이미지가 유효하지 않으면 null로 설정
-        };
-      } else {
-        setSeatImage(null); // savedData에 값이 없으면 null로 설정
+        setSeatImage(savedData.seatImage);
       }
+
+      setPerformanceName(savedData.performanceName || "");
+      setLastFourDigits(savedData.lastFourDigits || "");
       setSelectedSite(savedData.selectedSite || null);
-      setSelectedDate(new Date(savedData.selectedDate) || null);
+      setSelectedDate(
+        savedData.selectedDate ? new Date(savedData.selectedDate) : null
+      ); // 날짜 복원
       setSelectedHour(savedData.selectedHour || null);
       setSelectedMin(savedData.selectedMin || null);
       setSelectedAmPm(savedData.selectedAmPm || null);
@@ -88,13 +73,15 @@ export const TicketForm = () => {
       setPrice(savedData.price || "");
       setDiscountInfo(savedData.discountInfo || "");
       setTermsAccepted(savedData.termsAccepted || false);
-      setLastFourDigits(savedData.lastFourDigits || "");
       setShowAdditionalFields(savedData.showAdditionalFields || false);
     }
   }, []);
 
   // 임시 저장 (localStorage에 저장)
   const handleTempSave = () => {
+    console.log("Saving the following data:");
+    console.log("Performance Name:", performanceName);
+    console.log("Last Four Digits:", lastFourDigits);
     const formData = {
       reservImage,
       seatImage,
@@ -111,8 +98,9 @@ export const TicketForm = () => {
       termsAccepted,
       showAdditionalFields,
       performanceName, // 공연 이름도 저장
-      lastFourDigits,
+      lastFourDigits, // 예매자 전화번호 뒷자리도 저장
     };
+
     localStorage.setItem("ticketFormData", JSON.stringify(formData));
     alert("임시저장 완료!");
   };
@@ -161,25 +149,22 @@ export const TicketForm = () => {
       if (response.ok) {
         const responseData = await response.json(); // Parse JSON
         console.log("Response Data:", responseData);
-
         const { 관람년도, 관람월, 관람일, 관람시간 } = responseData.date_info;
         const selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
         const selectedHour = 관람시간.시;
         const selectedMin = 관람시간.분;
         const selectedAmPm = selectedHour >= 12 ? "PM" : "AM";
-
-        setSelectedDate(selectedDate || "");
-        setSelectedHour(selectedHour % 12 || "");
-        setSelectedMin(selectedMin || "");
-        setSelectedAmPm(selectedAmPm || "");
+        setPerformanceName(responseData.performanceName || "");
+        setLastFourDigits(responseData.lastFourDigits || "");
+        setSelectedDate(selectedDate);
+        setSelectedHour(selectedHour % 12);
+        setSelectedMin(selectedMin);
+        setSelectedAmPm(selectedAmPm);
         setTicketNumber(responseData.ticket_number || ""); // 예매번호
         setSeatInfo(responseData.seat_number || ""); // 좌석 정보
         setCastingInfo(responseData.cast_info || ""); // 캐스팅 정보 (responseData에 존재하는 경우)
         setPrice(responseData.total_amount || ""); // 가격
         setDiscountInfo(responseData.price_grade || ""); // 할인 정보
-
-        // 수정된 부분: savedData 대신 lastFourDigits 사용
-        setLastFourDigits("");
         setShowAdditionalFields(true);
       } else {
         console.error("Status Code:", response.status); // Log status
@@ -202,7 +187,7 @@ export const TicketForm = () => {
     formData.append("seat", seatInfo);
     formData.append("price", formattedPrice);
     formData.append("casting", castingInfo);
-    formData.append("booking_details", ticketNumber);
+    formData.append("booking_details", discountInfo);
     formData.append("uploaded_file", reservImage);
     formData.append("uploaded_seat_image", seatImage);
     formData.append("phone_last_digits", lastFourDigits);
@@ -232,142 +217,214 @@ export const TicketForm = () => {
         <label className="block mb-2 font-bold">공연 이름</label>
         <input
           type="text"
-          value={performanceName} // 상태값 바인딩
-          onChange={(e) => setPerformanceName(e.target.value)} // 입력 값 변경 시 상태 업데이트
-          placeholder="공연 이름을 입력하세요"
+          placeholder="Value"
           className="border p-2 mb-4 rounded-md"
+          value={performanceName} // 상태와 연결
+          onChange={(e) => setPerformanceName(e.target.value)} // 입력 값을 상태로 설정
         />
 
-        <label className="block mb-2 font-bold">공연 날짜</label>
-        <DatePicker
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          dateFormat="yyyy년 MM월 dd일"
-          locale={ko}
-          dropdownMode="select"
-          placeholderText="날짜 선택"
-          className="border p-2 w-full mb-4 rounded-md"
-        />
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">예매내역서</label>
+          <div className="upload-container">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleReservUpload}
+              style={{ display: "none" }}
+              id="upload1"
+            />
+            <label htmlFor="upload1" className="cursor-pointer upload-box">
+              {reservImage && (
+                <img
+                  src={reservImage}
+                  alt="예매내역서"
+                  className="max-h-[230px] max-w-[230px] object-cover"
+                />
+              )}
+            </label>
+          </div>
+        </div>
 
-        <label className="block mb-2 font-bold">공연 시간</label>
+        <div className="mb-4">
+          <label className="block mb-2 font-bold">좌석 사진</label>
+          <div className="upload-container">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleSeatUpload}
+              style={{ display: "none" }}
+              id="upload2"
+            />
+            <label htmlFor="upload2" className="cursor-pointer upload-box">
+              {seatImage && (
+                <img
+                  src={seatImage}
+                  alt="좌석 사진"
+                  className="max-h-[230px] max-w-[230px] object-cover"
+                />
+              )}
+            </label>
+          </div>
+        </div>
+
+        <label className="block mb-2 font-bold">예매처</label>
         <div className="flex gap-2 mb-4">
           <Select
-            options={hours}
-            value={hours.find((option) => option.value === selectedHour)} // hours 배열에서 현재 선택된 hour를 찾음
-            onChange={(option) => setSelectedHour(option.value)} // 선택된 객체에서 값을 추출하여 설정
-            placeholder="시간"
-            className="flex-1"
-          />
-          <Select
-            options={minutes}
-            value={
-              minutes.find((option) => option.value === selectedMin) || {
-                value: 0,
-                label: "0분",
-              }
-            }
-            onChange={(option) => setSelectedMin(option.value)}
-            placeholder="분"
-            className="flex-1"
-          />
-          <Select
-            options={amPmOptions}
-            value={amPmOptions.find((option) => option.value === selectedAmPm)}
-            onChange={(option) => setSelectedAmPm(option.value)}
-            placeholder="AM/PM"
+            options={site}
+            value={selectedSite}
+            onChange={setSelectedSite}
+            placeholder="선택"
             className="flex-1"
           />
         </div>
 
-        <label className="block mb-2 font-bold">예매번호</label>
-        <input
-          type="text"
-          value={ticketNumber}
-          onChange={(e) => setTicketNumber(e.target.value)}
-          placeholder="예매번호를 입력하세요"
-          className="border p-2 mb-4 rounded-md"
-        />
-
-        <label className="block mb-2 font-bold">좌석 정보</label>
-        <input
-          type="text"
-          value={seatInfo}
-          onChange={(e) => setSeatInfo(e.target.value)}
-          placeholder="좌석 정보를 입력하세요"
-          className="border p-2 mb-4 rounded-md"
-        />
-
-        <label className="block mb-2 font-bold">캐스팅 정보</label>
-        <input
-          type="text"
-          value={castingInfo}
-          onChange={(e) => setCastingInfo(e.target.value)}
-          placeholder="캐스팅 정보를 입력하세요"
-          className="border p-2 mb-4 rounded-md"
-        />
-
-        <label className="block mb-2 font-bold">가격(원가)</label>
-        <input
-          type="text"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          placeholder="가격을 입력하세요"
-          className="border p-2 mb-4 rounded-md"
-        />
-
-        <label className="block mb-2 font-bold">할인 정보</label>
-        <input
-          type="text"
-          value={discountInfo}
-          onChange={(e) => setDiscountInfo(e.target.value)}
-          placeholder="할인 정보를 입력하세요"
-          className="border p-2 mb-4 rounded-md"
-        />
-
-        <label className="block mb-2 font-bold">
-          예매자 전화번호 마지막 4자리
-        </label>
-        <input
-          type="text"
-          value={lastFourDigits}
-          onChange={(e) => setLastFourDigits(e.target.value)}
-          placeholder="전화번호 마지막 4자리"
-          className="border p-2 mb-4 rounded-md"
-        />
-
-        <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="terms"
-            checked={termsAccepted}
-            onChange={handleTermsChange}
-            className="mr-2"
-          />
-          <label htmlFor="terms">이용 약관에 동의합니다</label>
-          <a
-            href="/terms"
-            className="ml-2 text-gray-400 underline underline-offset-4"
-          >
-            이용 약관 읽기
-          </a>
-        </div>
-
-        <div className="flex justify-around mt-1">
+        {!showAdditionalFields && (
           <button
             type="button"
-            className="bg-gray-800 text-white px-10 rounded-md"
-            onClick={handleTempSave}
+            className="bg-gray-800 text-white mx-24 my-3 px-4 py-2 rounded-md mb-4"
+            onClick={handleUploadComplete}
           >
-            임시저장
+            업로드 완료
           </button>
-          <button
-            type="button"
-            className="bg-black text-white px-10 rounded-md"
-            onClick={handleSubmit}
-          >
-            작성 완료
-          </button>
-        </div>
+        )}
+
+        {showAdditionalFields && (
+          <>
+            <label className="block mb-2 font-bold">공연 날짜</label>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat="yyyy년 MM월 dd일"
+              locale={ko}
+              dropdownMode="select"
+              placeholderText="날짜 선택"
+              className="border p-2 w-full mb-4 rounded-md"
+            />
+            <label className="block mb-2 font-bold">공연 시간</label>
+            <div className="flex gap-2 mb-4">
+              <Select
+                options={hours}
+                value={hours.find((option) => option.value === selectedHour)} // hours 배열에서 현재 선택된 hour를 찾음
+                onChange={(option) => setSelectedHour(option.value)} // 선택된 객체에서 값을 추출하여 설정
+                placeholder="시간"
+                className="flex-1"
+              />
+
+              <Select
+                options={minutes}
+                value={
+                  minutes.find((option) => option.value === selectedMin) || {
+                    value: 0,
+                    label: "0분",
+                  }
+                } // 0을 명시적으로 처리
+                onChange={(option) => setSelectedMin(option.value)}
+                placeholder="분"
+                className="flex-1"
+              />
+
+              <Select
+                options={amPmOptions}
+                value={amPmOptions.find(
+                  (option) => option.value === selectedAmPm
+                )} // amPmOptions에서 현재 선택된 AM/PM을 찾음
+                onChange={(option) => setSelectedAmPm(option.value)} // 선택된 객체에서 값을 추출하여 설정
+                placeholder="AM/PM"
+                className="flex-1"
+              />
+            </div>
+
+            <label className="block mb-2 font-bold">예매번호</label>
+            <input
+              type="text"
+              value={ticketNumber}
+              onChange={(e) => setTicketNumber(e.target.value)}
+              placeholder="Value"
+              className="border p-2 mb-4 rounded-md"
+            />
+
+            <label className="block mb-2 font-bold">좌석 정보</label>
+            <input
+              type="text"
+              value={seatInfo}
+              onChange={(e) => setSeatInfo(e.target.value)}
+              placeholder="Value"
+              className="border p-2 mb-4 rounded-md"
+            />
+
+            <label className="block mb-2 font-bold">캐스팅 정보</label>
+            <input
+              type="text"
+              value={castingInfo}
+              onChange={(e) => setCastingInfo(e.target.value)}
+              placeholder="Value"
+              className="border p-2 mb-4 rounded-md"
+            />
+
+            <label className="block mb-2 font-bold">가격(원가)</label>
+            <input
+              type="text"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="Value"
+              className="border p-2 mb-4 rounded-md"
+            />
+
+            <label className="block mb-2 font-bold">할인 정보</label>
+            <input
+              type="text"
+              value={discountInfo}
+              onChange={(e) => setDiscountInfo(e.target.value)}
+              placeholder="Value"
+              className="border p-2 mb-4 rounded-md"
+            />
+
+            <label className="block mb-2 font-bold">
+              예매자 전화번호 마지막 4자리
+            </label>
+            <input
+              type="text"
+              placeholder="Value"
+              className="border p-2 mb-4 rounded-md"
+              value={lastFourDigits} // 상태와 연결
+              onChange={(e) => setLastFourDigits(e.target.value)} // 입력 값을 상태로 설정
+            />
+
+            <div className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={termsAccepted}
+                onChange={handleTermsChange}
+                className="mr-2"
+              />
+              <label htmlFor="terms">I accept the terms</label>
+              <a
+                href="/terms"
+                className="ml-2 text-gray-400 underline underline-offset-4"
+              >
+                Read our T&Cs
+              </a>
+            </div>
+
+            <div className="flex justify-around mt-1">
+              <button
+                type="button"
+                className="bg-gray-800 text-white px-10 rounded-md"
+                onClick={handleTempSave}
+              >
+                임시저장
+              </button>
+              <button
+                type="button"
+                className="bg-black text-white px-10 rounded-md"
+                onClick={handleSubmit}
+              >
+                작성 완료
+              </button>
+            </div>
+          </>
+        )}
       </form>
     </div>
   );
