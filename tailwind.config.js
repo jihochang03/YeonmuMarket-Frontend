@@ -13,7 +13,7 @@ export default {
         "main-frame": `calc(100vh * 0.6)`,
         "header-height": `${headerHeight}px`,
         "main-height": `calc(100vh - ${headerHeight}px)`,
-        "main-menu-height": `calc(100vh - ${headerHeight}px - 95px)`
+        "main-menu-height": `calc(100vh - ${headerHeight}px - 95px)`,
       },
       colors: {
         "darker": "#F8F9FD",

@@ -19,24 +19,25 @@ function Auth() {
     getToken()
       .then((res) => {
         if (res === null) {
+          navigate('/');
           console.error("Failed to get token from backend, response is null");
-          return;
         }
 
         console.log("Response from backend:", res);
         dispatch(setLoginState(true));
         dispatch(setUserProfile(res));
-        // 쿠키에서 엑세스 토큰 확인
-        const accessToken = getCookie("access_token");
-        if (!accessToken) {
-          console.error("No access token found in cookies");
+        if (!res.account_num) {
+          navigate('/account-auth');
         } else {
-          console.log("Access token from cookies:", accessToken);
+          navigate('/main/sold')
         }
-        // Redux 상태 업데이트
-        window.location.href = "/main/sold";
       })
-      .catch((err) => console.log("Error during token fetch:", err));
-  }, []);
+      .catch((err) => {
+        console.log(err);
+        navigate('/');
+    });
+  }, [dispatch, navigate]);
+
+  return <></>;
 }
 export default Auth;
