@@ -62,9 +62,17 @@ export const kakaoSignIn = async (data) => {
 // 티켓 생성 API 호출 함수
 export const createTicket = async (formData) => {
   try {
-    const response = await instanceWithToken.post("/tickets/create/", formData);
+    // FormData를 사용할 때는 headers에 Content-Type을 설정하지 마세요.
+    const response = await instanceWithToken.post(
+      "/tickets/create/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // axios가 자동으로 multipart/form-data로 처리
+        },
+      }
+    );
 
-    // 응답 상태 코드가 200-299 범위에 있는지 확인
     if (response.status === 200 || response.status === 201) {
       console.log("Ticket creation response data:", response.data); // 응답 데이터 확인
       return response.data; // 성공적인 응답 데이터 반환
