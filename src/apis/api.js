@@ -88,6 +88,15 @@ export const fetchTransferredTickets = async () => {
     throw error;
   }
 };
+export const fetchPurchasedTickets = async () => {
+  try {
+    const response = await instanceWithToken.get("/tickets/purchased/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching transferred tickets:", error);
+    throw error;
+  }
+};
 
 export const fetchTicketPostDetail = async (ticketPostId) => {
   try {

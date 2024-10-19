@@ -8,7 +8,7 @@ import { createTicket } from "../../../../apis/api";
 
 export const TicketForm = () => {
   const navigate = useNavigate();
-  const [performanceName, setPerformanceName] = useState("");
+  const [performanceName, setPerformanceName] = useState(null);
   const [reservImage, setReservImage] = useState(null);
   const [seatImage, setSeatImage] = useState(null);
   const [reservFile, setReservFile] = useState(null); // Server-side file
@@ -80,9 +80,11 @@ export const TicketForm = () => {
   // 임시 저장 (localStorage에 저장)
   const handleTempSave = () => {
     console.log("Saving the following data:");
-    console.log("Performance Name:", performanceName);
+    console.log("Performance Name:", performanceName); // Check if it's correctly logged
     console.log("Last Four Digits:", lastFourDigits);
+
     const formData = {
+      performanceName, // Ensure it's included here
       reservImage,
       seatImage,
       selectedSite,
@@ -97,11 +99,10 @@ export const TicketForm = () => {
       discountInfo,
       termsAccepted,
       showAdditionalFields,
-      performanceName, // 공연 이름도 저장
-      lastFourDigits, // 예매자 전화번호 뒷자리도 저장
+      lastFourDigits,
     };
 
-    localStorage.setItem("ticketFormData", JSON.stringify(formData));
+    localStorage.setItem("ticketFormData", JSON.stringify(formData)); // Ensure it's saved
     alert("임시저장 완료!");
   };
 
@@ -126,16 +127,20 @@ export const TicketForm = () => {
   };
 
   const handleUploadComplete = async () => {
-    // Collect the uploaded files and send them to the backend
+    // Check if required files are uploaded
     if (!reservFile || !seatFile) {
       alert("예매내역서와 좌석 사진을 모두 업로드해주세요.");
       return;
     }
 
+    // Log the performance name before the upload
+    console.log("Performance Name before upload:", performanceName);
+
     const formData = new FormData();
+    formData.append("performanceName", performanceName); // Append the performance name
     formData.append("keyword", selectedSite ? selectedSite.value : "");
-    formData.append("reservImage", reservFile); // Append the reservation file
-    formData.append("seatImage", seatFile); // Append the seat image file
+    formData.append("reservImage", reservFile);
+    formData.append("seatImage", seatFile);
 
     try {
       const response = await fetch(
@@ -147,28 +152,31 @@ export const TicketForm = () => {
       );
 
       if (response.ok) {
-        const responseData = await response.json(); // Parse JSON
+        const responseData = await response.json(); // Parse the JSON response
         console.log("Response Data:", responseData);
+
+        // Update state with the new data received
         const { 관람년도, 관람월, 관람일, 관람시간 } = responseData.date_info;
         const selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
         const selectedHour = 관람시간.시;
         const selectedMin = 관람시간.분;
         const selectedAmPm = selectedHour >= 12 ? "PM" : "AM";
-        setPerformanceName(responseData.performanceName || "");
+
+        setPerformanceName(performanceName || ""); // Make sure this updates state
         setLastFourDigits(responseData.lastFourDigits || "");
         setSelectedDate(selectedDate);
         setSelectedHour(selectedHour % 12);
         setSelectedMin(selectedMin);
         setSelectedAmPm(selectedAmPm);
-        setTicketNumber(responseData.ticket_number || ""); // 예매번호
-        setSeatInfo(responseData.seat_number || ""); // 좌석 정보
-        setCastingInfo(responseData.cast_info || ""); // 캐스팅 정보 (responseData에 존재하는 경우)
-        setPrice(responseData.total_amount || ""); // 가격
-        setDiscountInfo(responseData.price_grade || ""); // 할인 정보
+        setTicketNumber(responseData.ticket_number || "");
+        setSeatInfo(responseData.seat_number || "");
+        setCastingInfo(responseData.cast_info || "");
+        setPrice(responseData.total_amount || "");
+        setDiscountInfo(responseData.price_grade || "");
         setShowAdditionalFields(true);
       } else {
-        console.error("Status Code:", response.status); // Log status
-        console.error("Response Text:", await response.text()); // Log full response
+        console.error("Status Code:", response.status);
+        console.error("Response Text:", await response.text());
       }
     } catch (error) {
       console.error("Error uploading files:", error);
@@ -188,8 +196,8 @@ export const TicketForm = () => {
     formData.append("price", formattedPrice);
     formData.append("casting", castingInfo);
     formData.append("booking_details", discountInfo);
-    formData.append("uploaded_file", reservImage);
-    formData.append("uploaded_seat_image", seatImage);
+    formData.append("uploaded_file", reservFile);
+    formData.append("uploaded_seat_image", seatFile);
     formData.append("phone_last_digits", lastFourDigits);
     formData.append("keyword", selectedSite ? selectedSite.value : "");
 
@@ -219,8 +227,8 @@ export const TicketForm = () => {
           type="text"
           placeholder="Value"
           className="border p-2 mb-4 rounded-md"
-          value={performanceName} // 상태와 연결
-          onChange={(e) => setPerformanceName(e.target.value)} // 입력 값을 상태로 설정
+          value={performanceName || ""} // Ensure a fallback empty string for controlled input
+          onChange={(e) => setPerformanceName(e.target.value)} // Make sure this correctly updates state
         />
 
         <div className="mb-4">
