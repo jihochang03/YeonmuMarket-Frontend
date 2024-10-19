@@ -196,8 +196,8 @@ export const TicketForm = () => {
     formData.append("price", formattedPrice);
     formData.append("casting", castingInfo);
     formData.append("booking_details", discountInfo);
-    formData.append("uploaded_file", reservFile);
-    formData.append("uploaded_seat_image", seatFile);
+    formData.append("reservImage", reservFile);
+    formData.append("seatImage", seatFile);
     formData.append("phone_last_digits", lastFourDigits);
     formData.append("keyword", selectedSite ? selectedSite.value : "");
 
