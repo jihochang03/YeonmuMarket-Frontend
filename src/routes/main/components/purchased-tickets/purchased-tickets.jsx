@@ -10,6 +10,8 @@ const statusMapping = {
 export const PurchasedTickets = () => {
   const [tickets, setTickets] = useState([]); // 백엔드에서 가져온 티켓 데이터 저장
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   // 백엔드에서 티켓 목록을 가져오는 함수
   useEffect(() => {
@@ -28,6 +30,25 @@ export const PurchasedTickets = () => {
   const handleDetailClick = (ticketId) => {
     const ticket = tickets.find((item) => item.id === ticketId);
     setSelectedTicket(ticket);
+  };
+
+  const handleModalOpen = (message) => {
+    setModalMessage(message);
+    setIsModalOpen(true);
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  }
+
+  const handleConfirm = () => {
+    const updatedTickets = tickets.map((ticket) =>
+      ticket.id === selectedTicket.id
+      ? { ...ticket, status: 'transfer_complete' }
+      : ticket
+    );
+    setTickets(updatedTickets);
+    setIsModalOpen(false);
   };
 
   return (
@@ -118,18 +139,33 @@ export const PurchasedTickets = () => {
                   <div>/</div>
                   <div className="ticket-place">{ticket.seat}</div>
                 </div>
-                <div className="ticket-button-container">
-                  <button
-                    className="ticket-button"
-                    onClick={() => handleDetailClick(ticket.id)}
-                  >
-                    상세보기
-                  </button>
-                </div>
+                {ticket.status === 'waiting' && (
+                  <div className='ticket-button-container'>
+                    <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
+                  </div>
+                )}
+                {ticket.status === 'transfer_pending' && (
+                  <div className='ticket-button-container'>
+                    <div className="ticket-button" onClick={() => handleModalOpen('입금을 완료하셨나요?0')}>입금 완료</div>
+                    <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
+                  </div>
+                )}
+                {ticket.status === 'transfer_complete' && (
+                  <div className='ticket-button-container'>
+                    <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
+                  </div>
+                )}
               </div>
             ))
           )}
         </div>
+      )}
+      {isModalOpen && (
+        <Modal
+          message={modalMessage}
+          onClose={handleModalClose}
+          onConfirm={handleConfirm}
+        />
       )}
     </div>
   );
