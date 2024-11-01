@@ -5,6 +5,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
 import { createTicket } from "../../../../apis/api";
+import XIcon from '../../../../assets/xlogo.png';
+import UrlIcon from '../../../../assets/url.png';
 
 export const TicketForm = () => {
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ export const TicketForm = () => {
   const [price, setPrice] = useState(false);
   const [discountInfo, setDiscountInfo] = useState(false);
   const [lastFourDigits, setLastFourDigits] = useState("");
+  const [isPromoViewVisible, setIsPromoViewVisible] = useState(false);
 
   const site = [
     { value: "인터파크", label: "인터파크" },
@@ -207,233 +210,272 @@ export const TicketForm = () => {
       // 성공적으로 응답을 받으면 알림을 띄우고 페이지 이동
       alert("티켓 등록이 완료되었습니다.");
       localStorage.removeItem("ticketFormData");
-      navigate("/main/sold");
+      setIsPromoViewVisible(true);
     } catch (error) {
       // 에러 로그 출력
       console.error("Error submitting the form:", error);
     }
   };
 
+  const handlePublishToX = () => {
+    alert('X에 게시')
+  };
+
+  const handleCopyUrl = () => {
+    const promoUrl = window.location.href;
+    navigator.clipboard.writeText(promoUrl).then(() => {
+      alert('URL 복사됨')
+    });
+  };
+
   return (
     <div className="max-w-lg p-1 border-2 border-gray-300 rounded-md mx-5 mt-4">
-      <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
-        <h1>양도글 작성</h1>
-        <h3 className="text-gray-500 mb-6">
-          양도할 티켓의 정보를 입력해주세요.
-        </h3>
+      {!isPromoViewVisible ? (
+        <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
+          <h1>양도글 작성</h1>
+          <h3 className="text-gray-500 mb-6">
+            양도할 티켓의 정보를 입력해주세요.
+          </h3>
 
-        <label className="block mb-2 font-bold">공연 이름</label>
-        <input
-          type="text"
-          placeholder="Value"
-          className="border p-2 mb-4 rounded-md"
-          value={performanceName || ""} // Ensure a fallback empty string for controlled input
-          onChange={(e) => setPerformanceName(e.target.value)} // Make sure this correctly updates state
-        />
-
-        <div className="mb-4">
-          <label className="block mb-2 font-bold">예매내역서</label>
-          <div className="upload-container">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleReservUpload}
-              style={{ display: "none" }}
-              id="upload1"
-            />
-            <label htmlFor="upload1" className="cursor-pointer upload-box">
-              {reservImage && (
-                <img
-                  src={reservImage}
-                  alt="예매내역서"
-                  className="max-h-[230px] max-w-[230px] object-cover"
-                />
-              )}
-            </label>
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-2 font-bold">좌석 사진</label>
-          <div className="upload-container">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleSeatUpload}
-              style={{ display: "none" }}
-              id="upload2"
-            />
-            <label htmlFor="upload2" className="cursor-pointer upload-box">
-              {seatImage && (
-                <img
-                  src={seatImage}
-                  alt="좌석 사진"
-                  className="max-h-[230px] max-w-[230px] object-cover"
-                />
-              )}
-            </label>
-          </div>
-        </div>
-
-        <label className="block mb-2 font-bold">예매처</label>
-        <div className="flex gap-2 mb-4">
-          <Select
-            options={site}
-            value={selectedSite}
-            onChange={setSelectedSite}
-            placeholder="선택"
-            className="flex-1"
+          <label className="block mb-2 font-bold">공연 이름</label>
+          <input
+            type="text"
+            placeholder="Value"
+            className="border p-2 mb-4 rounded-md"
+            value={performanceName || ""} // Ensure a fallback empty string for controlled input
+            onChange={(e) => setPerformanceName(e.target.value)} // Make sure this correctly updates state
           />
-        </div>
 
-        {!showAdditionalFields && (
-          <button
-            type="button"
-            className="bg-gray-800 text-white mx-24 my-3 px-4 py-2 rounded-md mb-4"
-            onClick={handleUploadComplete}
-          >
-            업로드 완료
-          </button>
-        )}
-
-        {showAdditionalFields && (
-          <>
-            <label className="block mb-2 font-bold">공연 날짜</label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="yyyy년 MM월 dd일"
-              locale={ko}
-              dropdownMode="select"
-              placeholderText="날짜 선택"
-              className="border p-2 w-full mb-4 rounded-md"
-            />
-            <label className="block mb-2 font-bold">공연 시간</label>
-            <div className="flex gap-2 mb-4">
-              <Select
-                options={hours}
-                value={hours.find((option) => option.value === selectedHour)} // hours 배열에서 현재 선택된 hour를 찾음
-                onChange={(option) => setSelectedHour(option.value)} // 선택된 객체에서 값을 추출하여 설정
-                placeholder="시간"
-                className="flex-1"
-              />
-
-              <Select
-                options={minutes}
-                value={
-                  minutes.find((option) => option.value === selectedMin) || {
-                    value: 0,
-                    label: "0분",
-                  }
-                } // 0을 명시적으로 처리
-                onChange={(option) => setSelectedMin(option.value)}
-                placeholder="분"
-                className="flex-1"
-              />
-
-              <Select
-                options={amPmOptions}
-                value={amPmOptions.find(
-                  (option) => option.value === selectedAmPm
-                )} // amPmOptions에서 현재 선택된 AM/PM을 찾음
-                onChange={(option) => setSelectedAmPm(option.value)} // 선택된 객체에서 값을 추출하여 설정
-                placeholder="AM/PM"
-                className="flex-1"
-              />
-            </div>
-
-            <label className="block mb-2 font-bold">예매번호</label>
-            <input
-              type="text"
-              value={ticketNumber}
-              onChange={(e) => setTicketNumber(e.target.value)}
-              placeholder="Value"
-              className="border p-2 mb-4 rounded-md"
-            />
-
-            <label className="block mb-2 font-bold">좌석 정보</label>
-            <input
-              type="text"
-              value={seatInfo}
-              onChange={(e) => setSeatInfo(e.target.value)}
-              placeholder="Value"
-              className="border p-2 mb-4 rounded-md"
-            />
-
-            <label className="block mb-2 font-bold">캐스팅 정보</label>
-            <input
-              type="text"
-              value={castingInfo}
-              onChange={(e) => setCastingInfo(e.target.value)}
-              placeholder="Value"
-              className="border p-2 mb-4 rounded-md"
-            />
-
-            <label className="block mb-2 font-bold">가격(원가)</label>
-            <input
-              type="text"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="Value"
-              className="border p-2 mb-4 rounded-md"
-            />
-
-            <label className="block mb-2 font-bold">할인 정보</label>
-            <input
-              type="text"
-              value={discountInfo}
-              onChange={(e) => setDiscountInfo(e.target.value)}
-              placeholder="Value"
-              className="border p-2 mb-4 rounded-md"
-            />
-
-            <label className="block mb-2 font-bold">
-              예매자 전화번호 마지막 4자리
-            </label>
-            <input
-              type="text"
-              placeholder="Value"
-              className="border p-2 mb-4 rounded-md"
-              value={lastFourDigits} // 상태와 연결
-              onChange={(e) => setLastFourDigits(e.target.value)} // 입력 값을 상태로 설정
-            />
-
-            <div className="flex items-center mb-4">
+          <div className="mb-4">
+            <label className="block mb-2 font-bold">예매내역서</label>
+            <div className="upload-container">
               <input
-                type="checkbox"
-                id="terms"
-                checked={termsAccepted}
-                onChange={handleTermsChange}
-                className="mr-2"
+                type="file"
+                accept="image/*"
+                onChange={handleReservUpload}
+                style={{ display: "none" }}
+                id="upload1"
               />
-              <label htmlFor="terms">I accept the terms</label>
-              <a
-                href="/terms"
-                className="ml-2 text-gray-400 underline underline-offset-4"
-              >
-                Read our T&Cs
-              </a>
+              <label htmlFor="upload1" className="cursor-pointer upload-box">
+                {reservImage && (
+                  <img
+                    src={reservImage}
+                    alt="예매내역서"
+                    className="max-h-[230px] max-w-[230px] object-cover"
+                  />
+                )}
+              </label>
             </div>
+          </div>
 
-            <div className="flex justify-around mt-1">
-              <button
-                type="button"
-                className="bg-gray-800 text-white px-10 rounded-md"
-                onClick={handleTempSave}
-              >
-                임시저장
-              </button>
-              <button
-                type="button"
-                className="bg-black text-white px-10 rounded-md"
-                onClick={handleSubmit}
-              >
-                작성 완료
-              </button>
+          <div className="mb-4">
+            <label className="block mb-2 font-bold">좌석 사진</label>
+            <div className="upload-container">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleSeatUpload}
+                style={{ display: "none" }}
+                id="upload2"
+              />
+              <label htmlFor="upload2" className="cursor-pointer upload-box">
+                {seatImage && (
+                  <img
+                    src={seatImage}
+                    alt="좌석 사진"
+                    className="max-h-[230px] max-w-[230px] object-cover"
+                  />
+                )}
+              </label>
             </div>
-          </>
-        )}
-      </form>
+          </div>
+
+          <label className="block mb-2 font-bold">예매처</label>
+          <div className="flex gap-2 mb-4">
+            <Select
+              options={site}
+              value={selectedSite}
+              onChange={setSelectedSite}
+              placeholder="선택"
+              className="flex-1"
+            />
+          </div>
+
+          {!showAdditionalFields && (
+            <button
+              type="button"
+              className="bg-gray-800 text-white mx-24 my-3 px-4 py-2 rounded-md mb-4"
+              onClick={handleUploadComplete}
+            >
+              업로드 완료
+            </button>
+          )}
+
+          {showAdditionalFields && (
+            <>
+              <label className="block mb-2 font-bold">공연 날짜</label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="yyyy년 MM월 dd일"
+                locale={ko}
+                dropdownMode="select"
+                placeholderText="날짜 선택"
+                className="border p-2 w-full mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">공연 시간</label>
+              <div className="flex gap-2 mb-4">
+                <Select
+                  options={hours}
+                  value={hours.find((option) => option.value === selectedHour)} // hours 배열에서 현재 선택된 hour를 찾음
+                  onChange={(option) => setSelectedHour(option.value)} // 선택된 객체에서 값을 추출하여 설정
+                  placeholder="시간"
+                  className="flex-1"
+                />
+
+                <Select
+                  options={minutes}
+                  value={
+                    minutes.find((option) => option.value === selectedMin) || {
+                      value: 0,
+                      label: "0분",
+                    }
+                  } // 0을 명시적으로 처리
+                  onChange={(option) => setSelectedMin(option.value)}
+                  placeholder="분"
+                  className="flex-1"
+                />
+
+                <Select
+                  options={amPmOptions}
+                  value={amPmOptions.find(
+                    (option) => option.value === selectedAmPm
+                  )} // amPmOptions에서 현재 선택된 AM/PM을 찾음
+                  onChange={(option) => setSelectedAmPm(option.value)} // 선택된 객체에서 값을 추출하여 설정
+                  placeholder="AM/PM"
+                  className="flex-1"
+                />
+              </div>
+
+              <label className="block mb-2 font-bold">예매번호</label>
+              <input
+                type="text"
+                value={ticketNumber}
+                onChange={(e) => setTicketNumber(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+
+              <label className="block mb-2 font-bold">좌석 정보</label>
+              <input
+                type="text"
+                value={seatInfo}
+                onChange={(e) => setSeatInfo(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+
+              <label className="block mb-2 font-bold">캐스팅 정보</label>
+              <input
+                type="text"
+                value={castingInfo}
+                onChange={(e) => setCastingInfo(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+
+              <label className="block mb-2 font-bold">가격(원가)</label>
+              <input
+                type="text"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+
+              <label className="block mb-2 font-bold">할인 정보</label>
+              <input
+                type="text"
+                value={discountInfo}
+                onChange={(e) => setDiscountInfo(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+
+              <label className="block mb-2 font-bold">
+                예매자 전화번호 마지막 4자리
+              </label>
+              <input
+                type="text"
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+                value={lastFourDigits} // 상태와 연결
+                onChange={(e) => setLastFourDigits(e.target.value)} // 입력 값을 상태로 설정
+              />
+
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={termsAccepted}
+                  onChange={handleTermsChange}
+                  className="mr-2"
+                />
+                <label htmlFor="terms">I accept the terms</label>
+                <a
+                  href="/terms"
+                  className="ml-2 text-gray-400 underline underline-offset-4"
+                >
+                  Read our T&Cs
+                </a>
+              </div>
+
+              <div className="flex justify-around mt-1">
+                <button
+                  type="button"
+                  className="bg-gray-800 text-white px-10 rounded-md"
+                  onClick={handleTempSave}
+                >
+                  임시저장
+                </button>
+                <button
+                  type="button"
+                  className="bg-black text-white px-10 rounded-md"
+                  onClick={handleSubmit}
+                >
+                  작성 완료
+                </button>
+              </div>
+            </>
+          )}
+        </form>
+      ) : (
+        <div className="flex flex-col w-full p-4">
+          <h1>홍보글 작성</h1>
+          <textarea
+            className="border p-2 mb-4 rounded-md w-full h-40"
+            defaultValue={`${performanceName}\n ${selectedDate} ${selectedAmPm} ${selectedHour} ${selectedMin}\n 캐스팅: ${castingInfo}\n 가격: ${price}\n 좌석 정보: ${seatInfo}\n <연뮤마켓> 통해서 안전 거래`}
+          />
+          <div className="flex gap-2">
+            <button
+              type='button'
+              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+              onClick={handlePublishToX}
+            >
+              <img src={XIcon} alt='X 로고' className="w-5 h-5" />
+              X에 게시
+            </button>
+            <button
+              type='button'
+              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+              onClick={handleCopyUrl}
+            >
+              <img src={UrlIcon} alt='url' className="w-5 h-5" />
+              URL 복사
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

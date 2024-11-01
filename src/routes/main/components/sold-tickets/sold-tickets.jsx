@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchTransferredTickets } from "../../../../apis/api"; // 백엔드 API 함수 호출
 import Modal from '../../../../components/modal';
-import EditTicketForm from "../ticket-form/edit-ticket";
+import EditTicketForm from "./edit-ticket";
 
 const statusMapping = {
   waiting: "양수자 대기",
