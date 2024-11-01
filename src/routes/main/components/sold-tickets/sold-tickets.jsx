@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchTransferredTickets } from "../../../../apis/api"; // 백엔드 API 함수 호출
+import Modal from '../../../../components/modal';
+import EditTicketForm from "../ticket-form/edit-ticket";
 
 const statusMapping = {
   waiting: "양수자 대기",
@@ -10,6 +12,9 @@ const statusMapping = {
 export const SoldTickets = () => {
   const [tickets, setTickets] = useState([]); // 백엔드에서 가져온 티켓 데이터 저장
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
 
   // 백엔드에서 티켓 목록을 가져오는 함수
   useEffect(() => {
@@ -21,7 +26,6 @@ export const SoldTickets = () => {
         console.error("Error loading tickets:", error);
       }
     };
-
     loadTickets();
   }, []);
 
@@ -30,10 +34,49 @@ export const SoldTickets = () => {
     setSelectedTicket(ticket);
   };
 
+  const handleModalOpen = (message) => {
+    setModalMessage(message);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirm = () => {
+    const updatedTickets = tickets.map((ticket) =>
+      ticket.id === selectedTicket.id
+      ? { ...ticket, status: 'transfer_complete' }
+      : ticket
+    );
+    setTickets(updatedTickets);
+    setIsModalOpen(false);
+  };
+
+  const handleEdit = () => {
+    setIsEditMode(true);
+  };
+
+  const handleSave = (updatedTicket) => {
+    const updatedTickets = tickets.map((ticket) =>
+      ticket.id === updatedTicket.id ? updatedTicket : ticket
+    );
+    setTickets(updatedTickets);
+    setSelectedTicket(updatedTicket);
+    setIsEditMode(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+  };
+
   return (
     <div>
       {selectedTicket ? (
         <div className="max-w-lg p-4 border-2 border-gray-300 rounded-md mx-5 mt-4">
+          {isEditMode ? (
+            <EditTicketForm ticket={selectedTicket} onSave={handleSave} onCancel={handleCancelEdit} />
+          ) : (
           <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
             <h1>작성한 양도글</h1>
             <div className={`status-label status-${selectedTicket.status}`}>
@@ -93,13 +136,28 @@ export const SoldTickets = () => {
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.phone_last_digits}
             </label>
-            <button
-              className="mx-24 bg-slate-300 px-4 py-2 rounded-md"
-              onClick={() => setSelectedTicket(null)}
-            >
-              뒤로 가기
-            </button>
+            <div className="button-container mt-4">
+              {selectedTicket.status === 'waiting' && (
+                <>
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded-md"
+                    onClick={() => handleModalOpen('판매를 취소하시겠습니까?')}
+                  >판매 취소</button>
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded-md"
+                    onClick={handleEdit}
+                  >수정하기</button>
+                </>
+              )}
+              {selectedTicket.status === 'transfer_pending' && (
+                <button
+                  className="bg-black text-white px-4 py-2 rounded-md"
+                  onClick={() => handleModalOpen('양도 의사를 확정하시겠습니까?')}
+                >양도 확정</button>
+              )}
+            </div>
           </form>
+          )}
         </div>
       ) : (
         <div className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
@@ -118,19 +176,36 @@ export const SoldTickets = () => {
                   <div>/</div>
                   <div className="ticket-place">{ticket.seat}</div>
                 </div>
-                <div className="ticket-button-container">
-                  <button
-                    className="ticket-button"
-                    onClick={() => handleDetailClick(ticket.id)}
-                  >
-                    상세보기
-                  </button>
-                </div>
+                {ticket.status === 'waiting' && (
+                  <div className='ticket-button-container'>
+                    <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
+                  </div>
+                )}
+                {ticket.status === 'transfer_pending' && (
+                  <div className='ticket-button-container'>
+                    <div className="ticket-button" onClick={() => handleModalOpen('양도 의사를 확정하시겠습니까?')}>양도 확정</div>
+                    <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
+                  </div>
+                )}
+                {ticket.status === 'transfer_complete' && (
+                  <div className='ticket-button-container'>
+                    <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
+                  </div>
+                )}
               </div>
             ))
           )}
         </div>
       )}
+      {isModalOpen && (
+        <Modal
+          message={modalMessage}
+          onClose={handleModalClose}
+          onConfirm={handleConfirm}
+        />
+      )}
     </div>
   );
 };
+
+export default SoldTickets;
