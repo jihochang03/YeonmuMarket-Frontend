@@ -19,23 +19,23 @@ function Auth() {
     getToken()
       .then((res) => {
         if (res === null) {
-          navigate('/');
+          navigate("/");
           console.error("Failed to get token from backend, response is null");
         }
 
         console.log("Response from backend:", res);
         dispatch(setLoginState(true));
         dispatch(setUserProfile(res));
-        if (!res.account_num) {
-          navigate('/account-auth');
+        if (!res.is_payment_verified) {
+          navigate("/account-auth");
         } else {
-          navigate('/main/sold')
+          navigate("/main/sold");
         }
       })
       .catch((err) => {
         console.log(err);
-        navigate('/');
-    });
+        navigate("/");
+      });
   }, [dispatch, navigate]);
 
   return <></>;

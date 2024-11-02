@@ -87,6 +87,32 @@ export const createTicket = async (formData) => {
   }
 };
 
+export const confirmAccount = async (accountData) => {
+  try {
+    console.log("A. confirmAccount 함수 호출됨", accountData); // 첫 번째 로그
+
+    const response = await instanceWithToken.post(
+      "/payments/register/",
+      accountData
+    );
+
+    console.log("B. API 응답 수신:", response); // 두 번째 로그
+
+    if (response.status === 200 || response.status === 201) {
+      console.log("C. 응답 성공, 데이터 반환:", response.data); // 세 번째 로그
+      return response.data; // 성공적인 응답 데이터 반환
+    } else {
+      console.error("D. 응답 실패, 상태 코드:", response.status); // 네 번째 로그
+      throw new Error(
+        `Error ${response.status}: ${JSON.stringify(response.data)}`
+      ); // 응답 데이터 문자열화
+    }
+  } catch (error) {
+    console.error("E. API 호출 중 오류 발생:", error); // 다섯 번째 로그
+    throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던짐
+  }
+};
+
 export const fetchTransferredTickets = async () => {
   try {
     const response = await instanceWithToken.get("/tickets/transferred/");
