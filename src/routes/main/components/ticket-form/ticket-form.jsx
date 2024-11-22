@@ -33,7 +33,7 @@ export const TicketForm = () => {
   const site = [
     { value: "인터파크", label: "인터파크" },
     { value: "예스24", label: "예스24" },
-    { value: "티켓베이", label: "티켓베이" },
+    { value: "티켓링크", label: "티켓링크" },
   ];
   const hours = Array.from({ length: 12 }, (v, k) => ({
     value: k + 1,
@@ -159,11 +159,22 @@ export const TicketForm = () => {
         console.log("Response Data:", responseData);
 
         // Update state with the new data received
-        const { 관람년도, 관람월, 관람일, 관람시간 } = responseData.date_info;
-        const selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
-        const selectedHour = 관람시간.시;
-        const selectedMin = 관람시간.분;
-        const selectedAmPm = selectedHour >= 12 ? "PM" : "AM";
+        const { 관람년도, 관람월, 관람일, 관람시간 } = responseData.date_info || {};
+        
+        let selectedDate = null;
+        let selectedHour = null;
+        let selectedMin = null;
+        let selectedAmPm = null;
+
+        if (관람년도 && 관람월 && 관람일) {
+          selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
+        }
+  
+        if (관람시간) {
+          selectedHour = 관람시간.시 || null;
+          selectedMin = 관람시간.분 || null;
+          selectedAmPm = 관람시간.시 >= 12 ? "PM" : "AM";
+        }
 
         setPerformanceName(performanceName || ""); // Make sure this updates state
         setLastFourDigits(responseData.lastFourDigits || "");
@@ -229,9 +240,9 @@ export const TicketForm = () => {
   };
 
   return (
-    <div className="max-w-lg p-1 border-2 border-gray-300 rounded-md mx-5 mt-4">
+    <div className="max-w-lg p-1 mx-5 mt-4">
       {!isPromoViewVisible ? (
-        <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
+        <form className="flex flex-col border-2 border-gray-300 rounded-md w-full p-4 overflow-y-auto max-h-main-menu-height">
           <h1>양도글 작성</h1>
           <h3 className="text-gray-500 mb-6">
             양도할 티켓의 정보를 입력해주세요.
@@ -450,20 +461,30 @@ export const TicketForm = () => {
           )}
         </form>
       ) : (
-        <div className="flex flex-col w-full p-4">
-          <h1>홍보글 작성</h1>
+        <div className="flex flex-col justify-center min-h-main-menu-height w-full p-8">
+          <h3 className="py-2 font-bold">홍보글 작성(선택)</h3>
           <textarea
             className="border p-2 mb-4 rounded-md w-full h-40"
-            defaultValue={`${performanceName}\n ${selectedDate} ${selectedAmPm} ${selectedHour} ${selectedMin}\n 캐스팅: ${castingInfo}\n 가격: ${price}\n 좌석 정보: ${seatInfo}\n <연뮤마켓> 통해서 안전 거래`}
+            defaultValue={(() => {
+              let formattedDate = selectedDate
+                ? `${selectedDate.getFullYear()}.${String(selectedDate.getMonth() + 1).padStart(2, '0')}.${String(
+                    selectedDate.getDate()
+                  ).padStart(2, '0')}`
+                : "날짜 정보 없음";
+              let formattedTime = selectedHour !== null && selectedMin !== null
+                ? `${String(selectedHour).padStart(2, '0')}:${String(selectedMin).padStart(2, '0')}`
+                : "시간 정보 없음";
+              return `${performanceName || "공연 이름 없음"} 양도 \n${formattedDate} ${selectedAmPm || ""} ${formattedTime}\n캐스팅: ${castingInfo || "캐스팅 정보 없음"}\n가격: ${price || "가격 정보 없음"}\n좌석 정보: ${seatInfo || "좌석 정보 없음"}\n<연뮤마켓> 통해서 안전 거래`;
+            })()} 
           />
-          <div className="flex gap-2">
+          <div className="flex w-full justify-around items-center gap-2 pb-24">
             <button
               type='button'
               className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
               onClick={handlePublishToX}
             >
               <img src={XIcon} alt='X 로고' className="w-5 h-5" />
-              X에 게시
+              에 게시
             </button>
             <button
               type='button'
