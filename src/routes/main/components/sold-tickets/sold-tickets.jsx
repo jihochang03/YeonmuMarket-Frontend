@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchTransferredTickets } from "../../../../apis/api"; // 백엔드 API 함수 호출
+import { fetchTransferredTickets, updateTicketPost } from "../../../../apis/api"; // 백엔드 API 함수 호출
 import Modal from '../../../../components/modal';
 import EditTicketForm from "./edit-ticket";
 
@@ -62,7 +62,10 @@ export const SoldTickets = () => {
       ticket.id === updatedTicket.id ? updatedTicket : ticket
     );
     setTickets(updatedTickets);
-    setSelectedTicket(updatedTicket);
+    setSelectedTicket(null);
+    setTimeout(() => {
+      setSelectedTicket(updatedTicket);
+    }, 0);
     setIsEditMode(false);
   };
 
@@ -73,16 +76,16 @@ export const SoldTickets = () => {
   return (
     <div>
       {selectedTicket ? (
-        <div className="max-w-lg p-4 border-2 border-gray-300 rounded-md mx-5 mt-4">
+        <div key={selectedTicket.id} className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4">
           {isEditMode ? (
             <EditTicketForm ticket={selectedTicket} onSave={handleSave} onCancel={handleCancelEdit} />
           ) : (
-          <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
+          <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height" onSubmit={(e) => e.preventDefault()}>
             <h1>작성한 양도글</h1>
-            <div className={`status-label status-${selectedTicket.status}`}>
+            <div className={`status-label status-${selectedTicket.status} mt-3`}>
               상태: {statusMapping[selectedTicket.status]}
             </div>
-            <label className="block mb-2 font-bold">공연 이름</label>
+            <label className="block my-2 font-bold">공연 이름</label>
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.title}
             </label>
@@ -136,24 +139,30 @@ export const SoldTickets = () => {
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.phone_last_digits}
             </label>
-            <div className="button-container mt-4">
+            <div className="w-full flex items-center justify-center gap-10 mt-4">
               {selectedTicket.status === 'waiting' && (
                 <>
                   <button
-                    className="bg-black text-white px-4 py-2 rounded-md"
+                    className="bg-black text-white px-8 py-2 rounded-md"
                     onClick={() => handleModalOpen('판매를 취소하시겠습니까?')}
                   >판매 취소</button>
                   <button
-                    className="bg-black text-white px-4 py-2 rounded-md"
+                    className="bg-black text-white px-8 py-2 rounded-md"
                     onClick={handleEdit}
                   >수정하기</button>
                 </>
               )}
               {selectedTicket.status === 'transfer_pending' && (
-                <button
-                  className="bg-black text-white px-4 py-2 rounded-md"
-                  onClick={() => handleModalOpen('양도 의사를 확정하시겠습니까?')}
-                >양도 확정</button>
+                <>
+                  <button
+                    className="bg-black text-white px-8 py-2 rounded-md"
+                    onClick={() => handleModalOpen('판매를 취소하시겠습니까?')}
+                  >판매 취소</button>
+                  <button
+                    className="bg-black text-white px-8 py-2 rounded-md"
+                    onClick={handleEdit}
+                  >수정하기</button>
+                </>
               )}
             </div>
           </form>
@@ -183,7 +192,7 @@ export const SoldTickets = () => {
                 )}
                 {ticket.status === 'transfer_pending' && (
                   <div className='ticket-button-container'>
-                    <div className="ticket-button" onClick={() => handleModalOpen('양도 의사를 확정하시겠습니까?')}>양도 확정</div>
+                    <div className="ticket-button">대화방</div>
                     <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
                   </div>
                 )}

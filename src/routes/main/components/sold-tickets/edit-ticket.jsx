@@ -27,16 +27,15 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
   };
 
   return (
-    <form className="flex flex-col w-full p-4 border-2 border-gray-300 rounded-md">
-      <h2 className="text-lg font-bold mb-4">양도글 수정하기</h2>
-
-      <label className="block mb-2 font-bold">공연 이름</label>
+    <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
+      <h1>양도글 수정하기</h1>
+      <label className="block my-2 font-bold">공연 이름</label>
       <input
         type="text"
         name="title"
         value={editedTicket.title}
         onChange={handleChange}
-        className="border p-2 rounded-md mb-4"
+        className="border p-2 mb-4 rounded-md"
       />
 
       <label className="block mb-2 font-bold">예매내역서</label>
@@ -117,17 +116,17 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
         className="border p-2 rounded-md mb-4"
       />
 
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-center items-center gap-12 mt-4">
         <button
           type="button"
-          className="bg-black text-white px-4 py-2 rounded-md"
+          className="bg-black text-white px-8 py-2 rounded-md"
           onClick={() => onSave(editedTicket)}
         >
           저장
         </button>
         <button
           type="button"
-          className="bg-black text-white px-4 py-2 rounded-md"
+          className="bg-black text-white px-8 py-2 rounded-md"
           onClick={onCancel}
         >
           취소
