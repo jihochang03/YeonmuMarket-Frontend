@@ -159,7 +159,7 @@ const AccountAuthPage = () => {
             }}
             placeholder=" •"
           />
-          <span className="text-3xl mx-1">* * * * * *</span>
+          <span className="text-2xl mx-1">* * * * * *</span>
         </div>
         <label className="block mb-2 font-bold mt-4">
           본인 명의의 계좌번호
