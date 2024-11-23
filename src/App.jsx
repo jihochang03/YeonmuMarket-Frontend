@@ -8,6 +8,7 @@ import TermsPage from './routes/terms/pages/terms-page.jsx';
 import Auth from './routes/login/pages/auth.jsx';
 import AccountAuthPage from './routes/account-auth/pages/account-auth-page.jsx';
 import { useSelector } from 'react-redux';
+import ChatRoom from './routes/main/components/chat-room/chat-room.jsx';
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account-auth" element={<AccountAuthPage />} />
+                <Route path="/chat" element={<ChatRoom />} />
               </Routes>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { TicketForm } from '../components/ticket-form/ticket-form';
 import { SoldTickets } from '../components/sold-tickets/sold-tickets';
 import { PurchasedTickets } from '../components/purchased-tickets/purchased-tickets';
 import { ProfileSettings } from '../components/profile-settings/profile-settings';
+import ChatRoom from '../components/chat-room/chat-room';
 
 const MainPage = () => {
   return (

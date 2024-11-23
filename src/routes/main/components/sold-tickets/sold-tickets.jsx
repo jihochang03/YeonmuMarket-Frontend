@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { fetchTransferredTickets, updateTicketPost } from "../../../../apis/api"; // 백엔드 API 함수 호출
 import Modal from '../../../../components/modal';
 import EditTicketForm from "./edit-ticket";
+import { useNavigate } from 'react-router-dom';
 
 const statusMapping = {
   waiting: "양수자 대기",
@@ -15,6 +16,7 @@ export const SoldTickets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
+  const navigate = useNavigate();
 
   // 백엔드에서 티켓 목록을 가져오는 함수
   useEffect(() => {
@@ -71,6 +73,18 @@ export const SoldTickets = () => {
 
   const handleCancelEdit = () => {
     setIsEditMode(false);
+  };
+
+  const handleChatRoomOpen = (ticketId) => {
+    const ticket = tickets.find((item) => item.id === ticketId);
+  
+    if (ticket) {
+      navigate('/chat', {
+        state: { from: '/main/sold', ticketData: ticket },
+      }, console.log(ticket));
+    } else {
+      console.error("Ticket not found");
+    }
   };
 
   return (
@@ -169,7 +183,7 @@ export const SoldTickets = () => {
           )}
         </div>
       ) : (
-        <div className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
+        <div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
           {tickets.length === 0 ? (
             <div>양도한 티켓이 없습니다.</div>
           ) : (
@@ -192,7 +206,7 @@ export const SoldTickets = () => {
                 )}
                 {ticket.status === 'transfer_pending' && (
                   <div className='ticket-button-container'>
-                    <div className="ticket-button">대화방</div>
+                    <button className="ticket-button" onClick={() => handleChatRoomOpen(ticket.id)}>대화방</button>
                     <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
                   </div>
                 )}

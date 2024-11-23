@@ -1,11 +1,16 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export const MainIndex = () => {
+export const MainIndex = ({ activeTab }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path) => {
+    if (activeTab) {
+      return activeTab === path;
+    }
+    return location.pathname === path;
+  };
 
   return (
     <div className="w-full flex justify-around items-center pt-3 px-5">
