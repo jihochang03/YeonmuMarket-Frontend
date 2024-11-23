@@ -55,7 +55,7 @@ export const PurchasedTickets = () => {
     <div>
       {selectedTicket ? (
         <div className="max-w-lg p-4 border-2 border-gray-300 rounded-md mx-5 mt-4">
-          <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
+          <form className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
             <h1>작성한 양도글</h1>
             <div className={`status-label status-${selectedTicket.status}`}>
               상태: {statusMapping[selectedTicket.status]}
@@ -146,7 +146,7 @@ export const PurchasedTickets = () => {
                 )}
                 {ticket.status === 'transfer_pending' && (
                   <div className='ticket-button-container'>
-                    <div className="ticket-button" onClick={() => handleModalOpen('입금을 완료하셨나요?0')}>입금 완료</div>
+                    <div className="ticket-button" onClick={() => handleModalOpen('입금을 완료하셨나요?')}>입금 완료</div>
                     <button className="ticket-button" onClick={() => handleDetailClick(ticket.id)}>상세보기</button>
                   </div>
                 )}
