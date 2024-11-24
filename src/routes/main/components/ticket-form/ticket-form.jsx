@@ -30,7 +30,7 @@ export const TicketForm = () => {
   const site = [
     { value: "인터파크", label: "인터파크" },
     { value: "예스24", label: "예스24" },
-    { value: "티켓베이", label: "티켓베이" },
+    { value: "티켓링크", label: "티켓링크" },
   ];
   const hours = Array.from({ length: 12 }, (v, k) => ({
     value: k + 1,
