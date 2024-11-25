@@ -1,28 +1,63 @@
-import React, { useState } from "react";
-import Modal from '../../../../components/modal';
+// ChatRoom.js
+
+import React, { useState, useEffect } from "react";
+import Modal from "../../../../components/modal";
 import { MainIndex } from "../../../../components/main-index";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import {
+  chatTickets,
+  confirmTransferIntent,
+  markPaymentCompleted,
+  confirmReceipt,
+} from "../../../../apis/api";
 
 const ChatRoom = () => {
+  const [conversationData, setConversationData] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [step, setStep] = useState(0);
-  const location = useLocation();
+  const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
-  const ticketData = location.state?.ticketData;
+  const { ticket_id } = useParams();
 
-  const buyerName = ticketData?.transferee;
-  const sellerName = ticketData?.owner;
+  useEffect(() => {
+    const fetchConversationData = async () => {
+      try {
+        const response = await chatTickets(ticket_id);
+        setConversationData(response);
 
-  let activeTab = '';
-  if (location.state && location.state.from) {
-    if (location.state.from === '/main/sold') {
-      activeTab = '/main/sold';
-    } else if (location.state.from === '/main/purchased') {
-      activeTab = '/main/purchased';
-    }
-  }
+        // transaction_step에 따른 메시지 설정
+        const initialMessages = [];
+        if (response.transaction_step >= 1) {
+          initialMessages.push(
+            `${response.buyer_name}님이 양수 의사를 전했습니다.`
+          );
+        }
+        if (response.transaction_step >= 2) {
+          initialMessages.push(
+            `${response.seller_name}님이 양도 의사를 확정했습니다.`
+          );
+        }
+        if (response.transaction_step >= 3) {
+          initialMessages.push(
+            `${response.buyer_name}님이 입금을 완료했습니다. 입금을 확인해주세요.`
+          );
+        }
+        if (response.transaction_step >= 4) {
+          initialMessages.push(`양수가 완료되었습니다.`);
+        }
+        setMessages(initialMessages);
+      } catch (error) {
+        console.error(error);
+        if (error.response && error.response.status === 403) {
+          alert("이미 다른 사용자가 대화방에 참여 중입니다.");
+          navigate(-1); // 이전 페이지로 이동
+        }
+        // 다른 에러 처리
+      }
+    };
+    fetchConversationData();
+  }, [ticket_id]);
 
   const handleModalOpen = (message) => {
     setModalMessage(message);
@@ -35,39 +70,92 @@ const ChatRoom = () => {
 
   const handleConfirm = () => {
     setIsModalOpen(false);
-    if (step === 0) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        `${buyerName}님이 양도 의사를 전했습니다.`,
-      ]);
-      setStep(1);
-    } else if (step === 1) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        `${sellerName}님이 양도 의사를 확정했습니다.`,
-      ]);
-      setStep(2);
-    } else if (step === 2) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        `${buyerName}님이 입금을 완료했습니다. 입금을 확인해주세요.`,
-      ]);
-      setStep(3);
-    } else if (step === 3) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        `양수가 완료되었습니다.`,
-      ]);
-      setStep(4);
+
+    if (conversationData.user_role === "buyer") {
+      if (conversationData.transaction_step === 0) {
+        // 양수자가 양수 의사 확정
+        confirmTransferIntent(ticket_id)
+          .then((response) => {
+            setMessages((prev) => [
+              ...prev,
+              `${conversationData.buyer_name}님이 양수 의사를 전했습니다.`,
+            ]);
+            setConversationData((prev) => ({
+              ...prev,
+              transaction_step: 1,
+            }));
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else if (conversationData.transaction_step === 2) {
+        // 양수자가 입금 완료 확인
+        markPaymentCompleted(ticket_id)
+          .then((response) => {
+            setMessages((prev) => [
+              ...prev,
+              `${conversationData.buyer_name}님이 입금을 완료했습니다. 입금을 확인해주세요.`,
+            ]);
+            setConversationData((prev) => ({
+              ...prev,
+              transaction_step: 3,
+            }));
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    } else if (conversationData.user_role === "seller") {
+      if (conversationData.transaction_step === 1) {
+        // 양도자가 양도 의사 확정
+        confirmTransferIntent(ticket_id)
+          .then((response) => {
+            setMessages((prev) => [
+              ...prev,
+              `${conversationData.seller_name}님이 양도 의사를 확정했습니다.`,
+            ]);
+            setConversationData((prev) => ({
+              ...prev,
+              transaction_step: 2,
+            }));
+            // 필요한 경우 은행 계좌 정보를 업데이트
+            if (response.bank_account) {
+              setConversationData((prev) => ({
+                ...prev,
+                bank_account: response.bank_account,
+                bank_name: response.bank_name,
+                account_holder: response.account_holder,
+              }));
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else if (conversationData.transaction_step === 3) {
+        // 양도자가 입금 확인 및 거래 완료
+        confirmReceipt(ticket_id)
+          .then((response) => {
+            setMessages((prev) => [...prev, `양수가 완료되었습니다.`]);
+            setConversationData((prev) => ({
+              ...prev,
+              transaction_step: 4,
+              ticket_file_url: response.ticket_file_url,
+              phone_last_digits: response.phone_last_digits,
+            }));
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
     }
   };
 
   return (
     <div className="min-h-main-height">
-      <MainIndex activeTab={activeTab} />
+      <MainIndex />
       <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6">
         <div className="chat-room-container">
-          <h1 className="text-center">{ticketData?.title} 거래방</h1>
+          <h1 className="text-center">{conversationData?.title} 거래방</h1>
           <div className="chat-messages">
             {messages.map((message, index) => (
               <div key={index} className="chat-message">
@@ -75,47 +163,107 @@ const ChatRoom = () => {
               </div>
             ))}
           </div>
-          {step === 0 && (
-            <button
-              className="bg-black text-white px-4 py-2 rounded-md"
-              onClick={() => handleModalOpen('양수 의사를 확정하고 \n양도자에게 알리겠습니까?')}
-            >
-              양수 의사 확정
-            </button>
-          )}
-          {step === 1 && (
-            <button
-              className="bg-black text-white px-4 py-2 rounded-md"
-              onClick={() => handleModalOpen('양도 의사를 확정하고 \n계좌 정보를 전달하겠습니까?')}
-            >
-              양도 의사 확정
-            </button>
-          )}
-          {step === 2 && (
-            <button
-              className="bg-black text-white px-4 py-2 rounded-md"
-              onClick={() => handleModalOpen('입금을 완료하셨습니까?')}
-            >
-              입금 완료
-            </button>
-          )}
-          {step === 3 && (
-            <button
-              className="bg-black text-white px-4 py-2 rounded-md"
-              onClick={() => handleModalOpen('입금 내역을 확인하셨나요? \n양수자에게 예매 정보가 전달되며, \n이는 취소할 수 없습니다.')}
-            >
-              입금 확인
-            </button>
-          )}
-          {step === 4 && (
-            <button
-              className="bg-black text-white px-4 py-2 rounded-md"
-              onClick={() => alert('티켓 상세화면으로 이동합니다.')}
-            >
-              티켓 정보 보러 가기
-            </button>
-          )}
-      </div>
+          {/* Conditional rendering based on transaction_step and user_role */}
+          {conversationData &&
+            conversationData.user_role === "buyer" &&
+            conversationData.transaction_step === 0 && (
+              <>
+                {/* Display masked ticket and seat images */}
+                {conversationData.masked_file_url && (
+                  <img
+                    src={conversationData.masked_file_url}
+                    alt="Masked Ticket"
+                  />
+                )}
+                {conversationData.processed_seat_image_url && (
+                  <img
+                    src={conversationData.processed_seat_image_url}
+                    alt="Seat Image"
+                  />
+                )}
+                {/* Only the buyer sees this button at transaction_step === 0 */}
+                <button
+                  className="bg-black text-white px-4 py-2 rounded-md"
+                  onClick={() =>
+                    handleModalOpen(
+                      "양수 의사를 확정하고 양도자에게 알리겠습니까?"
+                    )
+                  }
+                >
+                  양수 의사 확정
+                </button>
+              </>
+            )}
+          {/* Other conditional renderings... */}
+          {conversationData &&
+            conversationData.user_role === "seller" &&
+            conversationData.transaction_step === 1 && (
+              <button
+                className="bg-black text-white px-4 py-2 rounded-md"
+                onClick={() =>
+                  handleModalOpen(
+                    "양도 의사를 확정하고 계좌 정보를 전달하겠습니까?"
+                  )
+                }
+              >
+                양도 의사 확정
+              </button>
+            )}
+          {conversationData &&
+            conversationData.user_role === "buyer" &&
+            conversationData.transaction_step === 2 && (
+              <>
+                {/* Display bank account details */}
+                <p>은행: {conversationData.bank_name}</p>
+                <p>계좌번호: {conversationData.bank_account}</p>
+                <p>
+                  예금주 초성: {conversationData.bank_account_holder_initials}
+                </p>
+                <button
+                  className="bg-black text-white px-4 py-2 rounded-md"
+                  onClick={() => handleModalOpen("입금을 완료하셨습니까?")}
+                >
+                  입금 완료
+                </button>
+              </>
+            )}
+          {conversationData &&
+            conversationData.user_role === "seller" &&
+            conversationData.transaction_step === 3 && (
+              <button
+                className="bg-black text-white px-4 py-2 rounded-md"
+                onClick={() =>
+                  handleModalOpen(
+                    "입금 내역을 확인하셨나요? 양수자에게 예매 정보가 전달되며, 이는 취소할 수 없습니다."
+                  )
+                }
+              >
+                입금 확인
+              </button>
+            )}
+          {conversationData &&
+            conversationData.transaction_step >= 4 &&
+            conversationData.user_role === "buyer" && (
+              <>
+                {/* Display ticket file and seller's phone last digits */}
+                {conversationData.ticket_file_url && (
+                  <img
+                    src={conversationData.ticket_file_url}
+                    alt="Ticket File"
+                  />
+                )}
+                <p>
+                  양도자 전화번호 뒷자리: {conversationData.phone_last_digits}
+                </p>
+                <button
+                  className="bg-black text-white px-4 py-2 rounded-md"
+                  onClick={() => navigate(`/main/purchased/${ticket_id}`)}
+                >
+                  티켓 정보 보러 가기
+                </button>
+              </>
+            )}
+        </div>
       </div>
       {isModalOpen && (
         <Modal

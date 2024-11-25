@@ -1,5 +1,7 @@
-import React from 'react';
-import { KakaoButton } from '../kakao-button';
+// src/routes/login/components/signup/signup-form.jsx
+
+import React from "react";
+import { KakaoButton } from "../kakao-button";
 
 export const SignUpForm = () => {
   return (

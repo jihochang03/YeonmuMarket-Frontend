@@ -1,15 +1,16 @@
+// src/routes/login/components/kakao-button.jsx
+
 import React from "react";
 import kakaoIcon from "../../../assets/icons/kakao_icon.svg";
 
 export const KakaoButton = ({ isLogin }) => {
-  // Fixed URL to redirect to after login
-
-  // Create the Kakao login URL with the state parameter set to the main page
-  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_SECRET_KEY}&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code`;
-
+  // 카카오 인증 URL 생성
+  const link = `https://kauth.kakao.com/oauth/authorize?client_id=${
+    import.meta.env.VITE_KAKAO_SECRET_KEY
+  }&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code`;
 
   const loginHandler = () => {
-    window.location.href = link; // Redirect to the Kakao OAuth authorization page
+    window.location.href = link; // 카카오 인증 페이지로 리다이렉트
   };
 
   return (
@@ -18,7 +19,7 @@ export const KakaoButton = ({ isLogin }) => {
       onClick={loginHandler}
     >
       <img src={kakaoIcon} alt="Kakao Icon" className="h-[24px] w-[24px]" />
-      {isLogin ? "카카오로 로그인하기" : "카카오로 시작하기"}{" "}
+      {isLogin ? "카카오로 로그인하기" : "카카오로 시작하기"}
     </button>
   );
 };
