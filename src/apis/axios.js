@@ -1,49 +1,48 @@
+// axios.js
+
 import axios from "axios";
-import { getCookie, removeCookie } from "../utils/cookie";
+import { getCookie, setCookie, removeCookie } from "../utils/cookie";
 
-// Set baseURL and credentials globally
-axios.defaults.baseURL = "http://localhost:8000/api";
-axios.defaults.withCredentials = true;
-axios.defaults.headers.post["Content-Type"] = "application/json";
-axios.defaults.headers.common["X-CSRFToken"] = getCookie("csrftoken");
+// 기본 설정
+const API_BASE_URL = "http://localhost:8000/api";
 
-// Public API instance
-export const instance = axios.create();
+// 공용 Axios 인스턴스
+export const instance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRFToken": getCookie("csrftoken"),
+  },
+});
 
-// Token-secured API instance
-export const instanceWithToken = axios.create();
+// 토큰이 필요한 Axios 인스턴스
+export const instanceWithToken = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRFToken": getCookie("csrftoken"),
+  },
+});
 
-// Request interceptor to add the access token to each request
+// 토큰 갱신을 위한 Axios 인스턴스 (인터셉터 없음)
+const refreshInstance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRFToken": getCookie("csrftoken"),
+  },
+});
+
+// 요청 인터셉터: 액세스 토큰이 있는 경우 헤더에 추가
 instanceWithToken.interceptors.request.use(
-  async (config) => {
-    let accessToken = getCookie("access_token");
-
-    // If access token exists, attach it to the headers
+  (config) => {
+    const accessToken = getCookie("access_token");
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
-    } else {
-      // Access token is missing, attempt to refresh it
-      const refreshToken = getCookie("refresh_token");
-      if (refreshToken) {
-        try {
-          // Make a request to refresh the access token
-          const response = await axios.post("/user/refresh/", {
-            refresh: refreshToken,
-          });
-          accessToken = response.data.access_token;
-          setCookie("access_token", accessToken); // Save the new access token
-          config.headers["Authorization"] = `Bearer ${accessToken}`;
-        } catch (error) {
-          console.error("Error refreshing token:", error);
-          //removeCookie("refresh_token");
-          //window.location.href = "/login"; // Redirect to login if refresh fails
-        }
-      } else {
-        // No refresh token available, redirect to login
-        //window.location.href = "/login";
-      }
     }
-
     return config;
   },
   (error) => {
@@ -52,36 +51,46 @@ instanceWithToken.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle 401 (Unauthorized) errors
+// 응답 인터셉터: 401 에러 발생 시 토큰 갱신 처리
 instanceWithToken.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
     console.log("Response Error:", error);
 
-    if (error.response && error.response.status === 401) {
-      // Access token has expired, try to refresh it
+    const originalRequest = error.config;
+
+    // 401 에러이면서 재시도하지 않은 경우
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true; // 재시도 플래그 설정
+
       const refreshToken = getCookie("refresh_token");
 
       if (refreshToken) {
         try {
-          // Refresh the access token
-          const response = await axios.post("/user/refresh/", {
+          // 토큰 갱신 요청 (refreshInstance 사용)
+          const response = await refreshInstance.post("/user/refresh/", {
             refresh: refreshToken,
           });
           const newAccessToken = response.data.access_token;
-          setCookie("access_token", newAccessToken); // Save the new access token
-          error.config.headers["Authorization"] = `Bearer ${newAccessToken}`;
-          return axios(error.config); // Retry the original request
-        } catch (error) {
-          console.error("Token refresh failed:", error);
+          setCookie("access_token", newAccessToken); // 새로운 액세스 토큰 저장
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`; // 헤더 업데이트
+          return instanceWithToken(originalRequest); // 원래 요청 재시도
+        } catch (refreshError) {
+          console.error("Token refresh failed:", refreshError);
+          // 토큰 제거 및 로그인 페이지로 리다이렉트
           removeCookie("access_token");
-          //window.location.href = "/login"; // Redirect to login if refresh fails
+          removeCookie("refresh_token");
+          window.location.href = "/"; // 로그인 페이지로 리다이렉트
         }
       } else {
-        // No refresh token available, redirect to login
-        //window.location.href = "/login";
+        // 리프레시 토큰이 없는 경우 로그인 페이지로 리다이렉트
+        removeCookie("access_token");
+        removeCookie("refresh_token");
+        window.location.href = "/"; // 로그인 페이지로 리다이렉트
       }
     }
 

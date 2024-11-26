@@ -4,9 +4,9 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
-import { createTicket } from "../../../../apis/api";
-import XIcon from '../../../../assets/xlogo.png';
-import UrlIcon from '../../../../assets/url.png';
+import { createTicket, processImageUpload } from "../../../../apis/api";
+import XIcon from "../../../../assets/xlogo.png";
+import UrlIcon from "../../../../assets/url.png";
 
 export const TicketForm = () => {
   const navigate = useNavigate();
@@ -130,70 +130,55 @@ export const TicketForm = () => {
   };
 
   const handleUploadComplete = async () => {
-    // Check if required files are uploaded
     if (!reservFile || !seatFile) {
       alert("예매내역서와 좌석 사진을 모두 업로드해주세요.");
       return;
     }
 
-    // Log the performance name before the upload
-    console.log("Performance Name before upload:", performanceName);
-
     const formData = new FormData();
-    formData.append("performanceName", performanceName); // Append the performance name
+    formData.append("performanceName", performanceName);
     formData.append("keyword", selectedSite ? selectedSite.value : "");
     formData.append("reservImage", reservFile);
     formData.append("seatImage", seatFile);
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/api/tickets/process_image/",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const responseData = await processImageUpload(formData); // Call the API function
+      console.log("Response Data:", responseData);
 
-      if (response.ok) {
-        const responseData = await response.json(); // Parse the JSON response
-        console.log("Response Data:", responseData);
+      // Handle response data...
+      const { 관람년도, 관람월, 관람일, 관람시간 } =
+        responseData.date_info || {};
 
-        // Update state with the new data received
-        const { 관람년도, 관람월, 관람일, 관람시간 } = responseData.date_info || {};
-        
-        let selectedDate = null;
-        let selectedHour = null;
-        let selectedMin = null;
-        let selectedAmPm = null;
+      let selectedDate = null;
+      let selectedHour = null;
+      let selectedMin = null;
+      let selectedAmPm = null;
 
-        if (관람년도 && 관람월 && 관람일) {
-          selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
-        }
-  
-        if (관람시간) {
-          selectedHour = 관람시간.시 || null;
-          selectedMin = 관람시간.분 || null;
-          selectedAmPm = 관람시간.시 >= 12 ? "PM" : "AM";
-        }
-
-        setPerformanceName(performanceName || ""); // Make sure this updates state
-        setLastFourDigits(responseData.lastFourDigits || "");
-        setSelectedDate(selectedDate);
-        setSelectedHour(selectedHour % 12);
-        setSelectedMin(selectedMin);
-        setSelectedAmPm(selectedAmPm);
-        setTicketNumber(responseData.ticket_number || "");
-        setSeatInfo(responseData.seat_number || "");
-        setCastingInfo(responseData.cast_info || "");
-        setPrice(responseData.total_amount || "");
-        setDiscountInfo(responseData.price_grade || "");
-        setShowAdditionalFields(true);
-      } else {
-        console.error("Status Code:", response.status);
-        console.error("Response Text:", await response.text());
+      if (관람년도 && 관람월 && 관람일) {
+        selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
       }
+
+      if (관람시간) {
+        selectedHour = 관람시간.시 || null;
+        selectedMin = 관람시간.분 || null;
+        selectedAmPm = 관람시간.시 >= 12 ? "PM" : "AM";
+      }
+
+      setPerformanceName(performanceName || "");
+      setLastFourDigits(responseData.lastFourDigits || "");
+      setSelectedDate(selectedDate);
+      setSelectedHour(selectedHour % 12);
+      setSelectedMin(selectedMin);
+      setSelectedAmPm(selectedAmPm);
+      setTicketNumber(responseData.ticket_number || "");
+      setSeatInfo(responseData.seat_number || "");
+      setCastingInfo(responseData.cast_info || "");
+      setPrice(responseData.total_amount || "");
+      setDiscountInfo(responseData.price_grade || "");
+      setShowAdditionalFields(true);
     } catch (error) {
       console.error("Error uploading files:", error);
+      alert("파일 업로드에 실패했습니다.");
     }
   };
 
@@ -229,13 +214,13 @@ export const TicketForm = () => {
   };
 
   const handlePublishToX = () => {
-    alert('X에 게시')
+    alert("X에 게시");
   };
 
   const handleCopyUrl = () => {
     const promoUrl = window.location.href;
     navigator.clipboard.writeText(promoUrl).then(() => {
-      alert('URL 복사됨')
+      alert("URL 복사됨");
     });
   };
 
@@ -467,31 +452,44 @@ export const TicketForm = () => {
             className="border p-2 mb-4 rounded-md w-full h-40"
             defaultValue={(() => {
               let formattedDate = selectedDate
-                ? `${selectedDate.getFullYear()}.${String(selectedDate.getMonth() + 1).padStart(2, '0')}.${String(
-                    selectedDate.getDate()
-                  ).padStart(2, '0')}`
+                ? `${selectedDate.getFullYear()}.${String(
+                    selectedDate.getMonth() + 1
+                  ).padStart(2, "0")}.${String(selectedDate.getDate()).padStart(
+                    2,
+                    "0"
+                  )}`
                 : "날짜 정보 없음";
-              let formattedTime = selectedHour !== null && selectedMin !== null
-                ? `${String(selectedHour).padStart(2, '0')}:${String(selectedMin).padStart(2, '0')}`
-                : "시간 정보 없음";
-              return `${performanceName || "공연 이름 없음"} 양도 \n${formattedDate} ${selectedAmPm || ""} ${formattedTime}\n캐스팅: ${castingInfo || "캐스팅 정보 없음"}\n가격: ${price || "가격 정보 없음"}\n좌석 정보: ${seatInfo || "좌석 정보 없음"}\n<연뮤마켓> 통해서 안전 거래`;
-            })()} 
+              let formattedTime =
+                selectedHour !== null && selectedMin !== null
+                  ? `${String(selectedHour).padStart(2, "0")}:${String(
+                      selectedMin
+                    ).padStart(2, "0")}`
+                  : "시간 정보 없음";
+              return `${
+                performanceName || "공연 이름 없음"
+              } 양도 \n${formattedDate} ${
+                selectedAmPm || ""
+              } ${formattedTime}\n캐스팅: ${
+                castingInfo || "캐스팅 정보 없음"
+              }\n가격: ${price || "가격 정보 없음"}\n좌석 정보: ${
+                seatInfo || "좌석 정보 없음"
+              }\n<연뮤마켓> 통해서 안전 거래`;
+            })()}
           />
           <div className="flex w-full justify-around items-center gap-2 pb-24">
             <button
-              type='button'
+              type="button"
               className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
               onClick={handlePublishToX}
             >
-              <img src={XIcon} alt='X 로고' className="w-5 h-5" />
-              에 게시
+              <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
             </button>
             <button
-              type='button'
+              type="button"
               className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
               onClick={handleCopyUrl}
             >
-              <img src={UrlIcon} alt='url' className="w-5 h-5" />
+              <img src={UrlIcon} alt="url" className="w-5 h-5" />
               URL 복사
             </button>
           </div>

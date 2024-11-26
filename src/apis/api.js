@@ -44,7 +44,7 @@ import axios from "axios";
 
 export const kakaoSignIn = async (data) => {
   try {
-    // GET 요청으로 카카오 인증 코드를 백엔드로 전달
+    // GET 요청으로 카카오 인증 코드를 백 엔드로 전달
     const response = await instance.post(
       `/user/kakao/callback/?code=${data.code}`,
       {},
@@ -122,6 +122,20 @@ export const fetchTransferredTickets = async () => {
     throw error;
   }
 };
+
+export const chatTickets = async (ticket_id) => {
+  try {
+    const response = await instanceWithToken.get(`conversations/${ticket_id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error fetching conversation data for ticket ${ticket_id}:`,
+      error
+    );
+    throw error;
+  }
+};
+
 export const fetchPurchasedTickets = async () => {
   try {
     const response = await instanceWithToken.get("/tickets/purchased/");
@@ -166,5 +180,104 @@ export const updateTicketPost = async (ticketPostId, updatedData) => {
   } catch (error) {
     console.error("Error updating ticket post:", error);
     throw error;
+  }
+};
+export const confirmTransferIntent = async (conversationId) => {
+  try {
+    const response = await instanceWithToken.post(
+      `/conversations/${conversationId}/transfer-intent/`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error confirming transfer intent:", error);
+    throw error;
+  }
+};
+
+// 입금 완료 처리 함수
+export const markPaymentCompleted = async (conversationId) => {
+  try {
+    const response = await instanceWithToken.post(
+      `/conversations/${conversationId}/payment-complete/`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error marking payment as completed:", error);
+    throw error;
+  }
+};
+
+// 입금 확인 및 거래 완료 함수
+export const confirmReceipt = async (conversationId) => {
+  try {
+    const response = await instanceWithToken.post(
+      `/conversations/${conversationId}/confirm-receipt/`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error confirming receipt:", error);
+    throw error;
+  }
+};
+
+export const joinConversation = async (ticketId) => {
+  try {
+    const response = await instanceWithToken.post(
+      `/conversations/join/${ticketId}/`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error joining conversation for ticket ${ticketId}:`, error);
+    throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던집니다.
+  }
+};
+
+export const deleteUserAccount = async () => {
+  try {
+    const response = await instanceWithToken.delete("/user/delete/");
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting user account:", error);
+    throw error;
+  }
+};
+export const fetchAccount = async () => {
+  try {
+    const response = await instanceWithToken.get("/payments/");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching account info:", error);
+    throw error;
+  }
+};
+
+// 계좌 정보 업데이트
+export const updateAccount = async (accountData) => {
+  try {
+    const response = await instanceWithToken.put(
+      "/payments/register/",
+      accountData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating account:", error);
+    throw error;
+  }
+};
+export const processImageUpload = async (formData) => {
+  try {
+    const response = await instanceWithToken.post(
+      "/tickets/process_image/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Ensure the correct content type
+        },
+      }
+    );
+    return response.data; // Return the processed response data
+  } catch (error) {
+    console.error("Error uploading files for processing:", error);
+    throw error; // Re-throw the error for caller to handle
   }
 };

@@ -48,10 +48,11 @@ const AccountAuthPage = () => {
       console.log("1. handleAccountConfirm 함수 호출됨"); // 첫 번째 로그
 
       const accountData = {
-        name,
+        name, // 사용자의 이름을 그대로 유지
         ssn: `${ssnFront}-${ssnBack}`,
         accountNum,
         bank: selectedBank.name,
+        account_holder: name, // 사용자의 이름을 account_holder로 추가
       };
 
       console.log("2. accountData 생성됨:", accountData); // 두 번째 로그
