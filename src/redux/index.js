@@ -1,10 +1,8 @@
-// index.js
-
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import { Provider } from "react-redux";
-import store from "./store"; // Redux 스토어 임포트
+import store from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 

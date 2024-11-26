@@ -1,6 +1,8 @@
 import { instance, instanceWithToken } from "./axios";
 import { getCookie } from "../utils/cookie";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setTicketId } from "../redux/ticketSlice"; // 액션 임포트
 
 // // Axios 인스턴스 정의
 
@@ -60,30 +62,35 @@ export const kakaoSignIn = async (data) => {
 };
 
 // 티켓 생성 API 호출 함수
-export const createTicket = async (formData) => {
+export const createTicket = async (formData, dispatch) => {
   try {
-    // FormData를 사용할 때는 headers에 Content-Type을 설정하지 마세요.
     const response = await instanceWithToken.post(
       "/tickets/create/",
       formData,
       {
         headers: {
-          "Content-Type": "multipart/form-data", // axios가 자동으로 multipart/form-data로 처리
+          "Content-Type": "multipart/form-data",
         },
       }
     );
 
     if (response.status === 200 || response.status === 201) {
-      console.log("Ticket creation response data:", response.data); // 응답 데이터 확인
-      return response.data; // 성공적인 응답 데이터 반환
+      console.log("Ticket creation response data:", response.data);
+
+      // Redux Store에 ticket_id 저장
+      const ticketId = response.data.ticket_id;
+      dispatch(setTicketId(ticketId)); // Redux 액션 호출
+      console.log("Extracted ticket_id:", ticketId);
+
+      return response.data; // 성공적인 응답 반환
     } else {
       throw new Error(
         `Error ${response.status}: ${JSON.stringify(response.data)}`
-      ); // 응답 데이터 문자열화
+      );
     }
   } catch (error) {
     console.error("Error creating the ticket:", error);
-    throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던짐
+    throw error;
   }
 };
 

@@ -7,9 +7,12 @@ import { ko } from "date-fns/locale";
 import { createTicket, processImageUpload } from "../../../../apis/api";
 import XIcon from "../../../../assets/xlogo.png";
 import UrlIcon from "../../../../assets/url.png";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 export const TicketForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [performanceName, setPerformanceName] = useState(null);
   const [reservImage, setReservImage] = useState(null);
   const [seatImage, setSeatImage] = useState(null);
@@ -201,7 +204,8 @@ export const TicketForm = () => {
     formData.append("keyword", selectedSite ? selectedSite.value : "");
 
     try {
-      const response = await createTicket(formData); // 티켓 생성 API 호출
+      const response = await createTicket(formData, dispatch);
+      console.log("Ticket created successfully:", response); // 티켓 생성 API 호출
 
       // 성공적으로 응답을 받으면 알림을 띄우고 페이지 이동
       alert("티켓 등록이 완료되었습니다.");
@@ -216,12 +220,26 @@ export const TicketForm = () => {
   const handlePublishToX = () => {
     alert("X에 게시");
   };
+  const ticketId = useSelector((state) => state.ticket.ticketId);
 
   const handleCopyUrl = () => {
-    const promoUrl = window.location.href;
-    navigator.clipboard.writeText(promoUrl).then(() => {
-      alert("URL 복사됨");
-    });
+    if (!ticketId) {
+      alert(
+        "ticket_id가 설정되지 않았습니다. 티켓을 생성한 후 URL을 복사하세요."
+      );
+      return;
+    }
+
+    const ticketUrl = `http://localhost:5173/chat/join/${ticketId}`;
+    navigator.clipboard
+      .writeText(ticketUrl)
+      .then(() => {
+        alert("URL이 클립보드에 복사되었습니다!");
+      })
+      .catch((err) => {
+        console.error("URL 복사 실패: ", err);
+        alert("URL 복사에 실패했습니다. 다시 시도해주세요.");
+      });
   };
 
   return (
@@ -489,7 +507,6 @@ export const TicketForm = () => {
               className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
               onClick={handleCopyUrl}
             >
-              <img src={UrlIcon} alt="url" className="w-5 h-5" />
               URL 복사
             </button>
           </div>
