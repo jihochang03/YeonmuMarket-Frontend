@@ -27,7 +27,6 @@ const JoinChatRoom = () => {
 
         if (error.response && error.response.status === 401) {
           // 인증되지 않은 경우 로그인 페이지로 리다이렉트
-          alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
           // Redux 상태 초기화
           dispatch(logout());
           // 로그인 페이지로 리다이렉트하면서 redirect 파라미터 전달

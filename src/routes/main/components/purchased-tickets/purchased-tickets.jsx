@@ -25,7 +25,7 @@ export const PurchasedTickets = () => {
   }, []);
 
   const handleChatRoomOpen = (ticket) => {
-    navigate(`/chat/${ticket.conversation_id}`);
+    navigate(`/chat/${ticket.ticket_id}`);
   };
 
   return (

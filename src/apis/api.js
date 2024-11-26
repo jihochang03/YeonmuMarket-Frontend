@@ -227,10 +227,7 @@ export const joinConversation = async (ticketId) => {
     );
     return response.data;
   } catch (error) {
-    console.error(
-      `Error joining conversation for ticket ${ticketId}:`,
-      error
-    );
+    console.error(`Error joining conversation for ticket ${ticketId}:`, error);
     throw error; // 에러를 호출한 쪽에서 처리할 수 있도록 던집니다.
   }
 };
@@ -246,10 +243,10 @@ export const deleteUserAccount = async () => {
 };
 export const fetchAccount = async () => {
   try {
-    const response = await instanceWithToken.get('/payments/');
+    const response = await instanceWithToken.get("/payments/");
     return response.data;
   } catch (error) {
-    console.error('Error fetching account info:', error);
+    console.error("Error fetching account info:", error);
     throw error;
   }
 };
@@ -257,10 +254,30 @@ export const fetchAccount = async () => {
 // 계좌 정보 업데이트
 export const updateAccount = async (accountData) => {
   try {
-    const response = await instanceWithToken.put('/payments/register/', accountData);
+    const response = await instanceWithToken.put(
+      "/payments/register/",
+      accountData
+    );
     return response.data;
   } catch (error) {
-    console.error('Error updating account:', error);
+    console.error("Error updating account:", error);
     throw error;
+  }
+};
+export const processImageUpload = async (formData) => {
+  try {
+    const response = await instanceWithToken.post(
+      "/tickets/process_image/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Ensure the correct content type
+        },
+      }
+    );
+    return response.data; // Return the processed response data
+  } catch (error) {
+    console.error("Error uploading files for processing:", error);
+    throw error; // Re-throw the error for caller to handle
   }
 };
