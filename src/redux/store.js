@@ -1,26 +1,29 @@
-// Step 1
-import { configureStore } from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage';
-import { combineReducers } from 'redux';
-import { persistReducer } from 'redux-persist';
+import { configureStore } from "@reduxjs/toolkit";
+import storage from "redux-persist/lib/storage";
+import { combineReducers } from "redux";
+import { persistReducer } from "redux-persist";
 
-import userReducer from './user-slice';
+// Import reducers
+import userReducer from "./user-slice";
+import ticketReducer from "./ticketSlice"; // ticketSlice 추가
 
-// Step 2
+// Combine all reducers
 const reducers = combineReducers({
   user: userReducer,
+  ticket: ticketReducer, // ticketReducer 추가
 });
 
-// Step 3
+// Persist config
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['user', 'darkMode'],
+  whitelist: ["user", "ticket"], // user와 ticket을 persist에 포함
 };
 
+// Persisted reducer
 const persistedReducer = persistReducer(persistConfig, reducers);
 
-// Step 4
+// Configure Store
 const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
