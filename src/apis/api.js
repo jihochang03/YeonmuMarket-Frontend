@@ -288,3 +288,15 @@ export const processImageUpload = async (formData) => {
     throw error; // Re-throw the error for caller to handle
   }
 };
+
+export const postTweet = async (tweetContent) => {
+  try {
+    const response = await instanceWithToken.post('/tickets/post-tweet/', {
+      tweetContent,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error posting tweet:', error);
+    throw error;
+  }
+};

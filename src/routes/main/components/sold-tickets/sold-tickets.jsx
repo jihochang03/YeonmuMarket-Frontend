@@ -25,8 +25,16 @@ export const SoldTickets = () => {
   useEffect(() => {
     const loadTickets = async () => {
       try {
+        console.log("Fetching tickets..."); // Debugging
         const data = await fetchTransferredTickets();
-        setTickets(data); // 백엔드에서 받은 티켓 데이터를 상태로 설정
+
+        console.log("Fetched tickets:", data); // Debugging
+
+        // Sort tickets by id in descending order
+        const sortedData = data.sort((a, b) => b.id - a.id);
+        console.log("Sorted tickets:", sortedData); // Debugging
+
+        setTickets(sortedData); // Set sorted tickets in state
       } catch (error) {
         console.error("Error loading tickets:", error);
       }
@@ -35,8 +43,29 @@ export const SoldTickets = () => {
   }, []);
 
   const handleDetailClick = (ticketId) => {
+    console.log("Detail clicked for ticketId:", ticketId); // Debugging
     const ticket = tickets.find((item) => item.id === ticketId);
+    if (ticket) {
+      console.log("Selected ticket:", ticket); // Debugging
+    } else {
+      console.error("Ticket not found for id:", ticketId); // Debugging
+    }
     setSelectedTicket(ticket);
+  };
+
+  const handleSave = (updatedTicket) => {
+    console.log("Saving updated ticket:", updatedTicket); // Debugging
+    const updatedTickets = tickets.map((ticket) =>
+      ticket.id === updatedTicket.id ? updatedTicket : ticket
+    );
+    console.log("Updated tickets list:", updatedTickets); // Debugging
+    setTickets(updatedTickets);
+    setSelectedTicket(null);
+    setTimeout(() => {
+      setSelectedTicket(updatedTicket);
+      console.log("Selected ticket after save:", updatedTicket); // Debugging
+    }, 0);
+    setIsEditMode(false);
   };
 
   const handleModalOpen = (message) => {
@@ -60,18 +89,6 @@ export const SoldTickets = () => {
 
   const handleEdit = () => {
     setIsEditMode(true);
-  };
-
-  const handleSave = (updatedTicket) => {
-    const updatedTickets = tickets.map((ticket) =>
-      ticket.id === updatedTicket.id ? updatedTicket : ticket
-    );
-    setTickets(updatedTickets);
-    setSelectedTicket(null);
-    setTimeout(() => {
-      setSelectedTicket(updatedTicket);
-    }, 0);
-    setIsEditMode(false);
   };
 
   const handleCancelEdit = () => {
@@ -123,9 +140,9 @@ export const SoldTickets = () => {
               </label>
               <div className="mb-4">
                 <label className="block mb-2 font-bold">예매내역서</label>
-                {selectedTicket.uploaded_file ? (
+                {selectedTicket.uploaded_file_url ? (
                   <img
-                    src={selectedTicket.uploaded_file}
+                    src={selectedTicket.uploaded_file_url}
                     alt="예매내역서"
                     className="max-h-[230px] max-w-[230px] object-cover upload-container"
                   />
@@ -133,11 +150,12 @@ export const SoldTickets = () => {
                   <span>이미지가 없습니다.</span>
                 )}
               </div>
+
               <div className="mb-4">
                 <label className="block mb-2 font-bold">좌석 사진</label>
-                {selectedTicket.uploaded_seat_image ? (
+                {selectedTicket.uploaded_seat_image_url ? (
                   <img
-                    src={selectedTicket.uploaded_seat_image}
+                    src={selectedTicket.uploaded_seat_image_url}
                     alt="좌석 사진"
                     className="max-h-[230px] max-w-[230px] object-cover upload-container"
                   />
