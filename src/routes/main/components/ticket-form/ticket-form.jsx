@@ -4,7 +4,11 @@ import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/locale";
-import { createTicket, processImageUpload } from "../../../../apis/api";
+import {
+  createTicket,
+  processImageUpload,
+  postTweet,
+} from "../../../../apis/api";
 import XIcon from "../../../../assets/xlogo.png";
 import UrlIcon from "../../../../assets/url.png";
 import { useDispatch } from "react-redux";
@@ -32,6 +36,7 @@ export const TicketForm = () => {
   const [discountInfo, setDiscountInfo] = useState(false);
   const [lastFourDigits, setLastFourDigits] = useState("");
   const [isPromoViewVisible, setIsPromoViewVisible] = useState(false);
+  const [maskedSeatImageUrl, setMaskedSeatImageUrl] = useState(null);
 
   const site = [
     { value: "인터파크", label: "인터파크" },
@@ -210,6 +215,7 @@ export const TicketForm = () => {
       // 성공적으로 응답을 받으면 알림을 띄우고 페이지 이동
       alert("티켓 등록이 완료되었습니다.");
       localStorage.removeItem("ticketFormData");
+      setMaskedSeatImageUrl(response.masked_seat_image_url);
       setIsPromoViewVisible(true);
     } catch (error) {
       // 에러 로그 출력
@@ -217,10 +223,52 @@ export const TicketForm = () => {
     }
   };
 
-  const handlePublishToX = () => {
-    alert("X에 게시");
-  };
   const ticketId = useSelector((state) => state.ticket.ticketId);
+
+  const handlePublishToX = async () => {
+    const tweetContent = (() => {
+      let formattedDate = selectedDate
+        ? `${selectedDate.getFullYear()}.${String(
+            selectedDate.getMonth() + 1
+          ).padStart(2, "0")}.${String(selectedDate.getDate()).padStart(
+            2,
+            "0"
+          )}`
+        : "날짜 정보 없음";
+      let formattedTime =
+        selectedHour !== null && selectedMin !== null
+          ? `${String(selectedHour).padStart(2, "0")}:${String(
+              selectedMin
+            ).padStart(2, "0")}`
+          : "시간 정보 없음";
+      const ticketUrl = ticketId
+        ? `http://localhost:5173/chat/join/${ticketId}`
+        : "URL 없음";
+
+      return `${performanceName || "공연 이름 없음"} 양도 \n${formattedDate} ${
+        selectedAmPm || ""
+      } ${formattedTime}\n캐스팅: ${castingInfo || "캐스팅 정보 없음"}\n가격: ${
+        price || "가격 정보 없음"
+      }\n좌석 정보: ${
+        seatInfo || "좌석 정보 없음"
+      }\n<연뮤마켓> 통해서 안전 거래\n${ticketUrl}`;
+    })();
+
+    if (!ticketId) {
+      alert(
+        "ticket_id가 설정되지 않았습니다. 티켓을 생성한 후 게시를 시도하세요."
+      );
+      return;
+    }
+
+    try {
+      const response = await postTweet(tweetContent);
+      alert("트윗이 성공적으로 게시되었습니다.");
+    } catch (error) {
+      console.error("트윗 게시 중 오류가 발생했습니다: ", error);
+      alert("트윗 게시 중 오류가 발생했습니다.");
+    }
+  };
 
   const handleCopyUrl = () => {
     if (!ticketId) {
@@ -240,6 +288,44 @@ export const TicketForm = () => {
         console.error("URL 복사 실패: ", err);
         alert("URL 복사에 실패했습니다. 다시 시도해주세요.");
       });
+  };
+  const handleDownloadMaskedSeatImage = async () => {
+    console.log(
+      "Masked Seat Image URL before modification:",
+      maskedSeatImageUrl
+    );
+
+    if (maskedSeatImageUrl) {
+      // Modify the URL to ensure correct extension
+
+      try {
+        // Fetch the image as a blob
+        const response = await fetch(maskedSeatImageUrl);
+        if (!response.ok) throw new Error("Failed to fetch image");
+
+        const blob = await response.blob();
+
+        // Create a blob URL for the file
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        // Trigger download
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = "masked_seat_image.jpg";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Revoke the blob URL to free memory
+        window.URL.revokeObjectURL(blobUrl);
+
+        console.log("Download completed.");
+      } catch (error) {
+        console.error("Error downloading image:", error);
+      }
+    } else {
+      console.error("No masked seat image URL provided.");
+    }
   };
 
   return (
@@ -466,6 +552,21 @@ export const TicketForm = () => {
       ) : (
         <div className="flex flex-col justify-center min-h-main-menu-height w-full p-8">
           <h3 className="py-2 font-bold">홍보글 작성(선택)</h3>
+          {maskedSeatImageUrl && (
+            <div className="mb-4">
+              <img
+                src={maskedSeatImageUrl}
+                alt="마스킹된 좌석 이미지"
+                className="max-w-full h-auto"
+              />
+              <button
+                onClick={handleDownloadMaskedSeatImage}
+                className="bg-black text-white px-4 py-2 rounded-md mt-2"
+              >
+                이미지 저장
+              </button>
+            </div>
+          )}
           <textarea
             className="border p-2 mb-4 rounded-md w-full h-40"
             defaultValue={(() => {

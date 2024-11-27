@@ -211,46 +211,59 @@ const ChatRoom = () => {
             )}
           {conversationData &&
             conversationData.user_role === "buyer" &&
-            conversationData.transaction_step === 2 && (
+            conversationData.transaction_step === 0 && (
               <>
-                {/* Display bank account details */}
-                <p>은행: {conversationData.bank_name}</p>
-                <p>계좌번호: {conversationData.bank_account}</p>
-                <p>
-                  예금주 초성: {conversationData.bank_account_holder_initials}
-                </p>
+                {conversationData.seat_image_url && (
+                  <img src={conversationData.seat_image_url} alt="Seat Image" />
+                )}
                 <button
                   className="bg-black text-white px-4 py-2 rounded-md"
-                  onClick={() => handleModalOpen("입금을 완료하셨습니까?")}
+                  onClick={() =>
+                    handleModalOpen(
+                      "양수 의사를 확정하고 양도자에게 알리겠습니까?"
+                    )
+                  }
                 >
-                  입금 완료
+                  양수 의사 확정
                 </button>
               </>
             )}
           {conversationData &&
-            conversationData.user_role === "seller" &&
-            conversationData.transaction_step === 3 && (
-              <button
-                className="bg-black text-white px-4 py-2 rounded-md"
-                onClick={() =>
-                  handleModalOpen(
-                    "입금 내역을 확인하셨나요? 양수자에게 예매 정보가 전달되며, 이는 취소할 수 없습니다."
-                  )
-                }
-              >
-                입금 확인
-              </button>
+            conversationData.user_role === "buyer" &&
+            conversationData.transaction_step >= 2 &&
+            conversationData.transaction_step < 4 && (
+              <>
+                {conversationData.masked_file_url && (
+                  <img
+                    src={conversationData.masked_file_url}
+                    alt="Masked Booking Confirmation"
+                  />
+                )}
+                <p>은행: {conversationData.bank_name}</p>
+                <p>계좌번호: {conversationData.bank_account}</p>
+                <p>예금주: {conversationData.account_holder}</p>
+                {conversationData.transaction_step === 2 && (
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded-md"
+                    onClick={() => handleModalOpen("입금을 완료하셨습니까?")}
+                  >
+                    입금 완료
+                  </button>
+                )}
+              </>
             )}
           {conversationData &&
             conversationData.transaction_step >= 4 &&
             conversationData.user_role === "buyer" && (
               <>
-                {/* Display ticket file and seller's phone last digits */}
                 {conversationData.ticket_file_url && (
                   <img
                     src={conversationData.ticket_file_url}
                     alt="Ticket File"
                   />
+                )}
+                {conversationData.seat_image_url && (
+                  <img src={conversationData.seat_image_url} alt="Seat Image" />
                 )}
                 <p>
                   양도자 전화번호 뒷자리: {conversationData.phone_last_digits}
