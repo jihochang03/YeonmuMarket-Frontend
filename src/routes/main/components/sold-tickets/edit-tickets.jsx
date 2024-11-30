@@ -1,9 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { updateTicketPost } from "../../../../apis/api";
 
-const EditTicketForm = ({ ticket, onSave, onCancel }) => {
-  const [editedTicket, setEditedTicket] = useState(ticket);
+const EditTicketForm = ({ ticket, onCancel, onSave }) => {
+  const navigate = useNavigate(); // useNavigate 훅 선언
+
+  const [editedTicket, setEditedTicket] = useState({
+    ...ticket, // Spread the ticket data
+    title: ticket.title || "", // Ensure fallback to empty string
+    date: ticket.date || "",
+    seat: ticket.seat || "",
+    booking_page: ticket.booking_page || "",
+    casting: ticket.casting || "",
+    price: ticket.price || "",
+    phone_last_digits: ticket.phone_last_digits || "",
+  });
+
   const [previewReceipt, setPreviewReceipt] = useState(ticket.uploaded_file);
-  const [previewSeatImage, setPreviewSeatImage] = useState(ticket.uploaded_seat_image);
+  const [previewSeatImage, setPreviewSeatImage] = useState(
+    ticket.uploaded_seat_image
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,9 +36,30 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
         } else if (field === "uploaded_seat_image") {
           setPreviewSeatImage(reader.result);
         }
-        setEditedTicket({ ...editedTicket, [field]: reader.result });
+        setEditedTicket({ ...editedTicket, [field]: file });
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    const formData = new FormData();
+    Object.entries(editedTicket).forEach(([key, value]) => {
+      if (value instanceof File) {
+        formData.append(key, value);
+      } else {
+        formData.append(key, value);
+      }
+    });
+
+    try {
+      const response = await updateTicketPost(ticket.id, formData); // Update the ticket via API
+      alert("수정이 완료되었습니다."); // Show success alert
+      onSave(response); // Pass updated ticket back to parent
+      window.location.reload(); // 새로 고침
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+      alert("티켓 수정 중 오류가 발생했습니다."); // Show error alert
     }
   };
 
@@ -33,7 +70,7 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
       <input
         type="text"
         name="title"
-        value={editedTicket.title}
+        value={editedTicket.title || ""}
         onChange={handleChange}
         className="border p-2 mb-4 rounded-md"
       />
@@ -45,7 +82,11 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
         className="mb-2"
       />
       {previewReceipt ? (
-        <img src={previewReceipt} alt="예매내역서" className="max-h-[230px] max-w-[230px] mb-4" />
+        <img
+          src={previewReceipt}
+          alt="예매내역서"
+          className="max-h-[230px] max-w-[230px] mb-4"
+        />
       ) : (
         <span className="mb-4">이미지가 없습니다.</span>
       )}
@@ -57,7 +98,11 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
         className="mb-2"
       />
       {previewSeatImage ? (
-        <img src={previewSeatImage} alt="좌석 사진" className="max-h-[230px] max-w-[230px] mb-4" />
+        <img
+          src={previewSeatImage}
+          alt="좌석 사진"
+          className="max-h-[230px] max-w-[230px] mb-4"
+        />
       ) : (
         <span className="mb-4">이미지가 없습니다.</span>
       )}
@@ -83,8 +128,8 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
       <label className="block mb-2 font-bold">예매처</label>
       <input
         type="text"
-        name="keyword"
-        value={editedTicket.keyword}
+        name="booking_page"
+        value={editedTicket.booking_page}
         onChange={handleChange}
         className="border p-2 rounded-md mb-4"
       />
@@ -107,7 +152,9 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
         className="border p-2 rounded-md mb-4"
       />
 
-      <label className="block mb-2 font-bold">예매자 전화번호 마지막 4자리</label>
+      <label className="block mb-2 font-bold">
+        예매자 전화번호 마지막 4자리
+      </label>
       <input
         type="text"
         name="phone_last_digits"
@@ -120,7 +167,7 @@ const EditTicketForm = ({ ticket, onSave, onCancel }) => {
         <button
           type="button"
           className="bg-black text-white px-8 py-2 rounded-md"
-          onClick={() => onSave(editedTicket)}
+          onClick={handleSave}
         >
           저장
         </button>

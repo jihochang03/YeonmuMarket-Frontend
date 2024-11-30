@@ -2,15 +2,16 @@ import React, { useState, useEffect } from "react";
 import {
   fetchTransferredTickets,
   updateTicketPost,
+  deleteTicketPost,
 } from "../../../../apis/api"; // 백엔드 API 함수 호출
 import Modal from "../../../../components/modal";
-import EditTicketForm from "./edit-ticket";
+import EditTicketForm from "./edit-tickets";
 import { useNavigate } from "react-router-dom";
 
 const statusMapping = {
   waiting: "양수자 대기",
-  transfer_pending: "양도중 - 입금 대기",
-  transfer_complete: "양도 완료",
+  transfer_pending: "양도중",
+  transfer_completed: "양도 완료",
 };
 
 export const SoldTickets = () => {
@@ -42,6 +43,15 @@ export const SoldTickets = () => {
     loadTickets();
   }, []);
 
+  const handleSave = (updatedTicket) => {
+    setTickets((prevTickets) =>
+      prevTickets.map((ticket) =>
+        ticket.id === updatedTicket.id ? updatedTicket : ticket
+      )
+    ); // Update the tickets list with the edited ticket
+    setSelectedTicket(updatedTicket); // Update the selected ticket
+    setIsEditMode(false); // Exit edit mode
+  };
   const handleDetailClick = (ticketId) => {
     console.log("Detail clicked for ticketId:", ticketId); // Debugging
     const ticket = tickets.find((item) => item.id === ticketId);
@@ -52,22 +62,6 @@ export const SoldTickets = () => {
     }
     setSelectedTicket(ticket);
   };
-
-  const handleSave = (updatedTicket) => {
-    console.log("Saving updated ticket:", updatedTicket); // Debugging
-    const updatedTickets = tickets.map((ticket) =>
-      ticket.id === updatedTicket.id ? updatedTicket : ticket
-    );
-    console.log("Updated tickets list:", updatedTickets); // Debugging
-    setTickets(updatedTickets);
-    setSelectedTicket(null);
-    setTimeout(() => {
-      setSelectedTicket(updatedTicket);
-      console.log("Selected ticket after save:", updatedTicket); // Debugging
-    }, 0);
-    setIsEditMode(false);
-  };
-
   const handleModalOpen = (message) => {
     setModalMessage(message);
     setIsModalOpen(true);
@@ -76,19 +70,29 @@ export const SoldTickets = () => {
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
-
-  const handleConfirm = () => {
-    const updatedTickets = tickets.map((ticket) =>
-      ticket.id === selectedTicket.id
-        ? { ...ticket, status: "transfer_complete" }
-        : ticket
-    );
-    setTickets(updatedTickets);
-    setIsModalOpen(false);
+  const handleDelete = async () => {
+    try {
+      if (!selectedTicket) return;
+      await deleteTicketPost(selectedTicket.id);
+      setTickets(tickets.filter((ticket) => ticket.id !== selectedTicket.id));
+      setSelectedTicket(null);
+      setIsModalOpen(false);
+      alert("티켓이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("Error deleting ticket:", error);
+      alert("티켓 삭제 중 문제가 발생했습니다.");
+    }
   };
 
   const handleEdit = () => {
     setIsEditMode(true);
+  };
+  const handlePromo = (ticketId) => {
+    if (!ticketId) {
+      console.error("Invalid ticket ID");
+      return;
+    }
+    navigate(`/main/new/${ticketId}`); // 해당 경로로 이동
   };
 
   const handleCancelEdit = () => {
@@ -97,18 +101,6 @@ export const SoldTickets = () => {
   const handleChatRoomOpen = (ticketId) => {
     navigate(`/chat/${ticketId}`);
   };
-
-  // const handleChatRoomOpen = (ticketId) => {
-  //   const ticket = tickets.find((item) => item.id === ticketId);
-
-  //   if (ticket) {
-  //     navigate('/chat/', {
-  //       state: { from: '/main/sold', ticketData: ticket },
-  //     }, console.log(ticket));
-  //   } else {
-  //     console.error("Ticket not found");
-  //   }
-  // };
 
   return (
     <div>
@@ -120,7 +112,7 @@ export const SoldTickets = () => {
           {isEditMode ? (
             <EditTicketForm
               ticket={selectedTicket}
-              onSave={handleSave}
+              onSave={handleSave} // Pass the handleSave function
               onCancel={handleCancelEdit}
             />
           ) : (
@@ -173,7 +165,7 @@ export const SoldTickets = () => {
               </label>
               <label className="block mb-2 font-bold">예매처</label>
               <label className="border p-2 mb-4 rounded-md">
-                {selectedTicket.keyword}
+                {selectedTicket.booking_page}
               </label>
               <label className="block mb-2 font-bold">캐스팅 정보</label>
               <label className="border p-2 mb-4 rounded-md">
@@ -255,6 +247,12 @@ export const SoldTickets = () => {
                     >
                       상세보기
                     </button>
+                    <button
+                      className="ticket-button"
+                      onClick={() => handlePromo(ticket.id)}
+                    >
+                      홍보글 생성
+                    </button>
                   </div>
                 )}
                 {ticket.status === "transfer_pending" && (
@@ -271,15 +269,33 @@ export const SoldTickets = () => {
                     >
                       상세보기
                     </button>
+                    <button
+                      className="ticket-button"
+                      onClick={() => handlePromo(ticket.id)}
+                    >
+                      홍보글 생성
+                    </button>
                   </div>
                 )}
-                {ticket.status === "transfer_complete" && (
+                {ticket.status === "transfer_completed" && (
                   <div className="ticket-button-container">
+                    <button
+                      className="ticket-button"
+                      onClick={() => handleChatRoomOpen(ticket.id)}
+                    >
+                      대화방
+                    </button>
                     <button
                       className="ticket-button"
                       onClick={() => handleDetailClick(ticket.id)}
                     >
                       상세보기
+                    </button>
+                    <button
+                      className="ticket-button"
+                      onClick={() => handlePromo(ticket.id)}
+                    >
+                      홍보글 생성
                     </button>
                   </div>
                 )}
@@ -292,7 +308,7 @@ export const SoldTickets = () => {
         <Modal
           message={modalMessage}
           onClose={handleModalClose}
-          onConfirm={handleConfirm}
+          onConfirm={handleDelete} // Call handleDelete on confirm
         />
       )}
     </div>

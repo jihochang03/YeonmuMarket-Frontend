@@ -91,7 +91,7 @@ h3 {
   @apply bg-status-ing;
 }
 
-.status-transfer_complete {
+.status-transfer_completed {
   @apply bg-status-done;
 }
 
@@ -103,7 +103,7 @@ h3 {
   @apply bg-status-ing;
 }
 
-.status-transaction_complete {
+.status-transaction_completed {
   @apply bg-status-done;
 }
 
@@ -161,4 +161,9 @@ h3 {
   border: 2px solid #ddd;
   color: #333;
   align-self: flex-start;
+}
+
+.custom__menu {
+  max-height: 100px; /* 메뉴의 최대 높이 */
+  overflow-y: auto; /* 스크롤 활성화 */
 }
