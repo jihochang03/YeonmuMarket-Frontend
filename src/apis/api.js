@@ -132,7 +132,9 @@ export const fetchTransferredTickets = async () => {
 
 export const chatTickets = async (ticket_id) => {
   try {
-    const response = await instanceWithToken.get(`conversations/${ticket_id}/`);
+    const response = await instanceWithToken.get(
+      `/conversations/${ticket_id}/`
+    );
     return response.data;
   } catch (error) {
     console.error(
@@ -155,7 +157,9 @@ export const fetchPurchasedTickets = async () => {
 
 export const fetchTicketPostDetail = async (ticketPostId) => {
   try {
-    const response = await api.get(`/ticketpost/${ticketPostId}/`);
+    const response = await instanceWithToken.get(
+      `/tickets/ticketpost/${ticketPostId}/`
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching ticket post detail:", error);
@@ -163,18 +167,14 @@ export const fetchTicketPostDetail = async (ticketPostId) => {
   }
 };
 
-// 티켓 양도글 삭제
-export const deleteTicketPost = async (ticketPostId, username, password) => {
+export const deleteTicketPost = async (ticketPostId) => {
   try {
-    const response = await api.delete(`/ticketpost/${ticketPostId}/`, {
-      data: {
-        username,
-        password,
-      },
-    });
-    return response.status;
+    const response = await instanceWithToken.delete(
+      `/tickets/ticketpost/${ticketPostId}/`
+    );
+    return response.data;
   } catch (error) {
-    console.error("Error deleting ticket post:", error);
+    console.error(`Error deleting ticket post with ID ${ticketPostId}:`, error);
     throw error;
   }
 };
@@ -182,7 +182,10 @@ export const deleteTicketPost = async (ticketPostId, username, password) => {
 // 티켓 양도글 수정
 export const updateTicketPost = async (ticketPostId, updatedData) => {
   try {
-    const response = await api.put(`/ticketpost/${ticketPostId}/`, updatedData);
+    const response = await instanceWithToken.put(
+      `tickets/ticketpost/${ticketPostId}/`,
+      updatedData
+    );
     return response.data;
   } catch (error) {
     console.error("Error updating ticket post:", error);
@@ -289,14 +292,56 @@ export const processImageUpload = async (formData) => {
   }
 };
 
+export const ImageUpload = async (formData) => {
+  try {
+    const response = await instanceWithToken.post(
+      "/conversations/fetch_image",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Ensure the correct content type
+        },
+      }
+    );
+    return response.data; // Return the processed response data
+  } catch (error) {
+    console.error("Error uploading files for processing:", error);
+    throw error; // Re-throw the error for caller to handle
+  }
+};
+
+export const seatImageUpload = async (formData) => {
+  try {
+    const response = await instanceWithToken.post(
+      "/tickets/process_image/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Ensure the correct content type
+        },
+      }
+    );
+    return response.data; // Return the processed response data
+  } catch (error) {
+    console.error("Error uploading files for processing:", error);
+    throw error; // Re-throw the error for caller to handle
+  }
+};
+
 export const postTweet = async (tweetContent) => {
   try {
-    const response = await instanceWithToken.post('/tickets/post-tweet/', {
+    const response = await instanceWithToken.post("/tickets/post-tweet/", {
       tweetContent,
     });
     return response.data;
   } catch (error) {
-    console.error('Error posting tweet:', error);
+    console.error("Error posting tweet:", error);
     throw error;
   }
+};
+export const leaveChatRoom = async (ticket_id) => {
+  const response = await instanceWithToken.post(
+    `/conversations/${ticket_id}/leave/`
+  );
+  return response.data;
 };

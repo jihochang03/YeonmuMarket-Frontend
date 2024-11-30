@@ -148,6 +148,7 @@ export const TicketForm = () => {
     formData.append("keyword", selectedSite ? selectedSite.value : "");
     formData.append("reservImage", reservFile);
     formData.append("seatImage", seatFile);
+    formData.append("booking_page", selectedSite ? selectedSite.value : "");
 
     try {
       const responseData = await processImageUpload(formData); // Call the API function
@@ -178,6 +179,7 @@ export const TicketForm = () => {
       setSelectedHour(selectedHour % 12);
       setSelectedMin(selectedMin);
       setSelectedAmPm(selectedAmPm);
+      setSelectedSite(selectedSite);
       setTicketNumber(responseData.ticket_number || "");
       setSeatInfo(responseData.seat_number || "");
       setCastingInfo(responseData.cast_info || "");
@@ -191,35 +193,96 @@ export const TicketForm = () => {
   };
 
   const handleSubmit = async () => {
-    const formData = new FormData();
-
-    const formattedDate = selectedDate.toISOString().split("T")[0];
-
-    // 가격에서 콤마 제거
-    const formattedPrice = price.replace(/,/g, "");
-    formData.append("title", performanceName);
-    formData.append("date", formattedDate);
-    formData.append("seat", seatInfo);
-    formData.append("price", formattedPrice);
-    formData.append("casting", castingInfo);
-    formData.append("booking_details", discountInfo);
-    formData.append("reservImage", reservFile);
-    formData.append("seatImage", seatFile);
-    formData.append("phone_last_digits", lastFourDigits);
-    formData.append("keyword", selectedSite ? selectedSite.value : "");
-
+    if (!termsAccepted) {
+      alert("약관에 동의해야 등록을 완료할 수 있습니다.");
+      return;
+    }
     try {
-      const response = await createTicket(formData, dispatch);
-      console.log("Ticket created successfully:", response); // 티켓 생성 API 호출
+      // Input validation
+      if (!performanceName || performanceName.toString().trim() === "") {
+        alert("공연 이름을 입력해주세요.");
+        return;
+      }
+      if (!selectedDate) {
+        alert("날짜를 선택해주세요.");
+        return;
+      }
+      if (!seatInfo || seatInfo.toString().trim() === "") {
+        alert("좌석 정보를 입력해주세요.");
+        return;
+      }
+      if (!price || isNaN(price.replace(/,/g, ""))) {
+        alert("가격을 입력해주세요. '원' 단위는 제외해주세요 (예: 172000).");
+        return;
+      }
+      if (!castingInfo || castingInfo.toString().trim() === "") {
+        alert("캐스팅 정보를 입력해주세요.");
+        return;
+      }
+      if (!reservFile) {
+        alert("예매내역서를 첨부해주세요.");
+        return;
+      }
+      if (!seatFile) {
+        alert("좌석 사진을 첨부해주세요.");
+        return;
+      }
+      if (
+        !lastFourDigits ||
+        lastFourDigits.length !== 4 ||
+        isNaN(lastFourDigits)
+      ) {
+        alert("전화번호 마지막 4자리를 올바르게 입력해주세요.");
+        return;
+      }
 
-      // 성공적으로 응답을 받으면 알림을 띄우고 페이지 이동
+      // Prepare formData
+      const formData = new FormData();
+
+      const formattedDate = selectedDate.toISOString().split("T")[0];
+      const formattedPrice = price.replace(/,/g, ""); // Remove commas from the price
+
+      formData.append("title", performanceName);
+      formData.append("date", formattedDate);
+      formData.append("seat", seatInfo);
+      formData.append("price", formattedPrice);
+      formData.append("casting", castingInfo);
+      formData.append("booking_page", selectedSite ? selectedSite.value : "");
+      formData.append("booking_details", discountInfo || ""); // Default to empty string if no discount info provided
+      formData.append("reservImage", reservFile);
+      formData.append("seatImage", seatFile);
+      formData.append("phone_last_digits", lastFourDigits);
+      formData.append("keyword", selectedSite ? selectedSite.value : ""); // Default to empty string
+
+      // Submit formData
+      const response = await createTicket(formData, dispatch);
+
+      console.log("Ticket created successfully:", response);
+
+      // Display success message
       alert("티켓 등록이 완료되었습니다.");
+
+      // Clear local storage and reset form
       localStorage.removeItem("ticketFormData");
-      setMaskedSeatImageUrl(response.masked_seat_image_url);
+      const ticketId = response.ticket_id;
+      navigate(`/main/new/${ticketId}`);
+      setMaskedSeatImageUrl(response.masked_seat_image_url || null); // Handle response URL gracefully
       setIsPromoViewVisible(true);
     } catch (error) {
-      // 에러 로그 출력
       console.error("Error submitting the form:", error);
+
+      // Extract error details from the server response, if available
+      const errorDetails = error.response?.data?.errors || {};
+      const errorMessages = Object.entries(errorDetails)
+        .map(([field, message]) => `${field}: ${message}`)
+        .join("\n");
+
+      const alertMessage = error.response?.data?.detail
+        ? `${errorMessages}`
+        : "알 수 없는 오류가 발생했습니다. 다시 시도해주세요.";
+
+      // Show error alert
+      alert(alertMessage);
     }
   };
 
@@ -340,7 +403,7 @@ export const TicketForm = () => {
           <label className="block mb-2 font-bold">공연 이름</label>
           <input
             type="text"
-            placeholder="Value"
+            placeholder="공연 이름"
             className="border p-2 mb-4 rounded-md"
             value={performanceName || ""} // Ensure a fallback empty string for controlled input
             onChange={(e) => setPerformanceName(e.target.value)} // Make sure this correctly updates state
@@ -550,67 +613,74 @@ export const TicketForm = () => {
           )}
         </form>
       ) : (
-        <div className="flex flex-col justify-center min-h-main-menu-height w-full p-8">
-          <h3 className="py-2 font-bold">홍보글 작성(선택)</h3>
-          {maskedSeatImageUrl && (
-            <div className="mb-4">
-              <img
-                src={maskedSeatImageUrl}
-                alt="마스킹된 좌석 이미지"
-                className="max-w-full h-auto"
+        <div className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4">
+          <form
+            className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <div className="flex flex-col justify-center min-h-main-menu-height w-full p-8">
+              <h3 className="py-2 font-bold">홍보글 작성(선택)</h3>
+              {maskedSeatImageUrl && (
+                <div className="mb-4">
+                  <img
+                    src={maskedSeatImageUrl}
+                    alt="마스킹된 좌석 이미지"
+                    className="max-w-full h-auto"
+                  />
+                  <button
+                    onClick={handleDownloadMaskedSeatImage}
+                    className="bg-black text-white px-4 py-2 rounded-md mt-2"
+                  >
+                    이미지 저장
+                  </button>
+                </div>
+              )}
+              <textarea
+                className="border p-2 mb-4 rounded-md w-full h-160"
+                style={{ resize: "none", overflowY: "hidden" }}
+                defaultValue={(() => {
+                  let formattedDate = selectedDate
+                    ? `${selectedDate.getFullYear()}.${String(
+                        selectedDate.getMonth() + 1
+                      ).padStart(2, "0")}.${String(
+                        selectedDate.getDate()
+                      ).padStart(2, "0")}`
+                    : "날짜 정보 없음";
+                  let formattedTime =
+                    selectedHour !== null && selectedMin !== null
+                      ? `${String(selectedHour).padStart(2, "0")}:${String(
+                          selectedMin
+                        ).padStart(2, "0")}`
+                      : "시간 정보 없음";
+                  return `${
+                    performanceName || "공연 이름 없음"
+                  } 양도 \n${formattedDate} ${
+                    selectedAmPm || ""
+                  } ${formattedTime}\n캐스팅: ${
+                    castingInfo || "캐스팅 정보 없음"
+                  }\n가격: ${price || "가격 정보 없음"}\n좌석 정보: ${
+                    seatInfo || "좌석 정보 없음"
+                  }\n<연뮤마켓> 통해서 안전 거래`;
+                })()}
               />
-              <button
-                onClick={handleDownloadMaskedSeatImage}
-                className="bg-black text-white px-4 py-2 rounded-md mt-2"
-              >
-                이미지 저장
-              </button>
+              <div className="flex w-full justify-around items-center gap-2 pb-24">
+                <button
+                  type="button"
+                  className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+                  onClick={handlePublishToX}
+                >
+                  <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
+                </button>
+                <button
+                  type="button"
+                  className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+                  onClick={handleCopyUrl}
+                >
+                  URL 복사
+                </button>
+              </div>
             </div>
-          )}
-          <textarea
-            className="border p-2 mb-4 rounded-md w-full h-40"
-            defaultValue={(() => {
-              let formattedDate = selectedDate
-                ? `${selectedDate.getFullYear()}.${String(
-                    selectedDate.getMonth() + 1
-                  ).padStart(2, "0")}.${String(selectedDate.getDate()).padStart(
-                    2,
-                    "0"
-                  )}`
-                : "날짜 정보 없음";
-              let formattedTime =
-                selectedHour !== null && selectedMin !== null
-                  ? `${String(selectedHour).padStart(2, "0")}:${String(
-                      selectedMin
-                    ).padStart(2, "0")}`
-                  : "시간 정보 없음";
-              return `${
-                performanceName || "공연 이름 없음"
-              } 양도 \n${formattedDate} ${
-                selectedAmPm || ""
-              } ${formattedTime}\n캐스팅: ${
-                castingInfo || "캐스팅 정보 없음"
-              }\n가격: ${price || "가격 정보 없음"}\n좌석 정보: ${
-                seatInfo || "좌석 정보 없음"
-              }\n<연뮤마켓> 통해서 안전 거래`;
-            })()}
-          />
-          <div className="flex w-full justify-around items-center gap-2 pb-24">
-            <button
-              type="button"
-              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-              onClick={handlePublishToX}
-            >
-              <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-              onClick={handleCopyUrl}
-            >
-              URL 복사
-            </button>
-          </div>
+          </form>
         </div>
       )}
     </div>

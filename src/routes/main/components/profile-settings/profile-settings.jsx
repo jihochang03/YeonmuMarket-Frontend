@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Modal from "../../../../../src/components/modal";
 import { logout } from "../../../../redux/user-slice";
-import { removeCookie } from '../../../../utils/cookie';
+import { removeCookie } from "../../../../utils/cookie";
 
 export const ProfileSettings = () => {
   const navigate = useNavigate();
@@ -38,35 +38,35 @@ export const ProfileSettings = () => {
     setIsModalVisible(true);
   };
 
-  const handleAccountDeleteConfirm = async () => {
-    try {
-      // 사용자 계정 삭제 API 호출
-      await deleteUserAccount();
-      // 쿠키에서 토큰 제거
-      removeCookie("access_token");
-      removeCookie("refresh_token");
-      // Redux 상태 업데이트
-      dispatch(logout());
-      // 모달 닫기
-      handleModalClose();
-      // 알림 표시
-      alert("계정이 탈퇴되었습니다.");
-      // 로그인 페이지로 이동
-      navigate("/");
-    } catch (error) {
-      console.error("Error deleting account:", error);
-      alert("계정 탈퇴 중 오류가 발생했습니다.");
-      // 모달 닫기
-      handleModalClose();
-    }
-  };
+  // const handleAccountDeleteConfirm = async () => {
+  //   try {
+  //     // 사용자 계정 삭제 API 호출
+  //     await deleteUserAccount();
+  //     // 쿠키에서 토큰 제거
+  //     removeCookie("access_token");
+  //     removeCookie("refresh_token");
+  //     // Redux 상태 업데이트
+  //     dispatch(logout());
+  //     // 모달 닫기
+  //     handleModalClose();
+  //     // 알림 표시
+  //     alert("계정이 탈퇴되었습니다.");
+  //     // 로그인 페이지로 이동
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Error deleting account:", error);
+  //     alert("계정 탈퇴 중 오류가 발생했습니다.");
+  //     // 모달 닫기
+  //     handleModalClose();
+  //   }
+  // };
 
-  // 계정 탈퇴 버튼 클릭 핸들러
-  const handleAccountDelete = () => {
-    setModalMessage("정말 계정을 탈퇴하시겠습니까?");
-    setOnConfirmAction(() => handleAccountDeleteConfirm);
-    setIsModalVisible(true);
-  };
+  // // 계정 탈퇴 버튼 클릭 핸들러
+  // const handleAccountDelete = () => {
+  //   setModalMessage("정말 계정을 탈퇴하시겠습니까?");
+  //   setOnConfirmAction(() => handleAccountDeleteConfirm);
+  //   setIsModalVisible(true);
+  // };
 
   const handleModalClose = () => {
     setIsModalVisible(false);
@@ -88,12 +88,12 @@ export const ProfileSettings = () => {
         >
           로그아웃
         </button>
-        <button
+        {/* <button
           onClick={handleAccountDelete}
           className="w-11/12 bg-gray-200 text-black font-medium py-2 rounded-md"
         >
           계정 탈퇴
-        </button>
+        </button> */}
       </div>
       {isModalVisible && (
         <Modal
