@@ -4,12 +4,25 @@ import XIcon from "../../../../assets/xlogo.png";
 import UrlIcon from "../../../../assets/url.png";
 import { fetchTicketPostDetail, postTweet } from "../../../../apis/api"; // Import necessary API functions
 
-const PromoForm = () => {
+const PromoForm = ({ ticket, onCancel }) => {
   const navigate = useNavigate();
-  const [ticketDetails, setTicketDetails] = useState(null);
+  const [editedTicket, setEditedTicket] = useState({
+    ...ticket, // Spread the ticket data
+    title: ticket.title || "", // Ensure fallback to empty string
+    date: ticket.date || "",
+    seat: ticket.seat || "",
+    booking_page: ticket.booking_page || "",
+    casting: ticket.casting || "",
+    price: ticket.price || "",
+    phone_last_digits: ticket.phone_last_digits || "",
+  });
+  const [previewSeatImage, setPreviewSeatImage] = useState(
+    ticket.processed_seat_image
+  );
+  // const [ticketDetails, setTicketDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [maskedSeatImageUrl, setMaskedSeatImageUrl] = useState(null); // Ensure this is initialized in the state
+  // const [error, setError] = useState(null);
+  // const [maskedSeatImageUrl, setMaskedSeatImageUrl] = useState(null); // Ensure this is initialized in the state
   const textareaRef = useRef(null);
 
   const pathname = window.location.pathname; // "/main/new/103"
@@ -20,7 +33,9 @@ const PromoForm = () => {
       try {
         const data = await fetchTicketPostDetail(ticketId);
         setTicketDetails(data?.ticket || null); // Set ticket details
-        setMaskedSeatImageUrl(data?.ticket?.uploaded_processed_seat_image_url || null); // Set masked image URL if available
+        setMaskedSeatImageUrl(
+          data?.ticket?.uploaded_processed_seat_image_url || null
+        ); // Set masked image URL if available
         setLoading(false);
       } catch (err) {
         console.error("Error fetching ticket details:", err);
@@ -104,9 +119,6 @@ const PromoForm = () => {
         alert("텍스트 복사에 실패했습니다. 다시 시도해주세요.");
       });
   };
-  const onCancel = () => {
-    navigate(`/main/sold`);
-  }
 
   const handleInput = () => {
     const textarea = textareaRef.current;
@@ -130,27 +142,17 @@ const PromoForm = () => {
       return "날짜 정보 없음";
     }
   };
-
-  if (loading) {
-    return <div>로딩 중...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
+  //div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height"
   return (
-    <div className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4">
-      <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-list-height">
-        <div className="flex flex-col justify-center min-h-main-menu-height w-full p-8">
-          <h3 className="py-2 font-bold">
-            홍보글 생성(직접 수정하셔도 됩니다)
-          </h3>
-          {maskedSeatImageUrl && (
+      <form className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
+        <div className="flex flex-col justify-center min-h-main-menu-height2 w-full p-8">
+          <h3 className="py-2 font-bold">홍보글 생성 (수정 가능)</h3>
+  
+          {previewSeatImage && (
             <div className="mb-4">
               <img
-                src={maskedSeatImageUrl}
-                alt="마스킹된 좌석 이미지"
+                src={previewSeatImage}
+                alt="좌석 이미지 미리보기"
                 className="max-w-full h-auto"
               />
               <button
@@ -161,54 +163,51 @@ const PromoForm = () => {
               </button>
             </div>
           )}
-          {ticketDetails && (
-            <>
-              <textarea
-                ref={textareaRef}
-                className="border p-2 mb-4 rounded-md w-full overflow-y-auto resize-none"
+  
+          <textarea
+            ref={textareaRef}
+            className="border p-2 mb-4 rounded-md w-full overflow-y-auto resize-none"
             style={{ height: "auto", minHeight: "250px" }}
-                onInput={handleInput}
-                defaultValue={`
-${ticketDetails.title || "공연 이름 없음"} 양도
-${formatDate(ticketDetails.date)}
-캐스팅: ${ticketDetails.casting || "캐스팅 정보 없음"}
-가격: ${ticketDetails.price || "가격 정보 없음"}원
-좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
-<연뮤마켓> 통해서 안전 거래
-http://localhost:5173/chat/join/${ticketId}
-`}
-              />
-              <div className="flex w-full justify-around items-center gap-2 pb-24">
-                <button
-                  type="button"
-                  className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-                  onClick={handlePublishToX}
-                >
-                  <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
-                </button>
-                <button
-                  type="button"
-                  className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-                  onClick={handleCopyText}
-                >
-                  텍스트 복사
-                </button>
-              </div>
-              <div className="flex w-full justify-around items-center gap-2 pb-24">
-              <button
+            onInput={handleInput}
+            defaultValue={`
+  ${editedTicket.title || "공연 이름 없음"} 양도
+  날짜: ${formatDate(editedTicket.date)}
+  캐스팅: ${editedTicket.casting || "캐스팅 정보 없음"}
+  가격: ${editedTicket.price || "가격 정보 없음"}원
+  좌석 정보: ${editedTicket.seat || "좌석 정보 없음"}
+  <연뮤마켓> 통해서 안전 거래
+  http://localhost:5173/chat/join/${ticketId}`}
+          />
+  
+          <div className="flex justify-around items-center gap-2 mt-6">
+            <button
+              type="button"
+              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+              onClick={handlePublishToX}
+            >
+              <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
+            </button>
+            <button
+              type="button"
+              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+              onClick={handleCopyText}
+            >
+              텍스트 복사
+            </button>
+            </div>
+            <div className="flex justify-around items-center gap-2 mt-6">
+            <button
               type="button"
               className="bg-gray-500 text-white px-4 py-2 rounded-md"
               onClick={onCancel}
             >
               돌아가기
-                </button>
-              </div>
-            </>
-          )}
+            </button>
+            </div>
+          
         </div>
       </form>
-    </div>
-  );
+  );  
 };
 
 export default PromoForm;

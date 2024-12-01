@@ -14,6 +14,7 @@ export default {
         "header-height": `${headerHeight}px`,
         "main-height": `calc(100vh - ${headerHeight}px)`,
         "main-menu-height": `calc(100vh - ${headerHeight}px - 95px)`,
+        "main-menu-height2": `calc(150vh - ${headerHeight}px - 95px)`,
         "list-height": `calc(100vh - ${headerHeight}px - 50px)`,
       },
       colors: {

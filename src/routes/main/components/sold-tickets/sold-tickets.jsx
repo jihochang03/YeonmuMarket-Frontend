@@ -6,6 +6,7 @@ import {
 } from "../../../../apis/api"; // 백엔드 API 함수 호출
 import Modal from "../../../../components/modal";
 import EditTicketForm from "./edit-tickets";
+import PromoForm from "./promo-form";
 import { useNavigate } from "react-router-dom";
 
 const statusMapping = {
@@ -20,6 +21,7 @@ export const SoldTickets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isPromoMode, setIsPromoMode] = useState(false);
   const navigate = useNavigate();
 
   // 백엔드에서 티켓 목록을 가져오는 함수
@@ -51,7 +53,9 @@ export const SoldTickets = () => {
     ); // Update the tickets list with the edited ticket
     setSelectedTicket(updatedTicket); // Update the selected ticket
     setIsEditMode(false); // Exit edit mode
+    setIsPromoMode(false);
   };
+
   const handleDetailClick = (ticketId) => {
     console.log("Detail clicked for ticketId:", ticketId); // Debugging
     const ticket = tickets.find((item) => item.id === ticketId);
@@ -87,12 +91,27 @@ export const SoldTickets = () => {
   const handleEdit = () => {
     setIsEditMode(true);
   };
+  const handleBack = () =>{
+    setSelectedTicket(null);
+  };
   const handlePromo = (ticketId) => {
-    if (!ticketId) {
-      console.error("Invalid ticket ID");
-      return;
-    }
-    navigate(`/main/new/${ticketId}`); // 해당 경로로 이동
+    const ticket = tickets.find((item) => item.id === ticketId);
+    setSelectedTicket(ticket); // Select the ticket to be promoted
+    setIsPromoMode(true); // Toggle promo mode
+  };
+  // const handlePromo = (ticketId) => {
+  //   setIsPromoMode(true);
+  //   /*
+  //   if (!ticketId) {
+  //     console.error("Invalid ticket ID");
+  //     return;
+  //   }
+  //   navigate(`/main/new/${ticketId}`); // 해당 경로로 이동
+  //   */
+  // };
+  const handleCancelPromo = (ticketId) => {
+    setIsPromoMode(false);
+    setSelectedTicket(null);
   };
 
   const handleCancelEdit = () => {
@@ -114,6 +133,12 @@ export const SoldTickets = () => {
               ticket={selectedTicket}
               onSave={handleSave} // Pass the handleSave function
               onCancel={handleCancelEdit}
+            />
+          ) : isPromoMode ? (
+            <PromoForm
+              ticket={selectedTicket}
+              onSave={handleSave} // Pass the handleSave function
+              onCancel={handleCancelPromo}
             />
           ) : (
             <form
@@ -142,7 +167,7 @@ export const SoldTickets = () => {
                   <span>이미지가 없습니다.</span>
                 )}
               </div>
-
+  
               <div className="mb-4">
                 <label className="block mb-2 font-bold">좌석 사진</label>
                 {selectedTicket.uploaded_seat_image_url ? (
@@ -218,6 +243,15 @@ export const SoldTickets = () => {
                     </button>
                   </>
                 )}
+              </div>
+              <div className="w-full flex items-center justify-center gap-10 mt-4">
+              <button
+              type="button"
+              className="bg-gray-500 text-white px-4 py-2 rounded-md"
+              onClick={handleBack}
+            >
+                      돌아가기
+                    </button>
               </div>
             </form>
           )}
@@ -313,6 +347,7 @@ export const SoldTickets = () => {
       )}
     </div>
   );
+  
 };
 
 export default SoldTickets;

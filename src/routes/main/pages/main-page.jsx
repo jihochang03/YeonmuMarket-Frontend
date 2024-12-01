@@ -4,6 +4,7 @@ import { MainSection } from "../components/main-section";
 import { Introducement } from "../../../components/introduce-section";
 import { MainIndex } from "../../../components/main-index";
 import { TicketForm } from "../components/ticket-form/ticket-form";
+//import { PromoForm } from "../components/ticket-form/promo-form";
 import { SoldTickets } from "../components/sold-tickets/sold-tickets";
 import { PurchasedTickets } from "../components/purchased-tickets/purchased-tickets";
 import { ProfileSettings } from "../components/profile-settings/profile-settings";
