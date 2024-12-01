@@ -48,7 +48,6 @@ const AccountAuthPage = () => {
       console.log("1. handleAccountConfirm 함수 호출됨"); // 첫 번째 로그
 
       const accountData = {
-        name, // 사용자의 이름을 그대로 유지
         ssn: `${ssnFront}-${ssnBack}`,
         accountNum,
         bank: selectedBank.name,
@@ -74,7 +73,7 @@ const AccountAuthPage = () => {
   };
 
   if (isBankSelection) {
-    return <BankSelectionPage banks={banks} onSelectBank={handleBankSelect} />;
+    return <BankSelectionPage banks={banks} onSelectBank={handleBankSelect} redirectTo={'/account-auth'}/>;
   }
 
   if (isAccountConfirmation) {

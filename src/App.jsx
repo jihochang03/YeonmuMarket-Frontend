@@ -6,7 +6,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Header } from "./components/header.jsx";
 import LoginPage from "./routes/login/pages/login-page.jsx";
 import MainPage from "./routes/main/pages/main-page.jsx";
-import PromoForm from "./routes/main/components/ticket-form/promo-form.jsx";
 import TermsPage from "./routes/terms/pages/terms-page.jsx";
 import Auth from "./routes/login/pages/auth.jsx";
 import AccountAuthPage from "./routes/account-auth/pages/account-auth-page.jsx";
@@ -40,14 +39,6 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <MainPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/main/new/:ticket_id"
-                  element={
-                    <ProtectedRoute>
-                      <PromoForm />
                     </ProtectedRoute>
                   }
                 />

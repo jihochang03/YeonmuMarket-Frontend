@@ -13,6 +13,7 @@ const AccountEditPage = () => {
   const [selectedBank, setSelectedBank] = useState(null);
   const [error, setError] = useState('');
   const [isBankSelection, setIsBankSelection] = useState(false);
+  const [isAccountConfirmation, setIsAccountConfirmation] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const AccountEditPage = () => {
   };
 
   if (isBankSelection) {
-    return <BankSelectionPage banks={banks} onSelectBank={handleBankSelect} />;
+    return <BankSelectionPage banks={banks} onSelectBank={handleBankSelect} redirectTo={'/account-edit'} />;
   }
 
   return (

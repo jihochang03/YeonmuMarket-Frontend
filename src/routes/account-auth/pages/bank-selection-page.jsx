@@ -1,12 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const BankSelectionPage = ({ banks, onSelectBank }) => {
+const BankSelectionPage = ({ banks, onSelectBank, redirectTo }) => {
   const navigate = useNavigate();
 
   const handleBankSelect = (bank) => {
     onSelectBank(bank);
-    navigate('/account-auth');
+    navigate(redirectTo);
   };
 
   return (
