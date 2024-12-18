@@ -1,6 +1,5 @@
 // src/App.js
 
-import React from "react";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Header } from "./components/header.jsx";
@@ -16,8 +15,24 @@ import ChatRoom from "./routes/main/components/chat-room/chat-room.jsx";
 import ProtectedRoute from "./components/protectroute.jsx"; // ProtectedRoute 임포트
 import FetchCSRFToken from "./components/fetchcsrftoken.jsx"; // FetchCSRFToken 컴포넌트 임포트
 import AccountEditPage from "./routes/account-auth/pages/account-edit-page.jsx";
+import { useEffect } from "react";
+import { onPushNotificationReceived } from "./apis/firebase.js";
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
+  navigator.serviceWorker
+    .register("/firebase-messaging-sw.js")
+    .then(function (registration) {
+      console.log("Service Worker registered successfully", registration);
+    })
+    .catch(function (error) {
+      console.log("Service Worker registration failed: ", error);
+    });
+
+  useEffect(() => {
+    onPushNotificationReceived((notification) => {
+      alert(`New Notification: ${notification.title} - ${notification.body}`);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-darker flex flex-col items-center">

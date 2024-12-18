@@ -345,3 +345,25 @@ export const leaveChatRoom = async (ticket_id) => {
   );
   return response.data;
 };
+
+export const testPushNotification = async () => {
+  try {
+    const response = await instanceWithToken.get(
+      "/conversations/test/push-notification"
+    );
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const saveFCMToken = async (token) => {
+  try {
+    const response = await instanceWithToken.post("/user/save-fcm-token/", {
+      token,
+    });
+    return response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};

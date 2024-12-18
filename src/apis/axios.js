@@ -4,7 +4,7 @@ import axios from "axios";
 import { getCookie, setCookie, removeCookie } from "../utils/cookie";
 
 // 기본 설정
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "https://localhost:8000/api";
 
 // 공용 Axios 인스턴스
 export const instance = axios.create({

@@ -9,6 +9,7 @@ import {
   setUserProfile,
   setAccessToken,
 } from "../../../redux/user-slice";
+import { getCookie } from "../../../utils/cookie";
 
 function Auth() {
   const navigate = useNavigate();
@@ -25,16 +26,18 @@ function Auth() {
         console.log("State parameter:", state);
 
         const res = await kakaoSignIn({ code });
+        // debugger;
         if (res === null) {
           console.error("Failed to get token from backend, response is null");
           navigate("/");
+
           return;
         }
 
         console.log("Response from backend:", res);
 
         // Save the access token in Redux and localStorage
-        const accessToken = res.access_token;
+        const accessToken = getCookie("access_token");
         dispatch(setAccessToken(accessToken));
         localStorage.setItem("access_token", accessToken);
 
@@ -63,6 +66,7 @@ function Auth() {
       } catch (err) {
         console.error("Error during authentication:", err);
         navigate("/");
+        debugger;
       }
     };
 

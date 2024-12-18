@@ -7,9 +7,9 @@ const FetchCSRFToken = () => {
     const fetchCSRF = async () => {
       try {
         // CSRF 토큰을 초기화하는 GET 요청
-        await fetch("http://localhost:8000/", {
-          credentials: "include", // 쿠키 포함
-        });
+        // await fetch("http://localhost:8000/", {
+        //   credentials: "include", // 쿠키 포함
+        // });
         console.log("CSRF token fetched successfully");
       } catch (error) {
         console.error("Error fetching CSRF token:", error);

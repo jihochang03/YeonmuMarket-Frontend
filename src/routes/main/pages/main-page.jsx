@@ -1,4 +1,3 @@
-import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { MainSection } from "../components/main-section";
 import { Introducement } from "../../../components/introduce-section";
@@ -8,8 +7,27 @@ import { TicketForm } from "../components/ticket-form/ticket-form";
 import { SoldTickets } from "../components/sold-tickets/sold-tickets";
 import { PurchasedTickets } from "../components/purchased-tickets/purchased-tickets";
 import { ProfileSettings } from "../components/profile-settings/profile-settings";
+import { useEffect } from "react";
+import { getFCMToken } from "../../../apis/firebase";
+import { testPushNotification } from "../../../apis/api";
 
 const MainPage = () => {
+  useEffect(() => {
+    getFCMToken().then((token) => {
+      if (token) {
+        fetch("/api/user/save-fcm-token/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+      }
+    });
+
+    testPushNotification();
+  }, []);
+
   return (
     <div className="w-full h-main-height flex justify-center items-center">
       <div className="w-main-frame h-main-height flex flex-col fixed">
