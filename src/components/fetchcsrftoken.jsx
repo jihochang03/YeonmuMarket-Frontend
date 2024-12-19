@@ -1,16 +1,19 @@
-// src/components/fetch-csrf-token.jsx
-
 import React, { useEffect } from "react";
 
 const FetchCSRFToken = () => {
   useEffect(() => {
     const fetchCSRF = async () => {
       try {
-        // CSRF 토큰을 초기화하는 GET 요청
-        await fetch("https://2024-fw-project.fly.dev/api/", {
+        // CSRF token 초기화 요청
+        const response = await fetch("https://2024-fw-project.fly.dev/api/", {
           credentials: "include", // 쿠키 포함
         });
-        console.log("CSRF token fetched successfully");
+
+        if (response.ok) {
+          console.log("CSRF token fetched successfully");
+        } else {
+          console.error("Failed to fetch CSRF token:", response.statusText);
+        }
       } catch (error) {
         console.error("Error fetching CSRF token:", error);
       }

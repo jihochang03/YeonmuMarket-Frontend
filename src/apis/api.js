@@ -47,7 +47,7 @@ import { setTicketId } from "../redux/ticketSlice"; // 액션 임포트
 export const kakaoSignIn = async (data) => {
   try {
     // GET 요청으로 카카오 인증 코드를 백 엔드로 전달
-    const response = await instance.post(
+    const response = await instanceWithToken.post(
       `/user/kakao/callback/?code=${data.code}`,
       {},
       { withCredentials: true } // 쿠키 포함을 위한 설정
