@@ -89,7 +89,7 @@ const PromoForm = ({ ticket, onCancel }) => {
       가격: ${ticketDetails.price || "가격 정보 없음"}
       좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
       <연뮤마켓> 통해서 안전 거래
-      http://localhost:5173/chat/join/${ticketId}
+      https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}
     `;
 
     try {
@@ -144,70 +144,69 @@ const PromoForm = ({ ticket, onCancel }) => {
   };
   //div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height"
   return (
-      <form className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
-        <div className="flex flex-col justify-center min-h-main-menu-height2 w-full p-8">
-          <h3 className="py-2 font-bold">홍보글 생성 (수정 가능)</h3>
-  
-          {previewSeatImage && (
-            <div className="mb-4">
-              <img
-                src={previewSeatImage}
-                alt="좌석 이미지 미리보기"
-                className="max-w-full h-auto"
-              />
-              <button
-                onClick={handleDownloadMaskedSeatImage}
-                className="bg-black text-white px-4 py-2 rounded-md mt-2"
-              >
-                이미지 저장
-              </button>
-            </div>
-          )}
-  
-          <textarea
-            ref={textareaRef}
-            className="border p-2 mb-4 rounded-md w-full overflow-y-auto resize-none"
-            style={{ height: "auto", minHeight: "250px" }}
-            onInput={handleInput}
-            defaultValue={`
+    <form className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
+      <div className="flex flex-col justify-center min-h-main-menu-height2 w-full p-8">
+        <h3 className="py-2 font-bold">홍보글 생성 (수정 가능)</h3>
+
+        {previewSeatImage && (
+          <div className="mb-4">
+            <img
+              src={previewSeatImage}
+              alt="좌석 이미지 미리보기"
+              className="max-w-full h-auto"
+            />
+            <button
+              onClick={handleDownloadMaskedSeatImage}
+              className="bg-black text-white px-4 py-2 rounded-md mt-2"
+            >
+              이미지 저장
+            </button>
+          </div>
+        )}
+
+        <textarea
+          ref={textareaRef}
+          className="border p-2 mb-4 rounded-md w-full overflow-y-auto resize-none"
+          style={{ height: "auto", minHeight: "250px" }}
+          onInput={handleInput}
+          defaultValue={`
   ${editedTicket.title || "공연 이름 없음"} 양도
   날짜: ${formatDate(editedTicket.date)}
   캐스팅: ${editedTicket.casting || "캐스팅 정보 없음"}
   가격: ${editedTicket.price || "가격 정보 없음"}원
   좌석 정보: ${editedTicket.seat || "좌석 정보 없음"}
   <연뮤마켓> 통해서 안전 거래
-  http://localhost:5173/chat/join/${ticketId}`}
-          />
-  
-          <div className="flex justify-around items-center gap-2 mt-6">
-            <button
-              type="button"
-              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-              onClick={handlePublishToX}
-            >
-              <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-              onClick={handleCopyText}
-            >
-              텍스트 복사
-            </button>
-            </div>
-            <div className="flex justify-around items-center gap-2 mt-6">
-            <button
-              type="button"
-              className="bg-gray-500 text-white px-4 py-2 rounded-md"
-              onClick={onCancel}
-            >
-              돌아가기
-            </button>
-            </div>
-          
+  https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}`}
+        />
+
+        <div className="flex justify-around items-center gap-2 mt-6">
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+            onClick={handlePublishToX}
+          >
+            <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+            onClick={handleCopyText}
+          >
+            텍스트 복사
+          </button>
         </div>
-      </form>
-  );  
+        <div className="flex justify-around items-center gap-2 mt-6">
+          <button
+            type="button"
+            className="bg-gray-500 text-white px-4 py-2 rounded-md"
+            onClick={onCancel}
+          >
+            돌아가기
+          </button>
+        </div>
+      </div>
+    </form>
+  );
 };
 
 export default PromoForm;

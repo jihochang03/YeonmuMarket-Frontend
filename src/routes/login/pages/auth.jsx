@@ -20,10 +20,8 @@ function Auth() {
       try {
         const urlParams = new URL(window.location.href).searchParams;
         const code = urlParams.get("code");
-        const state = urlParams.get("state"); // Retrieve state parameter if it exists
 
         console.log("Received authorization code:", code);
-        console.log("State parameter:", state);
 
         const res = await kakaoSignIn({ code });
         if (res === null) {
@@ -34,17 +32,10 @@ function Auth() {
 
         console.log("Response from backend:", res);
 
-        // Save the access token in Redux and localStorage
-        const accessToken = res.access_token;
-        console.log(res.access_token);
-        dispatch(setAccessToken(accessToken));
-        //localStorage.setItem("access_token", accessToken);
-        setCookie("access_token", accessToken, {});
-
-        // Update login state
+        // 로그인 상태 업데이트
         dispatch(setLoginState(true));
 
-        // Save user profile info
+        // 사용자 프로필 저장
         dispatch(
           setUserProfile({
             nickname: res.nickname,
@@ -52,15 +43,10 @@ function Auth() {
           })
         );
 
-        // Redirect based on state or payment verification
-        if (state) {
-          // Redirect to the path specified in the state parameter
-          navigate(state);
-        } else if (!res.is_payment_verified) {
-          // Redirect to account authentication if payment not verified
+        // 인증 후 리다이렉트
+        if (!res.is_payment_verified) {
           navigate("/account-auth");
         } else {
-          // Default redirect for logged-in users
           navigate("/main/sold");
         }
       } catch (err) {
