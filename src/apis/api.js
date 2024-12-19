@@ -53,6 +53,7 @@ export const kakaoSignIn = async (data) => {
       { withCredentials: true } // 쿠키 포함을 위한 설정
     );
     if (response.status === 200) {
+      console.log(response.data);
       return response.data;
     }
   } catch (e) {

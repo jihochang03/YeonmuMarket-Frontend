@@ -9,6 +9,7 @@ import {
   setUserProfile,
   setAccessToken,
 } from "../../../redux/user-slice";
+import { getCookie, setCookie, removeCookie } from "../../../utils/cookie";
 
 function Auth() {
   const navigate = useNavigate();
@@ -35,8 +36,10 @@ function Auth() {
 
         // Save the access token in Redux and localStorage
         const accessToken = res.access_token;
+        console.log(res.access_token);
         dispatch(setAccessToken(accessToken));
-        localStorage.setItem("access_token", accessToken);
+        //localStorage.setItem("access_token", accessToken);
+        setCookie("access_token", accessToken, {});
 
         // Update login state
         dispatch(setLoginState(true));

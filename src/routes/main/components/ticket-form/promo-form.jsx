@@ -20,7 +20,9 @@ const PromoForm = () => {
       try {
         const data = await fetchTicketPostDetail(ticketId);
         setTicketDetails(data?.ticket || null); // Set ticket details
-        setMaskedSeatImageUrl(data?.ticket?.uploaded_processed_seat_image_url || null); // Set masked image URL if available
+        setMaskedSeatImageUrl(
+          data?.ticket?.uploaded_processed_seat_image_url || null
+        ); // Set masked image URL if available
         setLoading(false);
       } catch (err) {
         console.error("Error fetching ticket details:", err);
@@ -74,7 +76,7 @@ const PromoForm = () => {
       가격: ${ticketDetails.price || "가격 정보 없음"}
       좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
       <연뮤마켓> 통해서 안전 거래
-      http://localhost:5173/chat/join/${ticketId}
+      https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}
     `;
 
     try {
@@ -106,7 +108,7 @@ const PromoForm = () => {
   };
   const onCancel = () => {
     navigate(`/main/sold`);
-  }
+  };
 
   const handleInput = () => {
     const textarea = textareaRef.current;
@@ -166,7 +168,7 @@ const PromoForm = () => {
               <textarea
                 ref={textareaRef}
                 className="border p-2 mb-4 rounded-md w-full overflow-y-auto resize-none"
-            style={{ height: "auto", minHeight: "250px" }}
+                style={{ height: "auto", minHeight: "250px" }}
                 onInput={handleInput}
                 defaultValue={`
 ${ticketDetails.title || "공연 이름 없음"} 양도
@@ -175,7 +177,7 @@ ${formatDate(ticketDetails.date)}
 가격: ${ticketDetails.price || "가격 정보 없음"}원
 좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
 <연뮤마켓> 통해서 안전 거래
-http://localhost:5173/chat/join/${ticketId}
+https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}
 `}
               />
               <div className="flex w-full justify-around items-center gap-2 pb-24">
@@ -195,12 +197,12 @@ http://localhost:5173/chat/join/${ticketId}
                 </button>
               </div>
               <div className="flex w-full justify-around items-center gap-2 pb-24">
-              <button
-              type="button"
-              className="bg-gray-500 text-white px-4 py-2 rounded-md"
-              onClick={onCancel}
-            >
-              돌아가기
+                <button
+                  type="button"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                  onClick={onCancel}
+                >
+                  돌아가기
                 </button>
               </div>
             </>

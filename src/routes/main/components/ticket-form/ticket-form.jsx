@@ -305,7 +305,7 @@ export const TicketForm = () => {
             ).padStart(2, "0")}`
           : "시간 정보 없음";
       const ticketUrl = ticketId
-        ? `http://localhost:5173/chat/join/${ticketId}`
+        ? `https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}`
         : "URL 없음";
 
       return `${performanceName || "공연 이름 없음"} 양도 \n${formattedDate} ${
@@ -341,7 +341,7 @@ export const TicketForm = () => {
       return;
     }
 
-    const ticketUrl = `http://localhost:5173/chat/join/${ticketId}`;
+    const ticketUrl = `https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}`;
     navigator.clipboard
       .writeText(ticketUrl)
       .then(() => {

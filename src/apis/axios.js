@@ -4,7 +4,7 @@ import axios from "axios";
 import { getCookie, setCookie, removeCookie } from "../utils/cookie";
 
 // 기본 설정
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = "https://2024-fw-project.fly.dev/api";
 
 // 공용 Axios 인스턴스
 export const instance = axios.create({
@@ -12,7 +12,7 @@ export const instance = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    "X-CSRFToken": getCookie("csrftoken"),
+    //"X-CSRFToken": getCookie("csrftoken"),
   },
 });
 
@@ -22,7 +22,7 @@ export const instanceWithToken = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    "X-CSRFToken": getCookie("csrftoken"),
+    //"X-CSRFToken": getCookie("csrftoken"),
   },
 });
 
@@ -32,7 +32,7 @@ const refreshInstance = axios.create({
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
-    "X-CSRFToken": getCookie("csrftoken"),
+    //"X-CSRFToken": getCookie("csrftoken"),
   },
 });
 
