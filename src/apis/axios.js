@@ -34,12 +34,8 @@ const refreshInstance = axios.create({
 // 요청 인터셉터: 액세스 토큰 및 CSRF 토큰 동적 추가
 instanceWithToken.interceptors.request.use(
   (config) => {
-    const accessToken = getCookie("access_token");
     const csrfToken = getCookie("csrftoken");
 
-    if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
-    }
     if (csrfToken) {
       config.headers["X-CSRFToken"] = csrfToken;
     }

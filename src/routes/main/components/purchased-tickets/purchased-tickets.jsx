@@ -54,6 +54,38 @@ export const PurchasedTickets = () => {
     }
     setSelectedTicket(ticket);
   };
+  const fixRegionInUrl = (url) => {
+    if (!url) return null;
+    const regex = /s3\.ap-northeast-2\.amazonaws\.com/;
+    return url.replace(regex, "s3.ap-southeast-2.amazonaws.com");
+  };
+
+  const fixedSeatImageUrl = selectedTicket
+    ? fixRegionInUrl(selectedTicket.uploaded_seat_image_url)
+    : null;
+  const fixedFileImageUrl = selectedTicket
+    ? fixRegionInUrl(selectedTicket.uploaded_file_url)
+    : null;
+
+  const handleDownloadSeatImage = () => {
+    if (!fixedSeatImageUrl) return;
+    const link = document.createElement("a");
+    link.href = fixedSeatImageUrl;
+    link.download = "좌석사진.jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleDownloadFileImage = () => {
+    if (!fixedFileImageUrl) return;
+    const link = document.createElement("a");
+    link.href = fixedFileImageUrl;
+    link.download = "좌석사진.jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div>
@@ -73,6 +105,50 @@ export const PurchasedTickets = () => {
               상태: {statusMapping[selectedTicket.status]}
             </div>
             <label className="block my-2 font-bold">공연 이름</label>
+            {/* 예매내역서 사진 이미지 */}
+            <div className="mb-4">
+              <label className="block font-semibold mb-2">예매내역서</label>
+              {fixedFileImageUrl ? (
+                <div>
+                  <img
+                    src={fixedFileImageUrl}
+                    alt="예매내역서"
+                    className="max-h-[230px] max-w-[230px] object-cover border mb-2"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleDownloadFileImage}
+                    className="bg-gray-300 px-3 py-1 rounded-md text-sm"
+                  >
+                    예매내역서 다운로드
+                  </button>
+                </div>
+              ) : (
+                <span>이미지가 없습니다.</span>
+              )}
+            </div>
+            {/* 좌석 사진 이미지 */}
+            <div className="mb-4">
+              <label className="block font-semibold mb-2">좌석 사진</label>
+              {fixedSeatImageUrl ? (
+                <div>
+                  <img
+                    src={fixedSeatImageUrl}
+                    alt="좌석 사진"
+                    className="max-h-[230px] max-w-[230px] object-cover border mb-2"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleDownloadSeatImage}
+                    className="bg-gray-300 px-3 py-1 rounded-md text-sm"
+                  >
+                    좌석사진 다운로드
+                  </button>
+                </div>
+              ) : (
+                <span>이미지가 없습니다.</span>
+              )}
+            </div>
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.title}
             </label>
@@ -88,16 +164,6 @@ export const PurchasedTickets = () => {
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.price}원
             </label>
-            {selectedTicket.uploaded_seat_image_url && (
-              <div className="mb-4">
-                <label className="block mb-2 font-bold">좌석 사진</label>
-                <img
-                  src={selectedTicket.uploaded_seat_image_url}
-                  alt="좌석 사진"
-                  className="max-h-[230px] max-w-[230px] object-cover"
-                />
-              </div>
-            )}
             <div className="w-full flex items-center justify-center gap-10 mt-4">
               <button
                 className="bg-black text-white px-8 py-2 rounded-md"

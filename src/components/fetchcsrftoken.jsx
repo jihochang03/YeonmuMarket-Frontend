@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
+import { csrfSignIn } from "../apis/api"; // api.js에서 함수 가져오기
 
 const FetchCSRFToken = () => {
   useEffect(() => {
     const fetchCSRF = async () => {
       try {
-        // CSRF token 초기화 요청
-        const response = await fetch("https://2024-fw-project.fly.dev/api/", {
+        // csrfSignIn 함수 호출
+        const response = await csrfSignIn({
           credentials: "include", // 쿠키 포함
         });
 

@@ -4,12 +4,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { kakaoSignIn } from "../../../apis/api";
-import {
-  setLoginState,
-  setUserProfile,
-  setAccessToken,
-} from "../../../redux/user-slice";
-import { getCookie, setCookie, removeCookie } from "../../../utils/cookie";
+import { setLoginState, setUserProfile } from "../../../redux/user-slice";
 
 function Auth() {
   const navigate = useNavigate();
@@ -18,10 +13,21 @@ function Auth() {
   useEffect(() => {
     const getToken = async () => {
       try {
+        // code, state 파라미터 모두 꺼내기
         const urlParams = new URL(window.location.href).searchParams;
         const code = urlParams.get("code");
+        const state = urlParams.get("state");
+
+        let decodedState = null;
+        try {
+          decodedState = JSON.parse(decodeURIComponent(state));
+        } catch (e) {
+          decodedState = decodeURIComponent(state);
+        }
+        console.log("Decoded state:", decodedState);
 
         console.log("Received authorization code:", code);
+        console.log("Received state:", state); // 우리가 넘긴 redirect 정보가 들어있음
 
         const res = await kakaoSignIn({ code });
         if (res === null) {
@@ -43,11 +49,18 @@ function Auth() {
           })
         );
 
-        // 인증 후 리다이렉트
+        const redirectUrl =
+          typeof decodedState === "string"
+            ? decodedState
+            : decodedState?.redirectUrl || "/main/sold";
+        console.log("Redirecting to:", redirectUrl);
+
+        // 로그인 후 이동할 URL
+        // 1) 우선 백엔드 응답의 상태(결제 인증 여부 등)에 따라 분기
         if (!res.is_payment_verified) {
           navigate("/account-auth");
         } else {
-          navigate("/main/sold");
+          navigate(redirectUrl);
         }
       } catch (err) {
         console.error("Error during authentication:", err);
@@ -58,7 +71,7 @@ function Auth() {
     getToken();
   }, [dispatch, navigate]);
 
-  return null; // No UI content for this page
+  return null; // 화면에 아무것도 표시 안 함
 }
 
 export default Auth;

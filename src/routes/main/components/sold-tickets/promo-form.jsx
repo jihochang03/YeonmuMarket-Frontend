@@ -1,106 +1,82 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import XIcon from "../../../../assets/xlogo.png";
-import UrlIcon from "../../../../assets/url.png";
-import { fetchTicketPostDetail, postTweet } from "../../../../apis/api"; // Import necessary API functions
+import { postTweet, getTwitterAuthUrl } from "../../../../apis/api";
 
-const PromoForm = ({ ticket, onCancel }) => {
-  const navigate = useNavigate();
-  const [editedTicket, setEditedTicket] = useState({
-    ...ticket, // Spread the ticket data
-    title: ticket.title || "", // Ensure fallback to empty string
-    date: ticket.date || "",
-    seat: ticket.seat || "",
-    booking_page: ticket.booking_page || "",
-    casting: ticket.casting || "",
-    price: ticket.price || "",
-    phone_last_digits: ticket.phone_last_digits || "",
-  });
-  const [previewSeatImage, setPreviewSeatImage] = useState(
-    ticket.processed_seat_image
-  );
-  // const [ticketDetails, setTicketDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-  // const [maskedSeatImageUrl, setMaskedSeatImageUrl] = useState(null); // Ensure this is initialized in the state
+function PromoForm({ ticket, onSave, onCancel }) {
+  // ticket 객체에서 공연명 등 필요한 기본값을 미리 세팅
   const textareaRef = useRef(null);
 
-  const pathname = window.location.pathname; // "/main/new/103"
-  const ticketId = pathname.split("/").pop(); // Extract the last part of the URL
+  // URL 리전 변경 로직
+  const fixRegionInUrl = (url) => {
+    if (!url) return null;
+    const regex = /s3\.ap-northeast-2\.amazonaws\.com/;
+    return url.replace(regex, "s3.ap-southeast-2.amazonaws.com");
+  };
 
-  useEffect(() => {
-    const fetchTicketDetails = async () => {
-      try {
-        const data = await fetchTicketPostDetail(ticketId);
-        setTicketDetails(data?.ticket || null); // Set ticket details
-        setMaskedSeatImageUrl(
-          data?.ticket?.uploaded_processed_seat_image_url || null
-        ); // Set masked image URL if available
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching ticket details:", err);
-        setError("Failed to load ticket details.");
-        setLoading(false);
-      }
-    };
+  const fixedSeatImageUrl = fixRegionInUrl(
+    ticket.uploaded_processed_seat_image_url
+  );
 
-    fetchTicketDetails();
-  }, [ticketId]);
+  const handleDownloadSeatImage = () => {
+    if (!fixedSeatImageUrl) return;
+    const link = document.createElement("a");
+    link.href = fixedSeatImageUrl;
+    link.download = "좌석사진.jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-  const handleDownloadMaskedSeatImage = async () => {
-    if (!maskedSeatImageUrl) {
-      console.error("No masked seat image URL provided.");
-      return;
-    }
-
+  const formatDate = (dateString) => {
+    if (!dateString) return "날짜 정보 없음";
     try {
-      const response = await fetch(maskedSeatImageUrl);
-      if (!response.ok) throw new Error("Failed to fetch image");
-
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      // Trigger download
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = "masked_seat_image.jpg";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Revoke the blob URL to free memory
-      window.URL.revokeObjectURL(blobUrl);
-      console.log("Download completed.");
+      const date = new Date(dateString);
+      const formattedDate = new Intl.DateTimeFormat("ko-KR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(date);
+      console.log("Formatted date:", formattedDate); // Debugging formatted date
+      return formattedDate;
     } catch (error) {
-      console.error("Error downloading image:", error);
+      console.error("Invalid date format:", dateString, error);
+      return "날짜 정보 없음";
     }
   };
 
   const handlePublishToX = async () => {
-    if (!ticketDetails) {
+    if (!ticket) {
       alert("티켓 정보를 불러오는 중입니다. 다시 시도해주세요.");
+      console.error("No ticket details available during publish.");
       return;
     }
 
     const tweetContent = `
-      ${ticketDetails.title || "공연 이름 없음"} 양도
-      ${ticketDetails.date || "날짜 정보 없음"}
-      캐스팅: ${ticketDetails.casting || "캐스팅 정보 없음"}
-      가격: ${ticketDetails.price || "가격 정보 없음"}
-      좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
-      <연뮤마켓> 통해서 안전 거래
-      https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}
-    `;
+    ${ticket.title || "공연 이름 없음"} 양도
+    ${formatDate(ticket.date)}
+    캐스팅: ${ticket.casting || "캐스팅 정보 없음"}
+    가격: ${ticket.price || "가격 정보 없음"}원
+    좌석 정보: ${ticket.seat || "좌석 정보 없음"}
+    <연뮤마켓> 통해서 안전 거래
+    https://www.yeonmu.shop/chat/join/${ticket.id}
+  `.trim();
+
+    console.log("Generated tweet content:", tweetContent);
 
     try {
-      await postTweet(tweetContent.trim());
+      const response = await postTweet(tweetContent);
       alert("트윗이 성공적으로 게시되었습니다.");
+      console.log("Tweet posted successfully:", response);
     } catch (error) {
-      console.error("트윗 게시 중 오류가 발생했습니다:", error);
-      alert("트윗 게시 중 오류가 발생했습니다.");
+      console.error(
+        "트윗 게시 중 오류가 발생했습니다:",
+        error.response?.data || error.message
+      );
+      alert("트윗 게시 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
+  // 홍보 문구 복사
   const handleCopyText = () => {
     const textarea = textareaRef.current;
     if (!textarea) {
@@ -119,7 +95,16 @@ const PromoForm = ({ ticket, onCancel }) => {
         alert("텍스트 복사에 실패했습니다. 다시 시도해주세요.");
       });
   };
-
+  // 폼 submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const updatedTicket = {
+      ...ticket,
+      promoTitle,
+      promoContent,
+    };
+    onSave(updatedTicket);
+  };
   const handleInput = () => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -128,85 +113,84 @@ const PromoForm = ({ ticket, onCancel }) => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "날짜 정보 없음";
-    try {
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }).format(date);
-    } catch (error) {
-      console.error("Invalid date format:", dateString, error);
-      return "날짜 정보 없음";
-    }
-  };
-  //div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height"
   return (
-    <form className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
-      <div className="flex flex-col justify-center min-h-main-menu-height2 w-full p-8">
-        <h3 className="py-2 font-bold">홍보글 생성 (수정 가능)</h3>
-
-        {previewSeatImage && (
-          <div className="mb-4">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
+    >
+      <h2 className="font-bold text-xl mb-4">홍보글 생성</h2>
+      {/* 좌석 사진 이미지 */}
+      <div className="mb-4">
+        <label className="block font-semibold mb-2">좌석 사진</label>
+        {fixedSeatImageUrl ? (
+          <div>
             <img
-              src={previewSeatImage}
-              alt="좌석 이미지 미리보기"
-              className="max-w-full h-auto"
+              src={fixedSeatImageUrl}
+              alt="좌석 사진"
+              className="max-h-[230px] max-w-[230px] object-cover border mb-2"
             />
             <button
-              onClick={handleDownloadMaskedSeatImage}
-              className="bg-black text-white px-4 py-2 rounded-md mt-2"
+              type="button"
+              onClick={handleDownloadSeatImage}
+              className="bg-gray-300 px-3 py-1 rounded-md text-sm"
             >
-              이미지 저장
+              좌석사진 다운로드
             </button>
           </div>
+        ) : (
+          <span>이미지가 없습니다.</span>
         )}
-
+      </div>
+      {/* 홍보글 내용 */}
+      <div className="mb-4">
+        <label className="block font-semibold mb-2">홍보 내용</label>
         <textarea
           ref={textareaRef}
           className="border p-2 mb-4 rounded-md w-full overflow-y-auto resize-none"
           style={{ height: "auto", minHeight: "250px" }}
           onInput={handleInput}
-          defaultValue={`
-  ${editedTicket.title || "공연 이름 없음"} 양도
-  날짜: ${formatDate(editedTicket.date)}
-  캐스팅: ${editedTicket.casting || "캐스팅 정보 없음"}
-  가격: ${editedTicket.price || "가격 정보 없음"}원
-  좌석 정보: ${editedTicket.seat || "좌석 정보 없음"}
-  <연뮤마켓> 통해서 안전 거래
-  https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}`}
+          defaultValue={
+            ticket
+              ? `${ticket.title || "공연 이름 없음"} 양도\n${formatDate(
+                  ticket.date
+                )}\n캐스팅: ${ticket.casting || "캐스팅 정보 없음"}\n가격: ${
+                  ticket.price || "가격 정보 없음"
+                }원\n좌석 정보: ${
+                  ticket.seat || "좌석 정보 없음"
+                }\n<연뮤마켓> 통해서 안전 거래\nhttps://www.yeonmu.shop/chat/join/${
+                  ticket.id
+                }`.trim()
+              : "티켓 정보를 불러오는 중입니다."
+          }
         />
-
-        <div className="flex justify-around items-center gap-2 mt-6">
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-            onClick={handlePublishToX}
-          >
-            <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
-          </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-            onClick={handleCopyText}
-          >
-            텍스트 복사
-          </button>
-        </div>
-        <div className="flex justify-around items-center gap-2 mt-6">
-          <button
-            type="button"
-            className="bg-gray-500 text-white px-4 py-2 rounded-md"
-            onClick={onCancel}
-          >
-            돌아가기
-          </button>
-        </div>
+      </div>
+      <div className="flex w-full justify-around items-center gap-2 pb-24">
+        <button
+          type="button"
+          className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+          onClick={handlePublishToX}
+        >
+          <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+          onClick={handleCopyText}
+        >
+          텍스트 복사
+        </button>
+      </div>
+      <div className="flex w-full justify-around items-center gap-2 pb-24">
+        <button
+          type="button"
+          className="bg-gray-500 text-white px-4 py-2 rounded-md"
+          onClick={onCancel}
+        >
+          돌아가기
+        </button>
       </div>
     </form>
   );
-};
+}
 
 export default PromoForm;

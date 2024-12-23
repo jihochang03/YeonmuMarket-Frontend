@@ -12,25 +12,31 @@ const JoinChatRoom = () => {
 
   const handleJoinChat = async () => {
     try {
+      console.log("Attempting to join chat with ticket_id:", ticket_id);
       const response = await joinConversation(ticket_id);
-      if (response.redirect_url) {
-        // Redirect to the provided URL
-        window.location.href = response.redirect_url;
-        return;
-      }
-      const ticket_Id = response.ticket_id;
-      navigate(`/chat/${ticket_Id}`);
+      console.log("Response from joinConversation:", response);
+
+      console.log("Navigating to chat room with ticket_Id:", ticket_id);
+      window.location.href = response.redirect_url;
     } catch (error) {
-      console.error(`Error joining conversation:`, error);
+      console.error("Error joining conversation:", error);
 
       if (error.response && error.response.status === 401) {
-        // 인증되지 않은 경우 로그인 페이지로 리다이렉트
+        console.warn("Unauthorized access detected. Redirecting to login.");
+
         // Redux 상태 초기화
         dispatch(logout());
-        // 로그인 페이지로 리다이렉트하면서 redirect 파라미터 전달
-        navigate(`/?redirect=/chat/${ticket_id}/join`);
+
+        // 리다이렉트 경로 생성
+        const redirectPath = `/?redirect=/chat/join/${ticket_id}`;
+        console.log("Redirecting to login with redirectPath:", redirectPath);
+
+        // 로그인 페이지로 이동
+        navigate(redirectPath);
       } else {
-        // 다른 에러의 경우 에러 메시지 표시 및 이전 페이지로 이동
+        console.error(
+          "Unhandled error occurred. Navigating back to previous page."
+        );
         alert(error.response?.data?.detail || "An error occurred.");
         navigate(-1);
       }
@@ -38,9 +44,9 @@ const JoinChatRoom = () => {
   };
 
   useEffect(() => {
-    // Show the join button instead of automatically joining
+    console.log("JoinChatRoom mounted with ticket_id:", ticket_id);
     setShowJoinButton(true);
-  }, []);
+  }, [ticket_id]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">

@@ -62,6 +62,23 @@ export const kakaoSignIn = async (data) => {
   }
 };
 
+export const csrfSignIn = async (data) => {
+  try {
+    // GET 요청으로 카카오 인증 코드를 백 엔드로 전달
+    const response = await instanceWithToken.post(
+      "/user/csrf/",
+      { withCredentials: true } // 쿠키 포함을 위한 설정
+    );
+    if (response.status === 200) {
+      console.log(response.data);
+      return response;
+    }
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 // 티켓 생성 API 호출 함수
 export const createTicket = async (formData, dispatch) => {
   try {
@@ -330,13 +347,19 @@ export const seatImageUpload = async (formData) => {
 };
 
 export const postTweet = async (tweetContent) => {
+  console.log("Request body to backend:", { tweetContent });
   try {
-    const response = await instanceWithToken.post("/tickets/post-tweet/", {
-      tweetContent,
-    });
-    return response.data;
+    const response = await instanceWithToken.post(
+      "/tickets/post-tweet/",
+      qs.stringify({ tweetContent }) // URL-encoded 형태로 변환
+    );
+    console.log("Tweet successfully posted:", response.data);
+    return response.data; // Return the response data
   } catch (error) {
-    console.error("Error posting tweet:", error);
+    console.error(
+      "Error posting tweet:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
