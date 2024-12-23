@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 export const TicketForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [performanceName, setPerformanceName] = useState(null);
   const [reservImage, setReservImage] = useState(null);
   const [seatImage, setSeatImage] = useState(null);
@@ -29,7 +30,6 @@ export const TicketForm = () => {
   const [selectedAmPm, setSelectedAmPm] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
-  const [ticketNumber, setTicketNumber] = useState(false);
   const [seatInfo, setSeatInfo] = useState(false);
   const [castingInfo, setCastingInfo] = useState(false);
   const [price, setPrice] = useState(false);
@@ -37,6 +37,8 @@ export const TicketForm = () => {
   const [lastFourDigits, setLastFourDigits] = useState("");
   const [isPromoViewVisible, setIsPromoViewVisible] = useState(false);
   const [maskedSeatImageUrl, setMaskedSeatImageUrl] = useState(null);
+  const [reservationStatus, setReservationStatus] = useState(null); // 예매 상태
+  const [place, setPlace] = useState(null);
 
   const site = [
     { value: "인터파크", label: "인터파크" },
@@ -78,13 +80,14 @@ export const TicketForm = () => {
       setSelectedHour(savedData.selectedHour || null);
       setSelectedMin(savedData.selectedMin || null);
       setSelectedAmPm(savedData.selectedAmPm || null);
-      setTicketNumber(savedData.ticketNumber || "");
       setSeatInfo(savedData.seatInfo || "");
       setCastingInfo(savedData.castingInfo || "");
       setPrice(savedData.price || "");
       setDiscountInfo(savedData.discountInfo || "");
       setTermsAccepted(savedData.termsAccepted || false);
       setShowAdditionalFields(savedData.showAdditionalFields || false);
+      setReservationStatus(savedData.reservationStatus || false);
+      setPlace(savedData.place || false);
     }
   }, []);
 
@@ -103,7 +106,6 @@ export const TicketForm = () => {
       selectedHour,
       selectedMin,
       selectedAmPm,
-      ticketNumber,
       seatInfo,
       castingInfo,
       price,
@@ -111,6 +113,8 @@ export const TicketForm = () => {
       termsAccepted,
       showAdditionalFields,
       lastFourDigits,
+      place,
+      reservationStatus,
     };
 
     localStorage.setItem("ticketFormData", JSON.stringify(formData)); // Ensure it's saved
@@ -138,8 +142,10 @@ export const TicketForm = () => {
   };
 
   const handleUploadComplete = async () => {
+    setLoading(true);
     if (!reservFile || !seatFile) {
       alert("예매내역서와 좌석 사진을 모두 업로드해주세요.");
+      setLoading(false);
       return;
     }
 
@@ -148,15 +154,14 @@ export const TicketForm = () => {
     formData.append("keyword", selectedSite ? selectedSite.value : "");
     formData.append("reservImage", reservFile);
     formData.append("seatImage", seatFile);
-    formData.append("booking_page", selectedSite ? selectedSite.value : "");
+    //formData.append("booking_page", selectedSite ? selectedSite.value : "");
 
     try {
       const responseData = await processImageUpload(formData); // Call the API function
       console.log("Response Data:", responseData);
 
       // Handle response data...
-      const { 관람년도, 관람월, 관람일, 관람시간 } =
-        responseData.date_info || {};
+      const { 관람년도, 관람월, 관람일, 시간 } = responseData.date_info || {};
 
       let selectedDate = null;
       let selectedHour = null;
@@ -167,10 +172,25 @@ export const TicketForm = () => {
         selectedDate = new Date(`${관람년도}-${관람월}-${관람일}`);
       }
 
-      if (관람시간) {
-        selectedHour = 관람시간.시 || null;
-        selectedMin = 관람시간.분 || null;
-        selectedAmPm = 관람시간.시 >= 12 ? "PM" : "AM";
+      if (시간) {
+        const [hourStr, minuteStr] = 시간.split(":");
+        const hourNum = parseInt(hourStr, 10); // 예: 19
+        const minuteNum = parseInt(minuteStr, 10); // 예: 30
+
+        // AM/PM 결정
+        selectedAmPm = hourNum >= 12 ? "PM" : "AM";
+
+        // 12시간제로 변환 (13시→1시, 19시→7시, 0시→12시)
+        let twelveHour = hourNum % 12;
+        if (twelveHour === 0) {
+          twelveHour = 12;
+        }
+
+        // 분(10분 단위) → 30분이면 3
+        const tenMinute = Math.floor(minuteNum / 10);
+
+        selectedHour = twelveHour; // 예: 7
+        selectedMin = tenMinute; // 예: 3
       }
 
       setPerformanceName(performanceName || "");
@@ -180,51 +200,76 @@ export const TicketForm = () => {
       setSelectedMin(selectedMin);
       setSelectedAmPm(selectedAmPm);
       setSelectedSite(selectedSite);
-      setTicketNumber(responseData.ticket_number || "");
       setSeatInfo(responseData.seat_number || "");
       setCastingInfo(responseData.cast_info || "");
       setPrice(responseData.total_amount || "");
       setDiscountInfo(responseData.price_grade || "");
       setShowAdditionalFields(true);
+      setPlace(responseData.place || "");
+      setReservationStatus(responseData.reservation_status || "");
     } catch (error) {
       console.error("Error uploading files:", error);
       alert("파일 업로드에 실패했습니다.");
+    } finally {
+      // ---------------------
+      // 추가: 로딩 종료
+      // ---------------------
+      setLoading(false);
     }
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (!termsAccepted) {
       alert("약관에 동의해야 등록을 완료할 수 있습니다.");
+      setLoading(false);
       return;
     }
     try {
       // Input validation
       if (!performanceName || performanceName.toString().trim() === "") {
         alert("공연 이름을 입력해주세요.");
+        setLoading(false);
         return;
       }
       if (!selectedDate) {
         alert("날짜를 선택해주세요.");
+        setLoading(false);
         return;
       }
       if (!seatInfo || seatInfo.toString().trim() === "") {
         alert("좌석 정보를 입력해주세요.");
+        setLoading(false);
         return;
       }
       if (!price || isNaN(price.replace(/,/g, ""))) {
         alert("가격을 입력해주세요. '원' 단위는 제외해주세요 (예: 172000).");
+        setLoading(false);
         return;
       }
       if (!castingInfo || castingInfo.toString().trim() === "") {
         alert("캐스팅 정보를 입력해주세요.");
+        setLoading(false);
         return;
       }
       if (!reservFile) {
         alert("예매내역서를 첨부해주세요.");
+        setLoading(false);
         return;
       }
       if (!seatFile) {
         alert("좌석 사진을 첨부해주세요.");
+        setLoading(false);
+        return;
+      }
+      if (!reservationStatus) {
+        alert("예매 상태를 입력해주세요.");
+        setLoading(false);
+        return;
+      }
+      if (!place) {
+        alert("공연 장소를 입력해주세요.");
+        setLoading(false);
         return;
       }
       if (
@@ -232,6 +277,7 @@ export const TicketForm = () => {
         lastFourDigits.length !== 4 ||
         isNaN(lastFourDigits)
       ) {
+        setLoading(false);
         alert("전화번호 마지막 4자리를 올바르게 입력해주세요.");
         return;
       }
@@ -252,7 +298,8 @@ export const TicketForm = () => {
       formData.append("reservImage", reservFile);
       formData.append("seatImage", seatFile);
       formData.append("phone_last_digits", lastFourDigits);
-      formData.append("keyword", selectedSite ? selectedSite.value : ""); // Default to empty string
+      formData.append("place", place);
+      formData.append("reservationStatus", reservationStatus);
 
       // Submit formData
       const response = await createTicket(formData, dispatch);
@@ -261,12 +308,15 @@ export const TicketForm = () => {
 
       // Display success message
       alert("티켓 등록이 완료되었습니다.");
+      setLoading(false);
 
       // Clear local storage and reset form
       localStorage.removeItem("ticketFormData");
-      const ticketId = response.ticket_id;
+      const ticketId = response.ticket.id;
       navigate(`/main/new/${ticketId}`);
-      setMaskedSeatImageUrl(response.masked_seat_image_url || null); // Handle response URL gracefully
+      setMaskedSeatImageUrl(
+        response.ticket.uploaded_processed_seat_image_url || null
+      ); // Handle response URL gracefully
       setIsPromoViewVisible(true);
     } catch (error) {
       console.error("Error submitting the form:", error);
@@ -305,14 +355,14 @@ export const TicketForm = () => {
             ).padStart(2, "0")}`
           : "시간 정보 없음";
       const ticketUrl = ticketId
-        ? `http://localhost:5173/chat/join/${ticketId}`
+        ? `https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}`
         : "URL 없음";
 
-      return `${performanceName || "공연 이름 없음"} 양도 \n${formattedDate} ${
-        selectedAmPm || ""
-      } ${formattedTime}\n캐스팅: ${castingInfo || "캐스팅 정보 없음"}\n가격: ${
-        price || "가격 정보 없음"
-      }\n좌석 정보: ${
+      return `${performanceName || "공연 이름 없음"} 양도 \n${
+        place || "공연 장소 없음"
+      } \n${formattedDate} ${selectedAmPm || ""} ${formattedTime}\n캐스팅: ${
+        castingInfo || "캐스팅 정보 없음"
+      }\n가격: ${price || "가격 정보 없음"}\n좌석 정보: ${
         seatInfo || "좌석 정보 없음"
       }\n<연뮤마켓> 통해서 안전 거래\n${ticketUrl}`;
     })();
@@ -341,7 +391,7 @@ export const TicketForm = () => {
       return;
     }
 
-    const ticketUrl = `http://localhost:5173/chat/join/${ticketId}`;
+    const ticketUrl = `https://yeonmumarket-frontend.fly.dev/chat/join/${ticketId}`;
     navigator.clipboard
       .writeText(ticketUrl)
       .then(() => {
@@ -393,6 +443,12 @@ export const TicketForm = () => {
 
   return (
     <div className="max-w-lg p-1 mx-5 mt-4">
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+          {/* 간단한 Tailwind 스피너 예시 */}
+          <div className="w-12 h-12 border-4 border-white border-t-transparent border-t-4 rounded-full animate-spin"></div>
+        </div>
+      )}
       {!isPromoViewVisible ? (
         <form className="flex flex-col border-2 border-gray-300 rounded-md w-full p-4 overflow-y-auto max-h-main-menu-height">
           <h1>양도글 작성</h1>
@@ -519,12 +575,19 @@ export const TicketForm = () => {
                   className="flex-1"
                 />
               </div>
-
-              <label className="block mb-2 font-bold">예매번호</label>
+              <label className="block mb-2 font-bold">예매상태</label>
               <input
                 type="text"
-                value={ticketNumber}
-                onChange={(e) => setTicketNumber(e.target.value)}
+                value={reservationStatus}
+                onChange={(e) => setReservationStatus(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">장소</label>
+              <input
+                type="text"
+                value={place}
+                onChange={(e) => setPlace(e.target.value)}
                 placeholder="Value"
                 className="border p-2 mb-4 rounded-md"
               />
@@ -639,28 +702,29 @@ export const TicketForm = () => {
                 className="border p-2 mb-4 rounded-md w-full h-160"
                 style={{ resize: "none", overflowY: "hidden" }}
                 defaultValue={(() => {
-                  let formattedDate = selectedDate
+                  const formattedDate = selectedDate
                     ? `${selectedDate.getFullYear()}.${String(
                         selectedDate.getMonth() + 1
                       ).padStart(2, "0")}.${String(
                         selectedDate.getDate()
                       ).padStart(2, "0")}`
                     : "날짜 정보 없음";
-                  let formattedTime =
+
+                  const formattedTime =
                     selectedHour !== null && selectedMin !== null
                       ? `${String(selectedHour).padStart(2, "0")}:${String(
                           selectedMin
                         ).padStart(2, "0")}`
                       : "시간 정보 없음";
-                  return `${
-                    performanceName || "공연 이름 없음"
-                  } 양도 \n${formattedDate} ${
-                    selectedAmPm || ""
-                  } ${formattedTime}\n캐스팅: ${
-                    castingInfo || "캐스팅 정보 없음"
-                  }\n가격: ${price || "가격 정보 없음"}\n좌석 정보: ${
-                    seatInfo || "좌석 정보 없음"
-                  }\n<연뮤마켓> 통해서 안전 거래`;
+
+                  const text = `${performanceName || "공연 이름 없음"} 양도
+${formattedDate} ${selectedAmPm || ""} ${formattedTime}
+캐스팅: ${castingInfo || "캐스팅 정보 없음"}
+가격: ${price || "가격 정보 없음"}
+좌석 정보: ${seatInfo || "좌석 정보 없음"}
+<연뮤마켓> 통해서 안전 거래`;
+
+                  return text.trim(); // 앞뒤 공백 제거
                 })()}
               />
               <div className="flex w-full justify-around items-center gap-2 pb-24">

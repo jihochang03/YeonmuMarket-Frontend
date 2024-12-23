@@ -16,10 +16,17 @@ const EditTicketForm = ({ ticket, onCancel, onSave }) => {
     phone_last_digits: ticket.phone_last_digits || "",
   });
 
-  const [previewReceipt, setPreviewReceipt] = useState(ticket.uploaded_file);
-  const [previewSeatImage, setPreviewSeatImage] = useState(
-    ticket.uploaded_seat_image
-  );
+  const fixRegionInUrl = (url) => {
+    if (!url) return null;
+    const regex = /s3\.ap-northeast-2\.amazonaws\.com/;
+    return url.replace(regex, "s3.ap-southeast-2.amazonaws.com");
+  };
+
+  const fixedReceiptUrl = fixRegionInUrl(ticket.uploaded_file_url);
+  const fixedSeatImageUrl = fixRegionInUrl(ticket.uploaded_seat_image_url);
+
+  const [previewReceipt, setPreviewReceipt] = useState(fixedReceiptUrl);
+  const [previewSeatImage, setPreviewSeatImage] = useState(fixedSeatImageUrl);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,6 +73,43 @@ const EditTicketForm = ({ ticket, onCancel, onSave }) => {
   return (
     <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
       <h1>양도글 수정하기</h1>
+
+      <div className="mb-4">
+        <label className="block mb-2 font-bold">예매내역서</label>
+        <input
+          type="file"
+          onChange={(e) => handleFileChange(e, "uploaded_file")}
+          className="mb-2"
+        />
+        {previewReceipt ? (
+          <img
+            src={previewReceipt}
+            alt="예매내역서"
+            className="max-h-[230px] max-w-[230px] mb-4"
+          />
+        ) : (
+          <span className="mb-4">이미지가 없습니다.</span>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label className="block mb-2 font-bold">좌석 사진</label>
+        <input
+          type="file"
+          onChange={(e) => handleFileChange(e, "uploaded_seat_image")}
+          className="mb-2"
+        />
+        {previewSeatImage ? (
+          <img
+            src={previewSeatImage}
+            alt="좌석 사진"
+            className="max-h-[230px] max-w-[230px] mb-4"
+          />
+        ) : (
+          <span className="mb-4">이미지가 없습니다.</span>
+        )}
+      </div>
+
       <label className="block my-2 font-bold">공연 이름</label>
       <input
         type="text"
@@ -74,38 +118,6 @@ const EditTicketForm = ({ ticket, onCancel, onSave }) => {
         onChange={handleChange}
         className="border p-2 mb-4 rounded-md"
       />
-
-      <label className="block mb-2 font-bold">예매내역서</label>
-      <input
-        type="file"
-        onChange={(e) => handleFileChange(e, "uploaded_file")}
-        className="mb-2"
-      />
-      {previewReceipt ? (
-        <img
-          src={previewReceipt}
-          alt="예매내역서"
-          className="max-h-[230px] max-w-[230px] mb-4"
-        />
-      ) : (
-        <span className="mb-4">이미지가 없습니다.</span>
-      )}
-
-      <label className="block mb-2 font-bold">좌석 사진</label>
-      <input
-        type="file"
-        onChange={(e) => handleFileChange(e, "uploaded_seat_image")}
-        className="mb-2"
-      />
-      {previewSeatImage ? (
-        <img
-          src={previewSeatImage}
-          alt="좌석 사진"
-          className="max-h-[230px] max-w-[230px] mb-4"
-        />
-      ) : (
-        <span className="mb-4">이미지가 없습니다.</span>
-      )}
 
       <label className="block mb-2 font-bold">공연 날짜</label>
       <input

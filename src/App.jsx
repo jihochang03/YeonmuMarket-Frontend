@@ -16,6 +16,7 @@ import ChatRoom from "./routes/main/components/chat-room/chat-room.jsx";
 import ProtectedRoute from "./components/protectroute.jsx"; // ProtectedRoute 임포트
 import FetchCSRFToken from "./components/fetchcsrftoken.jsx"; // FetchCSRFToken 컴포넌트 임포트
 import AccountEditPage from "./routes/account-auth/pages/account-edit-page.jsx";
+
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
 
