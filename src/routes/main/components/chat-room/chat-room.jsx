@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Modal from "../../../../components/modal";
 import { MainIndex } from "../../../../components/main-index";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   chatTickets,
   confirmTransferIntent,
@@ -213,13 +213,21 @@ const ChatRoom = () => {
   return (
     <div className="min-h-main-height">
       <MainIndex />
+
       {/* 메인 컨테이너: 테두리와 여백 */}
       <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
         {/* 상단: 타이틀 */}
-        <div className="p-4 text-center border-b border-gray-300">
-          <h1 className="text-xl font-semibold">
+        <div className="p-4 flex items-center justify-between border-b border-gray-300 relative">
+          <h1 className="text-xl font-semibold text-center flex-1">
             {conversationData?.title} 거래방
           </h1>
+          <Link
+            to="/main/sold"
+            className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl"
+            title="돌아가기"
+          >
+            ×
+          </Link>
         </div>
 
         {/* 중간: 스크롤 영역 (메시지, 티켓 정보, 버튼 등) */}

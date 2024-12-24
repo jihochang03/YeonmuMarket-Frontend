@@ -3,6 +3,7 @@ import {
   fetchTransferredTickets,
   updateTicketPost,
   deleteTicketPost,
+  downloadImage,
 } from "../../../../apis/api"; // 백엔드 API 함수 호출
 import Modal from "../../../../components/modal";
 import EditTicketForm from "./edit-tickets";
@@ -101,26 +102,27 @@ export const SoldTickets = () => {
     ? fixRegionInUrl(selectedTicket.uploaded_file_url)
     : null;
 
-  const handleDownloadSeatImage = () => {
-    if (!fixedSeatImageUrl) return;
-    const link = document.createElement("a");
-    link.href = fixedSeatImageUrl;
-    link.download = "좌석사진.jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadSeatImage = async () => {
+    if (!selectedTicket.uploaded_seat_image_url) return;
+
+    try {
+      await downloadImage(selectedTicket.uploaded_seat_image_url);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
   };
 
-  const handleDownloadFileImage = () => {
-    if (!fixedFileImageUrl) return;
-    const link = document.createElement("a");
-    link.href = fixedFileImageUrl;
-    link.download = "예매내역서.jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  const handleDownloadFileImage = async () => {
+    if (!selectedTicket.uploaded_file_url) return;
 
+    try {
+      await downloadImage(selectedTicket.uploaded_file_url);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
+  };
   // 수정하기
   const handleEdit = () => {
     setIsEditMode(true);
@@ -185,7 +187,16 @@ export const SoldTickets = () => {
               className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
               onSubmit={(e) => e.preventDefault()}
             >
-              <h1>작성한 양도글</h1>
+              <div className="flex items-center justify-between mb-4">
+                <h1>작성한 양도글</h1>
+                <button
+                  type="button"
+                  className="text-gray-500 text-xl hover:text-black"
+                  onClick={handleBack}
+                >
+                  ×
+                </button>
+              </div>
               <div
                 className={`status-label status-${selectedTicket.status} mt-3`}
               >
@@ -288,17 +299,6 @@ export const SoldTickets = () => {
                     </button>
                   </>
                 )}
-              </div>
-
-              {/* 돌아가기 버튼 */}
-              <div className="w-full flex items-center justify-center gap-10 mt-4">
-                <button
-                  type="button"
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md"
-                  onClick={handleBack}
-                >
-                  돌아가기
-                </button>
               </div>
             </form>
           )}
