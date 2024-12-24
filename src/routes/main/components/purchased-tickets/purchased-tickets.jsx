@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchPurchasedTickets } from "../../../../apis/api";
+import { fetchPurchasedTickets, downloadImage } from "../../../../apis/api";
 import { useNavigate } from "react-router-dom";
 
 const statusMapping = {
@@ -67,24 +67,26 @@ export const PurchasedTickets = () => {
     ? fixRegionInUrl(selectedTicket.uploaded_file_url)
     : null;
 
-  const handleDownloadSeatImage = () => {
-    if (!fixedSeatImageUrl) return;
-    const link = document.createElement("a");
-    link.href = fixedSeatImageUrl;
-    link.download = "좌석사진.jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadSeatImage = async () => {
+    if (!selectedTicket.uploaded_seat_image_url) return;
+
+    try {
+      await downloadImage(selectedTicket.uploaded_seat_image_url);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
   };
 
-  const handleDownloadFileImage = () => {
-    if (!fixedFileImageUrl) return;
-    const link = document.createElement("a");
-    link.href = fixedFileImageUrl;
-    link.download = "좌석사진.jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadFileImage = async () => {
+    if (!selectedTicket.uploaded_file_url) return;
+
+    try {
+      await downloadImage(selectedTicket.uploaded_file_url);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
   };
 
   return (

@@ -3,6 +3,7 @@ import { getCookie } from "../utils/cookie";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setTicketId } from "../redux/ticketSlice"; // 액션 임포트
+import qs from "qs";
 
 // // Axios 인스턴스 정의
 
@@ -222,6 +223,45 @@ export const confirmTransferIntent = async (conversationId) => {
   }
 };
 
+export const downloadImage = async (fileKey) => {
+  try {
+    // 앞부분 제거하여 S3 파일 키 추출
+    console.log(typeof fileKey);
+    const bucketBaseUrl =
+      "https://yeonmubucket.s3.ap-northeast-2.amazonaws.com/";
+    const ReplacedfileKey = fileKey.replace(bucketBaseUrl, "");
+    console.log("fileKey:", fileKey);
+    console.log("bucketBaseUrl:", bucketBaseUrl);
+    console.log("Does it match?", fileKey.startsWith(bucketBaseUrl));
+
+    if (!ReplacedfileKey) {
+      console.error("Invalid masked URL provided.");
+      throw new Error("Invalid masked URL provided.");
+    }
+
+    const response = await instanceWithToken.get(
+      `/tickets/download/${ReplacedfileKey}/`,
+      {
+        responseType: "blob", // Blob 형식으로 응답받기
+      }
+    );
+
+    // Blob을 사용해 다운로드 트리거
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", fileKey.split("/").pop()); // 파일 이름 설정
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    return "Download successful";
+  } catch (error) {
+    console.error("Error downloading image:", error);
+    throw error;
+  }
+};
+
 // 입금 완료 처리 함수
 export const markPaymentCompleted = async (conversationId) => {
   try {
@@ -351,7 +391,12 @@ export const postTweet = async (tweetContent) => {
   try {
     const response = await instanceWithToken.post(
       "/tickets/post-tweet/",
-      qs.stringify({ tweetContent }) // URL-encoded 형태로 변환
+      { tweetContent }, // JSON 데이터
+      {
+        headers: {
+          "Content-Type": "application/json", // JSON 형식으로 전송
+        },
+      }
     );
     console.log("Tweet successfully posted:", response.data);
     return response.data; // Return the response data
@@ -363,6 +408,7 @@ export const postTweet = async (tweetContent) => {
     throw error;
   }
 };
+
 export const leaveChatRoom = async (ticket_id) => {
   const response = await instanceWithToken.post(
     `/conversations/${ticket_id}/leave/`

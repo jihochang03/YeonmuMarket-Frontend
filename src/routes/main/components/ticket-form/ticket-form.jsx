@@ -8,6 +8,7 @@ import {
   createTicket,
   processImageUpload,
   postTweet,
+  downloadImage,
 } from "../../../../apis/api";
 import XIcon from "../../../../assets/xlogo.png";
 import UrlIcon from "../../../../assets/url.png";
@@ -403,41 +404,11 @@ export const TicketForm = () => {
       });
   };
   const handleDownloadMaskedSeatImage = async () => {
-    console.log(
-      "Masked Seat Image URL before modification:",
-      maskedSeatImageUrl
-    );
-
-    if (maskedSeatImageUrl) {
-      // Modify the URL to ensure correct extension
-
-      try {
-        // Fetch the image as a blob
-        const response = await fetch(maskedSeatImageUrl);
-        if (!response.ok) throw new Error("Failed to fetch image");
-
-        const blob = await response.blob();
-
-        // Create a blob URL for the file
-        const blobUrl = window.URL.createObjectURL(blob);
-
-        // Trigger download
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = "masked_seat_image.jpg";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Revoke the blob URL to free memory
-        window.URL.revokeObjectURL(blobUrl);
-
-        console.log("Download completed.");
-      } catch (error) {
-        console.error("Error downloading image:", error);
-      }
-    } else {
-      console.error("No masked seat image URL provided.");
+    try {
+      await downloadImage(maskedSeatImageUrl);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
     }
   };
 
@@ -728,13 +699,13 @@ ${formattedDate} ${selectedAmPm || ""} ${formattedTime}
                 })()}
               />
               <div className="flex w-full justify-around items-center gap-2 pb-24">
-                <button
+                {/* <button
                   type="button"
                   className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
                   onClick={handlePublishToX}
                 >
                   <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
-                </button>
+                </button> */}
                 <button
                   type="button"
                   className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"

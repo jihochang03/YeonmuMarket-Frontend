@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import XIcon from "../../../../assets/xlogo.png";
-import { postTweet, getTwitterAuthUrl } from "../../../../apis/api";
+import { postTweet, downloadImage } from "../../../../apis/api";
 
 function PromoForm({ ticket, onSave, onCancel }) {
   // ticket 객체에서 공연명 등 필요한 기본값을 미리 세팅
@@ -17,14 +17,15 @@ function PromoForm({ ticket, onSave, onCancel }) {
     ticket.uploaded_processed_seat_image_url
   );
 
-  const handleDownloadSeatImage = () => {
-    if (!fixedSeatImageUrl) return;
-    const link = document.createElement("a");
-    link.href = fixedSeatImageUrl;
-    link.download = "좌석사진.jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadSeatImage = async () => {
+    if (!ticket.uploaded_processed_seat_image_url) return;
+
+    try {
+      await downloadImage(selectedTicket.uploaded_seat_image_url);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -118,8 +119,16 @@ function PromoForm({ ticket, onSave, onCancel }) {
       onSubmit={handleSubmit}
       className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
     >
-      <h2 className="font-bold text-xl mb-4">홍보글 생성</h2>
-      {/* 좌석 사진 이미지 */}
+      <div className="flex items-center justify-between">
+        <h2 className="font-bold text-xl mb-4">홍보글 생성</h2>
+        <button
+          type="button"
+          className="text-gray-500 text-xl hover:text-black"
+          onClick={onCancel}
+        >
+          ×
+        </button>
+      </div>
       <div className="mb-4">
         <label className="block font-semibold mb-2">좌석 사진</label>
         {fixedSeatImageUrl ? (
@@ -165,28 +174,19 @@ function PromoForm({ ticket, onSave, onCancel }) {
         />
       </div>
       <div className="flex w-full justify-around items-center gap-2 pb-24">
-        <button
+        {/* <button
           type="button"
           className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
           onClick={handlePublishToX}
         >
           <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
-        </button>
+        </button> */}
         <button
           type="button"
           className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
           onClick={handleCopyText}
         >
           텍스트 복사
-        </button>
-      </div>
-      <div className="flex w-full justify-around items-center gap-2 pb-24">
-        <button
-          type="button"
-          className="bg-gray-500 text-white px-4 py-2 rounded-md"
-          onClick={onCancel}
-        >
-          돌아가기
         </button>
       </div>
     </form>
