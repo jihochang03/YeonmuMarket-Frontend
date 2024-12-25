@@ -91,7 +91,7 @@ const ChatRoom = () => {
     // 10초마다 조용히 재갱신
     refreshIntervalRef.current = setInterval(() => {
       fetchConversationData(true);
-    }, 10000);
+    }, 60000);
 
     // 언마운트 시 interval 제거
     return () => {
