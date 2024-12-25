@@ -55,3 +55,34 @@ npm start
 cd ../backend
 pip install -r requirements.txt
 python manage.py runserver
+
+## 💻 기술 스택 (Tech Stack)
+- **프론트엔드**: React (React Router, Axios)
+- **백엔드**: Django REST Framework
+- **데이터베이스**: PostgreSQL
+- **기타 도구**: Docker, Selenium (자동화 프로그램)
+
+---
+
+## 🏗️ 구조 및 설계 (Architecture & Structure)
+
+### 디렉토리 구조
+```plaintext
+project/
+├── frontend/     # React 코드
+├── backend/      # Django 코드
+├── media/        # 업로드된 파일 저장
+├── README.md     # 프로젝트 설명 파일
+## 시스템 아키텍처 (Architecture)
+
+React와 Django REST Framework를 사용하여 프론트엔드와 백엔드를 분리한 구조입니다.  
+Docker를 활용해 개발 및 배포 환경을 통합하며, PostgreSQL 데이터베이스를 사용하여 강력한 데이터 처리 기능을 제공합니다.
+
+---
+
+## 🤝 기여 가이드 (Contribution Guide)
+
+1. 이 프로젝트를 포크(Fork)합니다.
+2. 새로운 브랜치를 생성합니다:
+   ```bash
+   git checkout -b feature/my-feature
