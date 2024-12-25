@@ -15,8 +15,8 @@
 ---
 
 ## 🎥 데모 및 스크린샷 (Demo & Screenshots)
-- **[양도글 작성 데모링크](https://www.youtube.com/watch?v=tJMxwJh0zEk)
-- **[트위터 업로드, 양수자 입장 데모링크](https://www.youtube.com/watch?v=tJMxwJh0zEk)
+- **[양도글 작성 데모링크] (https://youtube.com/shorts/5oPlUcXqPPM?si=rt8FjYRfYFzxKpZI)
+- **[트위터 업로드, 양수자 입장](https://youtube.com/shorts/nXQuASiIb5E?si=nTfBpq9vfwRz1XpK)
 - **[대화방 데모링크](https://www.youtube.com/watch?v=tJMxwJh0zEk)
 - 주요 화면 스크린샷:
 
