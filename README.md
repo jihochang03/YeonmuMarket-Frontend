@@ -15,8 +15,9 @@
 ---
 
 ## 🎥 데모 및 스크린샷 (Demo & Screenshots)
-
-- **[데모 링크](#)** (예시)
+- **[양도글 작성](https://www.youtube.com/watch?v=tJMxwJh0zEk)
+- **[트위터 업로드, 양수자 입장](https://www.youtube.com/watch?v=tJMxwJh0zEk)
+- **[대화방](https://www.youtube.com/watch?v=tJMxwJh0zEk)
 - 주요 화면 스크린샷:
 
 | **양도 목록 화면**               | **양도글 작성 화면**          | **홍보글 생성 화면**         |
