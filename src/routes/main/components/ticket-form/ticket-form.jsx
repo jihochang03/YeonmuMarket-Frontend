@@ -37,9 +37,12 @@ export const TicketForm = () => {
   const [discountInfo, setDiscountInfo] = useState(false);
   const [lastFourDigits, setLastFourDigits] = useState("");
   const [isPromoViewVisible, setIsPromoViewVisible] = useState(false);
-  const [maskedSeatImageUrl, setMaskedSeatImageUrl] = useState(null);
   const [reservationStatus, setReservationStatus] = useState(null); // 예매 상태
   const [place, setPlace] = useState(null);
+  const [maskedReservImage, setMaskedReservImage] = useState(null);
+  const [maskedSeatImage, setMaskedSeatImage] = useState(null);
+  const [maskedReservFile, setMaskedReservFile] = useState(null); // Server-side file
+  const [maskedSeatFile, setMaskedSeatFile] = useState(null); // Server-side file
 
   const site = [
     { value: "인터파크", label: "인터파크" },
@@ -70,6 +73,12 @@ export const TicketForm = () => {
       }
       if (savedData.seatImage) {
         setSeatImage(savedData.seatImage);
+      }
+      if (savedData.maskedReservImage) {
+        setMaskedReservImage(savedData.maskedReservImage);
+      }
+      if (savedData.maskedSeatImage) {
+        setMaskedSeatImage(savedData.maskedSeatImage);
       }
 
       setPerformanceName(savedData.performanceName || "");
@@ -116,6 +125,8 @@ export const TicketForm = () => {
       lastFourDigits,
       place,
       reservationStatus,
+      maskedReservImage,
+      maskedSeatImage,
     };
 
     localStorage.setItem("ticketFormData", JSON.stringify(formData)); // Ensure it's saved
@@ -129,12 +140,26 @@ export const TicketForm = () => {
       setReservFile(file); // For server-side upload
     }
   };
+  const handleMaskedReservUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setReservImage(URL.createObjectURL(file)); // For display
+      setReservFile(file); // For server-side upload
+    }
+  };
 
   const handleSeatUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       setSeatImage(URL.createObjectURL(file)); // For display
       setSeatFile(file); // For server-side upload
+    }
+  };
+  const handleMaskedSeatUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setMaskedSeatImage(URL.createObjectURL(file)); // For display
+      setMaskedSeatFile(file); // For server-side upload
     }
   };
 
@@ -194,6 +219,59 @@ export const TicketForm = () => {
         selectedMin = tenMinute; // 예: 3
       }
 
+      if (responseData.masked_image) {
+        const maskedReservBlob = base64ToBlob(
+          responseData.masked_image,
+          "image/jpeg"
+        );
+        console.log("MaskedReservBlob:", maskedReservBlob); // Blob 확인
+
+        const reservObjectURL = URL.createObjectURL(maskedReservBlob);
+        console.log("ReservObjectURL:", reservObjectURL); // Blob URL 확인
+
+        // Blob → File 변환
+        const maskedReservFile = new File(
+          [maskedReservBlob],
+          "masked_reserv_image.jpg",
+          {
+            type: "image/jpeg",
+          }
+        );
+        console.log(
+          "MaskedReservFile (converted from Blob):",
+          maskedReservFile
+        ); // File 확인
+
+        // Blob URL 및 File 객체 저장
+        setMaskedReservImage(reservObjectURL); // Blob URL로 미리보기 표시
+        setMaskedReservFile(maskedReservFile); // File 객체로 저장 (나중에 서버에 전송 가능)
+      }
+
+      if (responseData.masked_seat_image) {
+        const maskedSeatBlob = base64ToBlob(
+          responseData.masked_seat_image,
+          "image/jpeg"
+        );
+        console.log("MaskedSeatBlob:", maskedSeatBlob); // Blob 확인
+
+        const seatObjectURL = URL.createObjectURL(maskedSeatBlob);
+        console.log("SeatObjectURL:", seatObjectURL); // Blob URL 확인
+
+        // Blob → File 변환
+        const maskedSeatFile = new File(
+          [maskedSeatBlob],
+          "masked_seat_image.jpg",
+          {
+            type: "image/jpeg",
+          }
+        );
+        console.log("MaskedSeatFile (converted from Blob):", maskedSeatFile); // File 확인
+
+        // Blob URL 및 File 객체 저장
+        setMaskedSeatImage(seatObjectURL); // Blob URL로 미리보기 표시
+        setMaskedSeatFile(maskedSeatFile); // File 객체로 저장 (나중에 서버에 전송 가능)
+      }
+
       setPerformanceName(performanceName || "");
       setLastFourDigits(responseData.lastFourDigits || "");
       setSelectedDate(selectedDate);
@@ -217,6 +295,22 @@ export const TicketForm = () => {
       // ---------------------
       setLoading(false);
     }
+  };
+  // Base64 → Blob 변환 함수
+  const base64ToBlob = (base64, contentType = "", sliceSize = 512) => {
+    const byteCharacters = atob(base64.split(",")[1]); // Base64 데이터 디코딩
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      byteArrays.push(new Uint8Array(byteNumbers));
+    }
+
+    return new Blob(byteArrays, { type: contentType });
   };
 
   const handleSubmit = async () => {
@@ -301,6 +395,8 @@ export const TicketForm = () => {
       formData.append("phone_last_digits", lastFourDigits);
       formData.append("place", place);
       formData.append("reservationStatus", reservationStatus);
+      formData.append("maskedReservImage", maskedReservFile);
+      formData.append("maskedSeatImage", maskedSeatFile);
 
       // Submit formData
       const response = await createTicket(formData, dispatch);
@@ -315,10 +411,6 @@ export const TicketForm = () => {
       localStorage.removeItem("ticketFormData");
       const ticketId = response.ticket.id;
       navigate(`/main/new/${ticketId}`);
-      setMaskedSeatImageUrl(
-        response.ticket.uploaded_processed_seat_image_url || null
-      ); // Handle response URL gracefully
-      setIsPromoViewVisible(true);
     } catch (error) {
       console.error("Error submitting the form:", error);
 
@@ -503,6 +595,76 @@ export const TicketForm = () => {
 
           {showAdditionalFields && (
             <>
+              <div className="mb-4">
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-md shadow-md">
+                  <h3 className="text-gray-800 text-lg font-semibold flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-yellow-400 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                      />
+                    </svg>
+                    사진이 잘 가려졌는지 확인해주세요. 가려지지 않은 경우 직접
+                    파일을 지워서 넣어주세요.
+                  </h3>
+                </div>
+                <label className="block mb-2 font-bold">
+                  가려진 예매내역서
+                </label>
+                <div className="upload-container">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMaskedReservUpload}
+                    style={{ display: "none" }}
+                    id="upload1"
+                  />
+                  <label
+                    htmlFor="upload1"
+                    className="cursor-pointer upload-box"
+                  >
+                    {maskedReservImage && (
+                      <img
+                        src={maskedReservImage}
+                        alt="예매내역서"
+                        className="max-h-[230px] max-w-[230px] object-cover"
+                      />
+                    )}
+                  </label>
+                </div>
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2 font-bold">가려진 좌석 사진</label>
+                <div className="upload-container">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMaskedSeatUpload}
+                    style={{ display: "none" }}
+                    id="upload1"
+                  />
+                  <label
+                    htmlFor="upload1"
+                    className="cursor-pointer upload-box"
+                  >
+                    {maskedSeatImage && (
+                      <img
+                        src={maskedSeatImage}
+                        alt="예매내역서"
+                        className="max-h-[230px] max-w-[230px] object-cover"
+                      />
+                    )}
+                  </label>
+                </div>
+              </div>
               <label className="block mb-2 font-bold">공연 날짜</label>
               <DatePicker
                 selected={selectedDate}
