@@ -19,9 +19,12 @@
 - **[데모 링크](#)** (예시)
 - 주요 화면 스크린샷:
 
-| 메인 화면 | 티켓 게시 화면 | 양도/양수 내역 관리 |
+| 양도 목록 화면 | 양도글 작성 화면 | 홍보글 생성 화면 |
 |-----------|----------------|---------------------|
-| ![메인 화면](https://via.placeholder.com/300) | ![티켓 게시](https://via.placeholder.com/300) | ![양도 내역 관리](https://via.placeholder.com/300) |
+|![image](https://github.com/user-attachments/assets/174d0175-c072-49ea-9e4c-3b997d478984)
+ |![image](https://github.com/user-attachments/assets/b1df8c92-1dbc-4bc4-b871-b21c7364cce6)
+ | ![image](https://github.com/user-attachments/assets/44b2e527-70a6-463e-96a7-1eb805bde715)
+ |
 
 ---
 
