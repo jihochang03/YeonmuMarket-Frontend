@@ -229,12 +229,12 @@ const PromoForm = () => {
                   style={{ height: "auto", minHeight: "250px" }}
                   onInput={handleInput}
                   defaultValue={`${ticketDetails.title || "공연 이름 없음"} 양도
-  ${formatDate(ticketDetails.date)}
-  캐스팅: ${ticketDetails.casting || "캐스팅 정보 없음"}
-  가격: ${ticketDetails.price || "가격 정보 없음"}원
-  좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
-  <연뮤마켓> 통해서 안전 거래
-  https://www.yeonmu.shop/chat/join/${ticketDetails.id}`.trim()} // 공백 제거
+${formatDate(ticketDetails.date)}
+캐스팅: ${ticketDetails.casting || "캐스팅 정보 없음"}
+가격: ${ticketDetails.price || "가격 정보 없음"}원
+좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
+<연뮤마켓> 통해서 안전 거래
+https://www.yeonmu.shop/chat/join/${ticketDetails.id}`.trim()} // 공백 제거
                 />
                 <div className="flex justify-center items-center gap-2 mt-4">
                   <button
