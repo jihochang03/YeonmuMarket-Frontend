@@ -43,13 +43,13 @@
 
 ### 2️⃣ 설치 및 실행
 # 프로젝트 클론
-`git clone https://github.com/username/project.git
-cd project`
+`git clone https://github.com/username/project.git`
+`cd project`
 
 # 프론트엔드 설치 및 실행
-cd frontend
-npm install
-npm start
+`cd frontend`
+`npm install`
+`npm start`
 
 # 백엔드 설치 및 실행
 cd ../backend
@@ -86,3 +86,37 @@ Docker를 활용해 개발 및 배포 환경을 통합하며, PostgreSQL 데이�
 2. 새로운 브랜치를 생성합니다:
    ```bash
    git checkout -b feature/my-feature
+
+3.수정 사항을 커밋합니다:
+git commit -m "Add new feature"
+4.원격 저장소에 푸시합니다:
+git push origin feature/my-feature
+5.Pull Request를 생성합니다.
+
+
+##🧪 테스트 (Testing)
+테스트 실행 방법
+# 프론트엔드 테스트
+cd frontend
+npm test
+
+# 백엔드 테스트
+cd backend
+pytest
+📜 라이선스 (License)
+이 프로젝트는 MIT License를 따릅니다.
+
+👩‍💻 참여자 및 기여자 (Authors & Contributors)
+이름: GitHub 프로필 @username
+이름: GitHub 프로필 @username
+📧 연락처 및 문의 (Contact)
+문의 사항은 이메일로 연락 주세요: example@example.com
+
+📝 TODO 리스트 (Optional)
+ 실시간 채팅 기능 추가
+ 사용자 리뷰 시스템 개발
+ 다국어 지원 (한국어/영어)
+markdown
+코드 복사
+
+위 내용은 **마크다운 형식**에 맞춰 작성되었으며, 깔끔한 구조로 읽기 쉽도록 수정되었습니다. 그대로
