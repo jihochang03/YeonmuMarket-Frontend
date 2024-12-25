@@ -101,6 +101,12 @@ export const SoldTickets = () => {
   const fixedFileImageUrl = selectedTicket
     ? fixRegionInUrl(selectedTicket.uploaded_file_url)
     : null;
+  const fixedMaskedSeatImageUrl = selectedTicket
+    ? fixRegionInUrl(selectedTicket.processed_seat_image_url)
+    : null;
+  const fixedMaskedFileImageUrl = selectedTicket
+    ? fixRegionInUrl(selectedTicket.masked_file_url)
+    : null;
 
   const handleDownloadSeatImage = async () => {
     if (!selectedTicket.uploaded_seat_image_url) return;
@@ -118,6 +124,27 @@ export const SoldTickets = () => {
 
     try {
       await downloadImage(selectedTicket.uploaded_file_url);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
+  };
+  const handleDownloadMaskedSeatImage = async () => {
+    if (!selectedTicket.processed_seat_image_url) return;
+
+    try {
+      await downloadImage(selectedTicket.processed_seat_image_url);
+      console.log("Image download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download image:", error);
+    }
+  };
+
+  const handleDownloadMaskedFileImage = async () => {
+    if (!selectedTicket.masked_file_url) return;
+
+    try {
+      await downloadImage(selectedTicket.masked_file_url);
       console.log("Image download triggered successfully");
     } catch (error) {
       console.error("Failed to download image:", error);
@@ -244,6 +271,50 @@ export const SoldTickets = () => {
                       className="bg-gray-300 px-3 py-1 rounded-md text-sm"
                     >
                       좌석사진 다운로드
+                    </button>
+                  </div>
+                ) : (
+                  <span>이미지가 없습니다.</span>
+                )}
+              </div>
+              {/* 예매내역서 사진 이미지 */}
+              <div className="mb-4">
+                <label className="block font-semibold mb-2">예매내역서</label>
+                {fixedMaskedFileImageUrl ? (
+                  <div>
+                    <img
+                      src={fixedMaskedFileImageUrl}
+                      alt="가려진 예매내역서"
+                      className="max-h-[230px] max-w-[230px] object-cover border mb-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleDownloadMaskedFileImage}
+                      className="bg-gray-300 px-3 py-1 rounded-md text-sm"
+                    >
+                      가려진 예매내역서 다운로드
+                    </button>
+                  </div>
+                ) : (
+                  <span>이미지가 없습니다.</span>
+                )}
+              </div>
+              {/* 좌석 사진 이미지 */}
+              <div className="mb-4">
+                <label className="block font-semibold mb-2">좌석 사진</label>
+                {fixedMaskedSeatImageUrl ? (
+                  <div>
+                    <img
+                      src={fixedMaskedSeatImageUrl}
+                      alt="가려진 좌석 사진"
+                      className="max-h-[230px] max-w-[230px] object-cover border mb-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleDownloadMaskedSeatImage}
+                      className="bg-gray-300 px-3 py-1 rounded-md text-sm"
+                    >
+                      가려진 좌석사진 다운로드
                     </button>
                   </div>
                 ) : (

@@ -24,9 +24,19 @@ const EditTicketForm = ({ ticket, onCancel, onSave }) => {
 
   const fixedReceiptUrl = fixRegionInUrl(ticket.uploaded_file_url);
   const fixedSeatImageUrl = fixRegionInUrl(ticket.uploaded_seat_image_url);
+  const fixedMaskedReceiptUrl = fixRegionInUrl(ticket.masked_file_url);
+  const fixedMaskedSeatImageUrl = fixRegionInUrl(
+    ticket.processed_seat_image_url
+  );
 
   const [previewReceipt, setPreviewReceipt] = useState(fixedReceiptUrl);
   const [previewSeatImage, setPreviewSeatImage] = useState(fixedSeatImageUrl);
+  const [previewMaskedReceipt, setPreviewMaskedReceipt] = useState(
+    fixedMaskedReceiptUrl
+  );
+  const [previewMaskedSeatImage, setPreviewMaskedSeatImage] = useState(
+    fixedMaskedSeatImageUrl
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +52,10 @@ const EditTicketForm = ({ ticket, onCancel, onSave }) => {
           setPreviewReceipt(reader.result);
         } else if (field === "uploaded_seat_image") {
           setPreviewSeatImage(reader.result);
+        } else if (field === "uploaded_masked_file") {
+          setPreviewMaskedReceipt(reader.result);
+        } else if (field === "uploaded_masked_seat_image") {
+          setPreviewMaskedSeatImage(reader.result);
         }
         setEditedTicket({ ...editedTicket, [field]: file });
       };
@@ -93,15 +107,50 @@ const EditTicketForm = ({ ticket, onCancel, onSave }) => {
       </div>
 
       <div className="mb-4">
-        <label className="block mb-2 font-bold">좌석 사진</label>
+        <label className="block mb-2 font-bold">가려진 좌석 사진</label>
         <input
           type="file"
-          onChange={(e) => handleFileChange(e, "uploaded_seat_image")}
+          onChange={(e) => handleFileChange(e, "uploaded_masked_seat_image")}
+          className="mb-2"
+        />
+        {previewMaskedSeatImage ? (
+          <img
+            src={previewMaskedSeatImage}
+            alt="가려진 좌석 사진"
+            className="max-h-[230px] max-w-[230px] mb-4"
+          />
+        ) : (
+          <span className="mb-4">이미지가 없습니다.</span>
+        )}
+      </div>
+      <div className="mb-4">
+        <label className="block mb-2 font-bold">가려진 예매내역서</label>
+        <input
+          type="file"
+          onChange={(e) => handleFileChange(e, "uploaded_masked_file")}
+          className="mb-2"
+        />
+        {previewMaskedReceipt ? (
+          <img
+            src={previewMaskedReceipt}
+            alt="가려진 예매내역서"
+            className="max-h-[230px] max-w-[230px] mb-4"
+          />
+        ) : (
+          <span className="mb-4">이미지가 없습니다.</span>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label className="block mb-2 font-bold">가려진 좌석 사진</label>
+        <input
+          type="file"
+          onChange={(e) => handleFileChange(e, "uploaded_masked_seat_image")}
           className="mb-2"
         />
         {previewSeatImage ? (
           <img
-            src={previewSeatImage}
+            src={previewMaskedSeatImage}
             alt="좌석 사진"
             className="max-h-[230px] max-w-[230px] mb-4"
           />
