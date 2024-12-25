@@ -41,25 +41,27 @@
 - Docker (선택 사항)
 
 ### 2️⃣ 설치 및 실행
-# 프로젝트 클론
-`git clone https://github.com/username/YeonmuMarket-Frontend.git`  
-`cd project`
+# 프론트 프로젝트 클론
+`git clone https://github.com/jihochang03/YeonmuMarket-Frontend.git`  
+`cd YeonmuMarket-Frontend`
 
-# 프론트엔드 설치 및 실행
-`cd frontend`  
+# 프론트엔드 설치 및 실행 
 `npm install`  
 `npm start`
 
+# 백엔드 프로젝트 클론
+`git clone https://github.com/jihochang03/YeonmuMarket-Backend.git`  
+`cd YeonmuMarket-Backend`
+
 # 백엔드 설치 및 실행
-`cd ../backend`
 `pip install -r requirements.txt`
 `python manage.py runserver`
 
 ## 💻 기술 스택 (Tech Stack)
-- **프론트엔드**: React (React Router, Axios)
+- **프론트엔드**: React (Vite, React Router, Axios)
 - **백엔드**: Django REST Framework
-- **데이터베이스**: PostgreSQL
-- **기타 도구**: Docker, Selenium (자동화 프로그램)
+- **데이터베이스**: Supabase
+- **기타 도구**: Docker, Selenium (자동화 프로그램), Tesseract, OpenCV
 
 ---
 
