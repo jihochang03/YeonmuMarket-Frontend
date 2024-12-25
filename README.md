@@ -52,9 +52,9 @@
 `npm start`
 
 # 백엔드 설치 및 실행
-cd ../backend
-pip install -r requirements.txt
-python manage.py runserver
+`cd ../backend`
+`pip install -r requirements.txt`
+`python manage.py runserver`
 
 ## 💻 기술 스택 (Tech Stack)
 - **프론트엔드**: React (React Router, Axios)
