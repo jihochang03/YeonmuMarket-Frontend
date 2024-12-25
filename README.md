@@ -37,12 +37,11 @@
 ## 🛠️ 설치 및 실행 방법 (Installation & Usage)
 
 ### 1️⃣ 사전 요구사항
-- Node.js (v16 이상)
+- React (v18 이상)
 - Python (v3.8 이상)
 - Docker (선택 사항)
 
 ### 2️⃣ 설치 및 실행
-```bash
 # 프로젝트 클론
 git clone https://github.com/username/project.git
 cd project
