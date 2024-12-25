@@ -83,14 +83,14 @@ Docker를 활용해 개발 및 배포 환경을 통합하며, PostgreSQL 데이�
 ## 🤝 기여 가이드 (Contribution Guide)
 ```plaintext
 
-1. 이 프로젝트를 포크(Fork)합니다.
-2. 새로운 브랜치를 생성합니다:
+- 이 프로젝트를 포크(Fork)합니다.
+- 새로운 브랜치를 생성합니다:
    `git checkout -b feature/my-feature`
-3. 수정 사항을 커밋합니다:
+- 수정 사항을 커밋합니다:
 `git commit -m "Add new feature"`
-4. 원격 저장소에 푸시합니다:
+- 원격 저장소에 푸시합니다:
 `git push origin feature/my-feature`
-5. Pull Request를 생성합니다.
+- Pull Request를 생성합니다.
 
 ```
 
