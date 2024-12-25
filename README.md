@@ -43,7 +43,7 @@
 
 ### 2️⃣ 설치 및 실행
 # 프로젝트 클론
-`git clone https://github.com/username/project.git`
+`git clone https://github.com/username/project.git`  
 `cd project`
 
 # 프론트엔드 설치 및 실행
