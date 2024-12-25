@@ -77,9 +77,9 @@ project/
 
 React와 Django REST Framework를 사용하여 프론트엔드와 백엔드를 분리한 구조입니다.  
 Docker를 활용해 개발 및 배포 환경을 통합하며, PostgreSQL 데이터베이스를 사용하여 강력한 데이터 처리 기능을 제공합니다.
-
----
 ```
+---
+
 ## 🤝 기여 가이드 (Contribution Guide)
 ```plaintext
 
@@ -91,8 +91,8 @@ Docker를 활용해 개발 및 배포 환경을 통합하며, PostgreSQL 데이�
 - 원격 저장소에 푸시합니다:
 `git push origin feature/my-feature`
 - Pull Request를 생성합니다.
-
 ```
+---
 
 ## 📝 TODO 리스트 (Optional)
 - 실시간 채팅 기능 추가
