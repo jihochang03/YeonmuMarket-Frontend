@@ -79,38 +79,20 @@ React와 Django REST Framework를 사용하여 프론트엔드와 백엔드를 �
 Docker를 활용해 개발 및 배포 환경을 통합하며, PostgreSQL 데이터베이스를 사용하여 강력한 데이터 처리 기능을 제공합니다.
 
 ---
-
+```
 ## 🤝 기여 가이드 (Contribution Guide)
 
 1. 이 프로젝트를 포크(Fork)합니다.
 2. 새로운 브랜치를 생성합니다:
-   ```bash
-   git checkout -b feature/my-feature
+   `git checkout -b feature/my-feature`
 
 3.수정 사항을 커밋합니다:
-git commit -m "Add new feature"
+`git commit -m "Add new feature"`
 4.원격 저장소에 푸시합니다:
-git push origin feature/my-feature
+`git push origin feature/my-feature`
 5.Pull Request를 생성합니다.
 
 
-##🧪 테스트 (Testing)
-테스트 실행 방법
-# 프론트엔드 테스트
-cd frontend
-npm test
-
-# 백엔드 테스트
-cd backend
-pytest
-📜 라이선스 (License)
-이 프로젝트는 MIT License를 따릅니다.
-
-👩‍💻 참여자 및 기여자 (Authors & Contributors)
-이름: GitHub 프로필 @username
-이름: GitHub 프로필 @username
-📧 연락처 및 문의 (Contact)
-문의 사항은 이메일로 연락 주세요: example@example.com
 
 📝 TODO 리스트 (Optional)
  실시간 채팅 기능 추가
