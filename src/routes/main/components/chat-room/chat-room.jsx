@@ -356,7 +356,8 @@ const ChatRoom = () => {
                     </div>
                   )}
                   <p>
-                    양도자 전화번호 뒷자리: {conversationData.phone_last_digits}
+                    양도자 전화번호 뒷자리:{" "}
+                    {ticketPostData.ticket.phone_last_digits}
                   </p>
                   <button
                     className="bg-black text-white px-4 py-2 rounded-md w-full"
