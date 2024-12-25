@@ -91,7 +91,7 @@ const ChatRoom = () => {
     // 10초마다 조용히 재갱신
     refreshIntervalRef.current = setInterval(() => {
       fetchConversationData(true);
-    }, 10000);
+    }, 60000);
 
     // 언마운트 시 interval 제거
     return () => {
@@ -356,7 +356,8 @@ const ChatRoom = () => {
                     </div>
                   )}
                   <p>
-                    양도자 전화번호 뒷자리: {conversationData.phone_last_digits}
+                    양도자 전화번호 뒷자리:{" "}
+                    {ticketPostData.ticket.phone_last_digits}
                   </p>
                   <button
                     className="bg-black text-white px-4 py-2 rounded-md w-full"
