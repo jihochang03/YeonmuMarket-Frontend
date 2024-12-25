@@ -81,24 +81,20 @@ Docker를 활용해 개발 및 배포 환경을 통합하며, PostgreSQL 데이�
 ---
 ```
 ## 🤝 기여 가이드 (Contribution Guide)
+```plaintext
 
 1. 이 프로젝트를 포크(Fork)합니다.
 2. 새로운 브랜치를 생성합니다:
    `git checkout -b feature/my-feature`
-
 3.수정 사항을 커밋합니다:
 `git commit -m "Add new feature"`
 4.원격 저장소에 푸시합니다:
 `git push origin feature/my-feature`
 5.Pull Request를 생성합니다.
 
+```
 
-
-📝 TODO 리스트 (Optional)
- 실시간 채팅 기능 추가
- 사용자 리뷰 시스템 개발
- 다국어 지원 (한국어/영어)
-markdown
-코드 복사
-
-위 내용은 **마크다운 형식**에 맞춰 작성되었으며, 깔끔한 구조로 읽기 쉽도록 수정되었습니다. 그대로
+## 📝 TODO 리스트 (Optional)
+- 실시간 채팅 기능 추가
+- 사용자 리뷰 시스템 개발
+- 다국어 지원 (한국어/영어)
