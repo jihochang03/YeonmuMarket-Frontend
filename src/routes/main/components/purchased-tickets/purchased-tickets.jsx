@@ -166,6 +166,12 @@ export const PurchasedTickets = () => {
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.price}원
             </label>
+            <label className="block mb-2 font-bold">
+              예매자 전화번호 마지막 4자리
+            </label>
+            <label className="border p-2 mb-4 rounded-md">
+              {selectedTicket.phone_last_digits}
+            </label>
             <div className="w-full flex items-center justify-center gap-10 mt-4">
               <button
                 className="bg-black text-white px-8 py-2 rounded-md"
