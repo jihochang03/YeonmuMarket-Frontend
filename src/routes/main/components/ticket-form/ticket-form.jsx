@@ -580,6 +580,7 @@ export const TicketForm = () => {
               onChange={setSelectedSite}
               placeholder="선택"
               className="flex-1"
+              menuPlacement="auto"
             />
           </div>
 
