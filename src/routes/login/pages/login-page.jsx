@@ -25,7 +25,7 @@ const LoginPage = () => {
   }, [redirectUrl]);
 
   return (
-    <div className="w-full h-main-height flex justify-center items-center">
+    <div className="w-full sm:w-main-frame h-main-height flex justify-center items-center">
       <div className="w-main-frame h-main-height flex flex-col justify-center items-start gap-12">
         <Introducement />
         {isLogin ? (
