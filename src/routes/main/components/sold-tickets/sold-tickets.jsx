@@ -188,7 +188,7 @@ export const SoldTickets = () => {
   };
 
   return (
-    <div className="w-full sm:w-main-frame border-2 border-gray-300 rounded-md mx-5 mt-4 overflow-y-auto max-h-main-menu-height">
+    <div>
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
@@ -211,7 +211,7 @@ export const SoldTickets = () => {
           ) : (
             // 상세 보기
             <form
-              className="flex flex-col p-4"
+              className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height"
               onSubmit={(e) => e.preventDefault()}
             >
               <div className="flex items-center justify-between mb-4">
