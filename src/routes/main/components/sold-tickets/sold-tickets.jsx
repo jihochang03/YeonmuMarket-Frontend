@@ -211,7 +211,7 @@ export const SoldTickets = () => {
           ) : (
             // 상세 보기
             <form
-              className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height"
+              className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
               onSubmit={(e) => e.preventDefault()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -350,7 +350,7 @@ export const SoldTickets = () => {
               </label>
 
               {/* 상태에 따라 버튼 보이기 */}
-              <div className="w-full sm:w-main-frame flex items-center justify-center gap-10 mt-4">
+              <div className="w-full flex items-center justify-center gap-10 mt-4">
                 {(selectedTicket.status === "waiting" ||
                   selectedTicket.status === "transfer_pending") && (
                   <>
@@ -376,7 +376,7 @@ export const SoldTickets = () => {
         </div>
       ) : (
         // 티켓 리스트
-        <div className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-list-height">
+        <div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
           {tickets.length === 0 ? (
             <div>양도한 티켓이 없습니다.</div>
           ) : (
