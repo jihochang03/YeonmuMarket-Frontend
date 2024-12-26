@@ -179,7 +179,7 @@ const PromoForm = () => {
   }
 
   return (
-    <div className="flex flex-col w-full h-main-height">
+    <div className="flex flex-col w-full sm:w-main-frame h-main-height">
       <MainIndex />
       <div className="border-2 border-gray-300 rounded-md mt-4 mx-6 h-main-menu-height flex flex-col">
         <form className="flex flex-col w-full p-4 overflow-y-auto flex-1">
