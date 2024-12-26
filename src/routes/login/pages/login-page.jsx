@@ -10,14 +10,11 @@ const LoginPage = () => {
 
   // URL에서 redirect 파라미터 추출
   const params = new URLSearchParams(location.search);
-  const rawRedirectUrl = params.get("redirect"); // 실제로는 string 또는 null
-  // "null" 문자열을 진짜 null처럼 처리
-  let redirectUrl;
-  if (!rawRedirectUrl || rawRedirectUrl === "null") {
-    redirectUrl = "/main/sold";
-  } else {
-    redirectUrl = rawRedirectUrl;
-  }
+  const rawRedirectUrl = params.get("redirect");
+  const redirectUrl =
+    !rawRedirectUrl || rawRedirectUrl === "null"
+      ? "/main/sold"
+      : rawRedirectUrl;
 
   // 디버깅: redirectUrl 값 확인
   useEffect(() => {
