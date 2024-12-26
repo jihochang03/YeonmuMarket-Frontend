@@ -74,7 +74,7 @@ export const ProfileSettings = () => {
 
   return (
     <div className="px-6 py-3">
-      <div className="w-full sm:w-main-frame flex flex-col border-2 border-gray-100 rounded-md justify-center items-center p-4">
+      <div className="w-full flex flex-col border-2 border-gray-100 rounded-md justify-center items-center p-4">
         <h3 className="text-lg font-bold mb-6 w-full text-left px-2">설정</h3>
         <button
           onClick={handleAccountEdit}
