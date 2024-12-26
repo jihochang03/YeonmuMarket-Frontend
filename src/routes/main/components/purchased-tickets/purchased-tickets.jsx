@@ -97,7 +97,7 @@ export const PurchasedTickets = () => {
           className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4"
         >
           <form
-            className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
+            className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height"
             onSubmit={(e) => e.preventDefault()}
           >
             <h1>양수표</h1>
@@ -172,7 +172,7 @@ export const PurchasedTickets = () => {
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.phone_last_digits}
             </label>
-            <div className="w-full flex items-center justify-center gap-10 mt-4">
+            <div className="w-full sm:w-main-frame flex items-center justify-center gap-10 mt-4">
               <button
                 className="bg-black text-white px-8 py-2 rounded-md"
                 onClick={() => setSelectedTicket(null)}
@@ -184,7 +184,7 @@ export const PurchasedTickets = () => {
         </div>
       ) : (
         // Render the list of tickets
-        <div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
+        <div className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-list-height">
           {tickets.length === 0 ? (
             <div>양수한 티켓이 없습니다.</div>
           ) : (

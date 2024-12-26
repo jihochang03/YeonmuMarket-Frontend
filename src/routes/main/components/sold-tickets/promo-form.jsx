@@ -117,7 +117,7 @@ function PromoForm({ ticket, onSave, onCancel }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
+      className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height"
     >
       <div className="flex items-center justify-between">
         <h2 className="font-bold text-xl mb-4">홍보글 생성</h2>
