@@ -217,7 +217,7 @@ const ChatRoom = () => {
       {/* 메인 컨테이너: 테두리와 여백 */}
         <div className="border-2 border-gray-300 h-main-menu-height rounded-md mt-4 w-full flex flex-col">
           {/* 상단: 타이틀 */}
-          <div className="p-4 flex items-center justify-between border-b border-gray-300">
+          <div className="p-4 flex items-center justify-between border-b border-gray-300 relative">
             <h1 className="text-xl font-semibold text-center flex-1">
               {conversationData?.title} 거래방
             </h1>
@@ -252,21 +252,18 @@ const ChatRoom = () => {
                 <p>좌석: {ticketPostData.ticket.seat}</p>
                 <p>가격: {ticketPostData.ticket.price}</p>
 
-                {/* 좌석 이미지 (스크롤) */}
-                <div className="max-h-60 overflow-y-auto">
-                  {fixedSeatImageUrl && (
-                    <img
-                      src={fixedSeatImageUrl}
-                      alt="좌석사진"
-                      className="w-full object-cover border mb-2"
-                    />
-                  )}
-                </div>
+                {fixedSeatImageUrl && (
+                  <img
+                    src={fixedSeatImageUrl}
+                    alt="좌석사진"
+                    className="w-full object-cover border mb-2"
+                  />
+                )}
               </div>
             )}
 
             {/* transaction_step에 따라 버튼/입금 정보/이미지 등 표시 */}
-            <div className="space-y-4">
+            <div className="flex justify-center space-y-4">
               {/* Buyer: 양수 의사 확정 버튼 (step 0) */}
               {conversationData &&
                 conversationData.user_role === "buyer" &&
