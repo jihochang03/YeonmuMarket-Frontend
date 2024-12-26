@@ -513,7 +513,7 @@ export const TicketForm = () => {
         </div>
       )}
       {!isPromoViewVisible ? (
-        <form className="border-2 border-gray-300 rounded-md w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height mx-auto">
+        <form className="flex flex-col border-2 border-gray-300 rounded-md w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height">
           <h1>양도글 작성</h1>
           <h3 className="text-gray-500 mb-6">
             양도할 티켓의 정보를 입력해주세요.
