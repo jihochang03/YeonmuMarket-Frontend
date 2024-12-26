@@ -181,74 +181,77 @@ const PromoForm = () => {
   return (
     <div className="flex flex-col w-full h-main-height">
       <MainIndex />
-      <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
-        <div className="flex items-center justify-between">
-          {/* 여백 조정 */}
-          <h3 className="font-bold">홍보글 생성(직접 수정하셔도 됩니다)</h3>
-          <button
-            type="button"
-            className="text-gray-500 text-xl hover:text-black"
-            onClick={onCancel}
-          >
-            ×
-          </button>
-        </div>
-        {/* 좌석 사진 이미지 */}
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">
-            좌석 사진
-          </label>
-          {fixedSeatImageUrl ? (
-            <div className="flex flex-col items-start">
-              {/* 왼쪽 정렬 */}
-              <img
-                src={fixedSeatImageUrl}
-                alt="좌석 사진"
-                className="max-h-[230px] max-w-[230px] object-cover border mb-2"
-              />
-              <button
-                type="button"
-                onClick={handleDownloadSeatImage}
-                className="bg-gray-300 px-3 py-1 rounded-md text-sm"
-              >
-                좌석사진 다운로드
-              </button>
-            </div>
-          ) : (
-            <span>이미지가 없습니다.</span>
-          )}
-        </div>
-        <div className="mb-4">
-          <label className="block font-semibold mb-2">홍보 내용</label>
-          {/* 홍보글 내용 */}
-          {ticketDetails && (
-            <>
-              <textarea
-                ref={textareaRef}
-                className="border p-2 mb-4 rounded-md w-full resize-none overflow-y-auto"
-                style={{ height: "auto", minHeight: "250px" }}
-                onInput={handleInput}
-                defaultValue={`${ticketDetails.title || "공연 이름 없음"} 양도
-                ${formatDate(ticketDetails.date)}
-                캐스팅: ${ticketDetails.casting || "캐스팅 정보 없음"}
-                가격: ${ticketDetails.price || "가격 정보 없음"}원
-                좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
-                <연뮤마켓> 통해서 안전 거래
-                https://www.yeonmu.shop/chat/join/${ticketDetails.id}`.trim()} // 공백 제거
-              />
-              <div className="flex w-full justify-around items-center gap-2 pb-6">
+      <div className="border-2 border-gray-300 rounded-md mt-4 mx-6 h-main-menu-height flex flex-col">
+        <form className="flex flex-col w-full p-4 overflow-y-auto flex-1">
+          <div className="flex items-center justify-between">
+            {/* 여백 조정 */}
+            <h3 className="font-bold text-xl">홍보글 생성</h3>
+            <button
+              type="button"
+              className="text-gray-500 text-xl hover:text-black"
+              onClick={onCancel}
+            >
+              ×
+            </button>
+          </div>
+          <p className="text-sm text-gray-500 mt-1 mb-4">(직접 수정하셔도 됩니다.)</p>
+          {/* 좌석 사진 이미지 */}
+          <div className="mb-4">
+            <label className="block font-semibold mb-2 text-left">
+              좌석 사진
+            </label>
+            {fixedSeatImageUrl ? (
+              <div className="flex flex-col items-center">
+                {/* 왼쪽 정렬 */}
+                <img
+                  src={fixedSeatImageUrl}
+                  alt="좌석 사진"
+                  className="max-h-[230px] max-w-[230px] object-cover border mb-2"
+                />
                 <button
                   type="button"
-                  className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-                  onClick={handleCopyText}
+                  onClick={handleDownloadSeatImage}
+                  className="bg-gray-300 px-3 py-1 rounded-md text-sm"
                 >
-                  텍스트 복사
+                  좌석사진 다운로드
                 </button>
               </div>
-            </>
-          )}
-        </div>
-      </form>
+            ) : (
+              <span>이미지가 없습니다.</span>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-2">홍보 내용</label>
+            {/* 홍보글 내용 */}
+            {ticketDetails && (
+              <>
+                <textarea
+                  ref={textareaRef}
+                  className="border p-2 mb-4 rounded-md w-full resize-none overflow-y-auto"
+                  style={{ height: "auto", minHeight: "250px" }}
+                  onInput={handleInput}
+                  defaultValue={`${ticketDetails.title || "공연 이름 없음"} 양도
+${formatDate(ticketDetails.date)}
+캐스팅: ${ticketDetails.casting || "캐스팅 정보 없음"}
+가격: ${ticketDetails.price || "가격 정보 없음"}원
+좌석 정보: ${ticketDetails.seat || "좌석 정보 없음"}
+<연뮤마켓> 통해서 안전 거래
+https://www.yeonmu.shop/chat/join/${ticketDetails.id}`.trim()} // 공백 제거
+                />
+                <div className="flex w-full justify-around items-center gap-2">
+                  <button
+                    type="button"
+                    className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
+                    onClick={handleCopyText}
+                  >
+                    텍스트 복사
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
