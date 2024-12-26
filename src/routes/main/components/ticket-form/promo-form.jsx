@@ -202,7 +202,6 @@ const PromoForm = () => {
             </label>
             {fixedSeatImageUrl ? (
               <div className="flex flex-col items-center">
-                {/* 왼쪽 정렬 */}
                 <img
                   src={fixedSeatImageUrl}
                   alt="좌석 사진"
