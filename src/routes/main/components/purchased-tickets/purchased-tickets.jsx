@@ -94,10 +94,10 @@ export const PurchasedTickets = () => {
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
-          className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4"
+          className="w-full sm:w-main-frame border-2 border-gray-300 rounded-md mx-5 mt-4 overflow-y-auto max-h-main-menu-height"
         >
           <form
-            className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height"
+            className="flex flex-col p-4"
             onSubmit={(e) => e.preventDefault()}
           >
             <h1>양수표</h1>
