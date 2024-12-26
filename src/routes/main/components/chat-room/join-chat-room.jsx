@@ -8,6 +8,9 @@ const JoinChatRoom = () => {
   const { ticket_id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // redirectUrl 상태 추가
+  const [redirectUrl, setRedirectUrl] = useState(null);
   const [showJoinButton, setShowJoinButton] = useState(false);
 
   const handleJoinChat = async () => {
@@ -27,12 +30,13 @@ const JoinChatRoom = () => {
         // Redux 상태 초기화
         dispatch(logout());
 
-        // 리다이렉트 경로 생성
-        const redirectPath = `/?redirect=/chat/join/${ticket_id}`;
-        console.log("Redirecting to login with redirectPath:", redirectPath);
+        // redirectUrl 상태 저장
+        const redirectPath = `/chat/join/${ticket_id}`;
+        setRedirectUrl(redirectPath);
+        console.log("Setting redirectUrl:", redirectPath);
 
         // 로그인 페이지로 이동
-        navigate(redirectPath);
+        navigate(`/?redirect=${encodeURIComponent(redirectPath)}`);
       } else {
         console.error(
           "Unhandled error occurred. Navigating back to previous page."
@@ -43,10 +47,17 @@ const JoinChatRoom = () => {
     }
   };
 
+  // 컴포넌트가 다시 마운트되었을 때 상태 초기화
   useEffect(() => {
     console.log("JoinChatRoom mounted with ticket_id:", ticket_id);
     setShowJoinButton(true);
-  }, [ticket_id]);
+
+    // 리다이렉트 후 상태 초기화
+    if (redirectUrl) {
+      console.log("Resetting redirectUrl after redirect");
+      setRedirectUrl(null);
+    }
+  }, [ticket_id, redirectUrl]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">

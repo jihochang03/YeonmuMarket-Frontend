@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import kakaoIcon from "../../../assets/icons/kakao_icon.svg";
 
 export const KakaoButton = ({ isLogin, redirectUrl }) => {
   // 만약 redirectUrl이 없다면, 기본적으로 /main/sold 같은 주소 지정
-  const finalRedirect = redirectUrl || "/main/sold";
-  console.log("finalRedirect:", finalRedirect);
+  const [finalRedirect, setFinalRedirect] = useState("/main/sold");
+
+  useEffect(() => {
+    if (redirectUrl) {
+      setFinalRedirect(redirectUrl);
+    }
+  }, [redirectUrl]);
   const stateParam = encodeURIComponent(JSON.stringify(finalRedirect));
 
   const link = `https://kauth.kakao.com/oauth/authorize?client_id=${
