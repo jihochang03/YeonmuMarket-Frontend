@@ -53,7 +53,7 @@ const JoinChatRoom = () => {
       <h1 className="text-xl font-bold mb-4">대화방에 참여하시겠습니까?</h1>
       {showJoinButton && (
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 mb-6"
           onClick={handleJoinChat}
         >
           대화방 참여
