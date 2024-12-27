@@ -15,25 +15,23 @@ const MainPage = () => {
       <div className="w-main-frame h-main-height flex flex-col fixed">
         <MainIndex />
         <div className="flex-1 overflow-y-auto p-4">
-          <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <div className="w-full h-main-height flex flex-col">
-                    <div className="w-main-frame h-main-menu-height flex flex-col justify-center items-start gap-12">
-                      <Introducement />
-                      <MainSection />
-                    </div>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div className="w-full h-main-height flex flex-col">
+                  <div className="w-main-frame h-main-menu-height flex flex-col justify-center items-start gap-12">
+                    <Introducement />
+                    <MainSection />
                   </div>
-                }
-              />
-              <Route path="new" element={<TicketForm />} />
-              <Route path="sold" element={<SoldTickets />} />
-              <Route path="purchased" element={<PurchasedTickets />} />
-              <Route path="settings" element={<ProfileSettings />} />
-            </Routes>
-          </div>
+                </div>
+              }
+            />
+            <Route path="new" element={<TicketForm />} />
+            <Route path="sold" element={<SoldTickets />} />
+            <Route path="purchased" element={<PurchasedTickets />} />
+            <Route path="settings" element={<ProfileSettings />} />
+          </Routes>
         </div>
       </div>
     </div>

@@ -90,7 +90,7 @@ export const PurchasedTickets = () => {
   };
 
   return (
-    <div>
+    <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
