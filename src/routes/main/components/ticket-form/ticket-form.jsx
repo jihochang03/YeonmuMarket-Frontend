@@ -715,10 +715,10 @@ export const TicketForm = () => {
                     accept="image/*"
                     onChange={handleMaskedReservUpload}
                     style={{ display: "none" }}
-                    id="upload1"
+                    id="upload3"
                   />
                   <label
-                    htmlFor="upload1"
+                    htmlFor="upload3"
                     className="cursor-pointer upload-box"
                   >
                     {maskedReservImage && (
@@ -739,16 +739,16 @@ export const TicketForm = () => {
                     accept="image/*"
                     onChange={handleMaskedSeatUpload}
                     style={{ display: "none" }}
-                    id="upload1"
+                    id="upload4"
                   />
                   <label
-                    htmlFor="upload1"
+                    htmlFor="upload4"
                     className="cursor-pointer upload-box"
                   >
                     {maskedSeatImage && (
                       <img
                         src={maskedSeatImage}
-                        alt="예매내역서"
+                        alt="좌석 사진"
                         className="max-h-[230px] max-w-[230px] object-cover"
                       />
                     )}
