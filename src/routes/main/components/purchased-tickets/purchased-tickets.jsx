@@ -94,7 +94,7 @@ export const PurchasedTickets = () => {
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
-          className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4"
+          className="max-w-lg border-2 border-gray-300 rounded-md mx-2 mt-2"
         >
           <form
             className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
