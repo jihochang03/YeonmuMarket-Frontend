@@ -12,9 +12,9 @@ import { ProfileSettings } from "../components/profile-settings/profile-settings
 const MainPage = () => {
   return (
     <div className="w-full h-[calc(100vh)] flex justify-center items-center">
-      <div className="w-main-frame h-[calc(100vh)] flex flex-col fixed">
+      <div className="w-main-frame h-[calc(100vh)] flex flex-col pt-header-height">
         <MainIndex />
-        <div className="flex-1 overflow-y-auto p-4 pt-header-height">
+        <div className="flex-1 overflow-y-auto p-4">
           <Routes>
             <Route
               path="/"

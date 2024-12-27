@@ -24,7 +24,7 @@ function App() {
     <div className="min-h-[calc(100vh)] bg-darker flex flex-col items-center">
       <BrowserRouter>
         <FetchCSRFToken /> {/* CSRF 토큰 초기화를 위한 컴포넌트 */}
-        <div className="w-full sm:w-main-frame bg-white">
+        <div className="w-full max-w-screen-sm bg-white">
           <Header isLogin={isLogin} />
           <div className="flex flex-col pt-header-height">
             <div className="flex-1">
