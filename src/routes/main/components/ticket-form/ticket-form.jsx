@@ -107,6 +107,7 @@ export const TicketForm = () => {
         setMaskedSeatFile(maskedSeatFile);
         setMaskedSeatImage(URL.createObjectURL(maskedSeatFile));
       }
+
       setPerformanceName(savedData.performanceName || "");
       setLastFourDigits(savedData.lastFourDigits || "");
       setSelectedSite(savedData.selectedSite || null);
@@ -669,7 +670,6 @@ export const TicketForm = () => {
               onChange={setSelectedSite}
               placeholder="선택"
               className="flex-1"
-              menuPlacement="auto"
             />
           </div>
 
