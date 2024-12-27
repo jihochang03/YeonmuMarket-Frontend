@@ -21,12 +21,12 @@ function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
 
   return (
-    <div className="min-h-[calc(100vh)] bg-darker flex flex-col items-center">
+    <div className="min-h-screen bg-darker flex flex-col items-center">
       <BrowserRouter>
         <FetchCSRFToken /> {/* CSRF 토큰 초기화를 위한 컴포넌트 */}
-        <div className="w-full max-w-screen-sm bg-white">
+        <div className="w-main-frame bg-white">
           <Header isLogin={isLogin} />
-          <div className="flex flex-col pt-header-height">
+          <div className="flex flex-col">
             <div className="flex-1">
               <Routes>
                 {/* 로그인 페이지는 누구나 접근 가능 */}

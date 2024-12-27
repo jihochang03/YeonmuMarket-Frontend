@@ -11,15 +11,15 @@ import { ProfileSettings } from "../components/profile-settings/profile-settings
 
 const MainPage = () => {
   return (
-    <div className="w-full h-[calc(100vh)] flex justify-center items-center">
-      <div className="w-main-frame h-[calc(100vh)] flex flex-col pt-header-height">
+    <div className="w-full h-main-height flex justify-center items-center">
+      <div className="w-main-frame h-main-height flex flex-col fixed">
         <MainIndex />
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 p-4s">
           <Routes>
             <Route
               path="/"
               element={
-                <div className="w-full h-[calc(100vh)] flex flex-col">
+                <div className="w-full h-main-height flex flex-col">
                   <div className="w-main-frame h-main-menu-height flex flex-col justify-center items-start gap-12">
                     <Introducement />
                     <MainSection />
