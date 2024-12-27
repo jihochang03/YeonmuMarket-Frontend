@@ -207,12 +207,14 @@ export const PurchasedTickets = () => {
                   >
                     대화방
                   </button>
-                  <button
-                    className="ticket-button"
-                    onClick={() => handleDetailClick(ticket.id)}
-                  >
-                    상세보기
-                  </button>
+                  {ticket.status !== "transfer_pending" && (
+                    <button
+                      className="ticket-button"
+                      onClick={() => handleDetailClick(ticket.id)}
+                    >
+                      상세보기
+                    </button>
+                  )}
                 </div>
               </div>
             ))
