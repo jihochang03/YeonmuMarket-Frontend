@@ -15,7 +15,7 @@ export const MainIndex = ({ activeTab }) => {
   return (
     <div className="w-full flex flex-col pt-header-height px-5">
       {/* Main content */}
-      <div className="w-full flex justify-around items-center pt-3">
+      <div className="w-full max-w-screen-sm flex justify-around items-center pt-0">
         <button
           onClick={() => navigate("/main/new")}
           className={`button ${
