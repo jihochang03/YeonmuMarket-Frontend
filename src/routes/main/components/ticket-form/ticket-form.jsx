@@ -565,6 +565,34 @@ export const TicketForm = () => {
       console.error("Failed to download image:", error);
     }
   };
+  const handleTempCancel = () => {
+    localStorage.removeItem("ticketFormData"); // 임시저장 데이터 삭제
+    setPerformanceName(null);
+    setReservImage(null);
+    setSeatImage(null);
+    setReservFile(null);
+    setSeatFile(null);
+    setSelectedSite(null);
+    setSelectedDate(null);
+    setSelectedHour(null);
+    setSelectedMin(null);
+    setSelectedAmPm(null);
+    setTermsAccepted(false);
+    setShowAdditionalFields(false);
+    setSeatInfo(false);
+    setCastingInfo(false);
+    setPrice(false);
+    setDiscountInfo(false);
+    setLastFourDigits("");
+    setIsPromoViewVisible(false);
+    setReservationStatus(null);
+    setPlace(null);
+    setMaskedReservImage(null);
+    setMaskedSeatImage(null);
+    setMaskedReservFile(null);
+    setMaskedSeatFile(null);
+    alert("임시저장이 취소되었습니다."); // 알림 표시
+  };
 
   return (
     <div className="max-w-lg p-1 mx-5 mt-4">
@@ -858,6 +886,13 @@ export const TicketForm = () => {
                   onClick={handleTempSave}
                 >
                   임시저장
+                </button>
+                <button
+                  type="button"
+                  className="bg-red-500 text-white px-10 rounded-md"
+                  onClick={handleTempCancel}
+                >
+                  임시저장 취소
                 </button>
                 <button
                   type="button"
