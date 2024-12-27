@@ -78,29 +78,18 @@ export const TicketForm = () => {
     if (savedData) {
       console.log("Restoring saved data:", savedData);
 
-      // 이미지 파일 복원
-      if (savedData.reservImage) {
-        setReservImage(savedData.reservImage);
-      }
-      if (savedData.seatImage) {
-        setSeatImage(savedData.seatImage);
-      }
-      if (savedData.maskedReservImage) {
-        setMaskedReservImage(savedData.maskedReservImage);
-      }
-      if (savedData.maskedSeatImage) {
-        setMaskedSeatImage(savedData.maskedSeatImage);
-      }
       if (savedData.reservFile) {
         const reservFile = base64ToFile(
           savedData.reservFile,
           "reservImage.jpg"
         );
         setReservFile(reservFile);
+        setReservImage(URL.createObjectURL(reservFile));
       }
       if (savedData.seatFile) {
         const seatFile = base64ToFile(savedData.seatFile, "seatImage.jpg");
         setSeatFile(seatFile);
+        setSeatImage(URL.createObjectURL(seatFile));
       }
       if (savedData.maskedReservFile) {
         const maskedReservFile = base64ToFile(
@@ -108,6 +97,7 @@ export const TicketForm = () => {
           "maskedReservImage.jpg"
         );
         setMaskedReservFile(maskedReservFile);
+        setMaskedReservImage(URL.createObjectURL(maskedReservFile));
       }
       if (savedData.maskedSeatFile) {
         const maskedSeatFile = base64ToFile(
@@ -115,8 +105,8 @@ export const TicketForm = () => {
           "maskedSeatImage.jpg"
         );
         setMaskedSeatFile(maskedSeatFile);
+        setMaskedSeatImage(URL.createObjectURL(maskedSeatFile));
       }
-
       setPerformanceName(savedData.performanceName || "");
       setLastFourDigits(savedData.lastFourDigits || "");
       setSelectedSite(savedData.selectedSite || null);
