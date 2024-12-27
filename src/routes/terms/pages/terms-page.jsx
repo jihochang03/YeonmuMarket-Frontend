@@ -10,7 +10,7 @@ const TermsPage = () => {
   };
 
   return (
-    <div className="w-full h-main-height flex-col flex justify-between">
+    <div className="w-full h-screen flex-col flex justify-between pt-header-height">
       <TermsForm/>
       <button onClick={handleNavigate} className="bg-black text-white px-10 rounded-md mx-auto flex mb-10">확인</button>
     </div>
