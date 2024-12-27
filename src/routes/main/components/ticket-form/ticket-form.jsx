@@ -172,7 +172,7 @@ export const TicketForm = () => {
         reservFile: reservBase64,
         seatFile: seatBase64,
         maskedReservFile: maskedReservBase64,
-        maskedSeatBase64: maskedSeatBase64,
+        maskedSeatFile: maskedSeatBase64,
       };
 
       localStorage.setItem("ticketFormData", JSON.stringify(formData)); // Ensure it's saved
@@ -814,7 +814,6 @@ export const TicketForm = () => {
                 placeholder="Value"
                 className="border p-2 mb-4 rounded-md"
               />
-
               <label className="block mb-2 font-bold">좌석 정보</label>
               <input
                 type="text"
@@ -823,7 +822,6 @@ export const TicketForm = () => {
                 placeholder="Value"
                 className="border p-2 mb-4 rounded-md"
               />
-
               <label className="block mb-2 font-bold">캐스팅 정보</label>
               <input
                 type="text"
@@ -832,7 +830,6 @@ export const TicketForm = () => {
                 placeholder="Value"
                 className="border p-2 mb-4 rounded-md"
               />
-
               <label className="block mb-2 font-bold">가격(원가)</label>
               <input
                 type="text"
@@ -841,7 +838,6 @@ export const TicketForm = () => {
                 placeholder="Value"
                 className="border p-2 mb-4 rounded-md"
               />
-
               <label className="block mb-2 font-bold">할인 정보</label>
               <input
                 type="text"
@@ -850,7 +846,6 @@ export const TicketForm = () => {
                 placeholder="Value"
                 className="border p-2 mb-4 rounded-md"
               />
-
               <label className="block mb-2 font-bold">
                 예매자 전화번호 마지막 4자리
               </label>
@@ -861,7 +856,6 @@ export const TicketForm = () => {
                 value={lastFourDigits} // 상태와 연결
                 onChange={(e) => setLastFourDigits(e.target.value)} // 입력 값을 상태로 설정
               />
-
               <div className="flex items-center mb-4">
                 <input
                   type="checkbox"
@@ -878,25 +872,24 @@ export const TicketForm = () => {
                   Read our T&Cs
                 </a>
               </div>
-
-              <div className="flex justify-around mt-1">
+              <div className="flex justify-around mt-6 space-x-4">
                 <button
                   type="button"
-                  className="bg-gray-800 text-white px-10 rounded-md"
+                  className="px-6 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all"
                   onClick={handleTempSave}
                 >
                   임시저장
                 </button>
                 <button
                   type="button"
-                  className="bg-red-500 text-white px-10 rounded-md"
+                  className="px-6 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all"
                   onClick={handleTempCancel}
                 >
                   임시저장 취소
                 </button>
                 <button
                   type="button"
-                  className="bg-black text-white px-10 rounded-md"
+                  className="px-6 py-2 text-sm font-medium text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 transition-all"
                   onClick={handleSubmit}
                 >
                   작성 완료
