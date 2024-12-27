@@ -7,6 +7,7 @@ import {
   postTweet,
   downloadImage,
 } from "../../../../apis/api";
+import { MainIndex } from "../../../../components/main-index";
 
 const PromoForm = () => {
   const navigate = useNavigate();
@@ -178,13 +179,13 @@ const PromoForm = () => {
   }
 
   return (
-    <div className="max-w-lg border-2 border-gray-300 rounded-md mx-auto mt-4">
-      {/* mx-auto로 중앙 정렬 */}
-      <form className="flex flex-col w-full p-4">
-        <div className="flex flex-col w-full">
-          <div className="flex items-center justify-between mb-4">
+    <div className="flex flex-col w-full h-main-height">
+      <MainIndex />
+      <div className="border-2 border-gray-300 rounded-md mt-4 mx-6 h-main-menu-height flex flex-col">
+        <form className="flex flex-col w-full p-4 overflow-y-auto flex-1">
+          <div className="flex items-center justify-between">
             {/* 여백 조정 */}
-            <h3 className="font-bold">홍보글 생성(직접 수정하셔도 됩니다)</h3>
+            <h3 className="font-bold text-xl">홍보글 생성</h3>
             <button
               type="button"
               className="text-gray-500 text-xl hover:text-black"
@@ -193,14 +194,14 @@ const PromoForm = () => {
               ×
             </button>
           </div>
+          <p className="text-sm text-gray-500 mt-1 mb-4">(직접 수정하셔도 됩니다.)</p>
           {/* 좌석 사진 이미지 */}
           <div className="mb-4">
             <label className="block font-semibold mb-2 text-left">
               좌석 사진
             </label>
             {fixedSeatImageUrl ? (
-              <div className="flex flex-col items-start">
-                {/* 왼쪽 정렬 */}
+              <div className="flex flex-col items-center">
                 <img
                   src={fixedSeatImageUrl}
                   alt="좌석 사진"
@@ -225,7 +226,7 @@ const PromoForm = () => {
               <>
                 <textarea
                   ref={textareaRef}
-                  className="border p-2 rounded-md w-full resize-none text-left"
+                  className="border p-2 mb-4 rounded-md w-full resize-none overflow-y-auto"
                   style={{ height: "auto", minHeight: "250px" }}
                   onInput={handleInput}
                   defaultValue={`${ticketDetails.title || "공연 이름 없음"} 양도
@@ -236,10 +237,10 @@ ${formatDate(ticketDetails.date)}
 <연뮤마켓> 통해서 안전 거래
 https://www.yeonmu.shop/chat/join/${ticketDetails.id}`.trim()} // 공백 제거
                 />
-                <div className="flex justify-center items-center gap-2 mt-4">
+                <div className="flex w-full justify-around items-center gap-2">
                   <button
                     type="button"
-                    className="bg-black text-white px-4 py-2 rounded-md"
+                    className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
                     onClick={handleCopyText}
                   >
                     텍스트 복사
@@ -248,8 +249,8 @@ https://www.yeonmu.shop/chat/join/${ticketDetails.id}`.trim()} // 공백 제거
               </>
             )}
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

@@ -11,7 +11,7 @@ import { ProfileSettings } from "../components/profile-settings/profile-settings
 
 const MainPage = () => {
   return (
-    <div className="w-full h-main-height flex justify-center items-center">
+    <div className="w-full sm:w-main-frame h-main-height flex justify-center items-center">
       <div className="w-main-frame h-main-height flex flex-col fixed">
         <MainIndex />
         <div className="flex-1 p-4s">
@@ -19,7 +19,7 @@ const MainPage = () => {
             <Route
               path="/"
               element={
-                <div className="w-full h-main-height flex flex-col">
+                <div className="w-full sm:w-main-frame h-main-height flex flex-col">
                   <div className="w-main-frame h-main-menu-height flex flex-col justify-center items-start gap-12">
                     <Introducement />
                     <MainSection />

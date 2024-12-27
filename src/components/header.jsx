@@ -17,7 +17,6 @@ export const Header = () => {
       transform: "translateZ(0)",
     }}
   >
-    
       <Link
         to={isLogin ? "/main" : "/"}
         className="text-xl font-bold py-[17px]"
