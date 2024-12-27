@@ -369,24 +369,20 @@ const ChatRoom = () => {
             </div>
           </div>
 
-          {/* 하단: 대화방 나가기 버튼 (항상 아래에 고정) */}
-          <div className="p-4 border-t border-gray-300">
-            {/* Buyer가 거래를 진행중(step <= 2)이거나 Seller가 누구든 떠날 수 있음 */}
-            {/* 상황에 따라 노출 여부 조절은 기존 로직을 유지하되, 여기서 위치만 고정 */}
-            {(conversationData?.user_role === "buyer" &&
-              conversationData?.transaction_step <= 2) ||
-            (conversationData?.user_role === "seller" &&
-              conversationData?.transaction_step <= 2) ? (
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md w-full"
-                onClick={handleLeaveChatRoom}
-              >
-                대화방 나가기
-              </button>
-            ) : null}
-          </div>
+        {/* 하단: 대화방 나가기 버튼 (항상 아래에 고정) */}
+        <div className="p-4 border-t border-gray-300">
+          {/* Buyer가 거래를 진행중(step <= 2)이거나 Seller가 누구든 떠날 수 있음 */}
+          {/* 상황에 따라 노출 여부 조절은 기존 로직을 유지하되, 여기서 위치만 고정 */}
+          {conversationData?.user_role === "buyer" &&
+          conversationData?.transaction_step <= 2 ? (
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded-md w-full"
+              onClick={handleLeaveChatRoom}
+            >
+              대화방 나가기
+            </button>
+          ) : null}
         </div>
-
         {isModalOpen && (
           <Modal
             message={modalMessage}
