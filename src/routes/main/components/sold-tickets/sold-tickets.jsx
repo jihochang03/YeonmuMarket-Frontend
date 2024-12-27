@@ -192,7 +192,7 @@ export const SoldTickets = () => {
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
-          className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4"
+          className="max-w-lg border-2 border-gray-300 rounded-md mx-2 mt-2"
         >
           {/* 수정 모드 */}
           {isEditMode ? (
