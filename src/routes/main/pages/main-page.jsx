@@ -11,8 +11,8 @@ import { ProfileSettings } from "../components/profile-settings/profile-settings
 
 const MainPage = () => {
   return (
-    <div className="w-full h-main-height flex justify-center items-center">
-      <div className="w-main-frame h-main-height flex flex-col fixed">
+    <div className="w-full min-h-screen flex justify-center items-center">
+      <div className="w-main-frame h-screen flex flex-col fixed">
         <MainIndex />
         <div className="flex-1 p-4s">
           <Routes>
