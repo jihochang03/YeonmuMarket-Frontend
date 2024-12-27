@@ -100,7 +100,17 @@ export const PurchasedTickets = () => {
             className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
             onSubmit={(e) => e.preventDefault()}
           >
-            <h1>양수표</h1>
+            <div className="flex items-center justify-between mb-4">
+              <h1>양수표</h1>
+              <button
+                type="button"
+                className="text-gray-500 text-xl hover:text-black"
+                onClick={handleBack}
+              >
+                ×
+              </button>
+            </div>
+
             <div
               className={`status-label status-${selectedTicket.status} mt-3`}
             >
@@ -172,14 +182,6 @@ export const PurchasedTickets = () => {
             <label className="border p-2 mb-4 rounded-md">
               {selectedTicket.phone_last_digits}
             </label>
-            <div className="w-full flex items-center justify-center gap-10 mt-4">
-              <button
-                className="bg-black text-white px-8 py-2 rounded-md"
-                onClick={() => setSelectedTicket(null)}
-              >
-                뒤로 가기
-              </button>
-            </div>
           </form>
         </div>
       ) : (
@@ -207,12 +209,14 @@ export const PurchasedTickets = () => {
                   >
                     대화방
                   </button>
-                  <button
-                    className="ticket-button"
-                    onClick={() => handleDetailClick(ticket.id)}
-                  >
-                    상세보기
-                  </button>
+                  {ticket.status !== "transfer_pending" && (
+                    <button
+                      className="ticket-button"
+                      onClick={() => handleDetailClick(ticket.id)}
+                    >
+                      상세보기
+                    </button>
+                  )}
                 </div>
               </div>
             ))
