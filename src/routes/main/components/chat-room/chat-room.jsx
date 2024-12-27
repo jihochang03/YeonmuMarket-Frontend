@@ -211,49 +211,47 @@ const ChatRoom = () => {
     : null;
 
   return (
-    <div className="min-h-main-height">
+    <div className="min-h-main-height flex flex-col">
       <MainIndex />
-
+      <div className="flex-1 flex flex-col items-center mx-6">
       {/* 메인 컨테이너: 테두리와 여백 */}
-      <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
-        {/* 상단: 타이틀 */}
-        <div className="p-4 flex items-center justify-between border-b border-gray-300 relative">
-          <h1 className="text-xl font-semibold text-center flex-1">
-            {conversationData?.title} 거래방
-          </h1>
-          <Link
-            to="/main/sold"
-            className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl"
-            title="돌아가기"
-          >
-            ×
-          </Link>
-        </div>
-
-        {/* 중간: 스크롤 영역 (메시지, 티켓 정보, 버튼 등) */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {/* 메시지 목록 */}
-          <div className="space-y-2">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className="chat-message text-sm p-2 bg-gray-100 rounded"
-              >
-                {message}
-              </div>
-            ))}
+        <div className="border-2 border-gray-300 h-main-menu-height rounded-md mt-4 w-full flex flex-col">
+          {/* 상단: 타이틀 */}
+          <div className="p-4 flex items-center justify-between border-b border-gray-300 relative">
+            <h1 className="text-xl font-semibold text-center flex-1">
+              {conversationData?.title} 거래방
+            </h1>
+            <Link
+              to="/main/sold"
+              className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl"
+              title="돌아가기"
+            >
+              ×
+            </Link>
           </div>
 
-          {/* 티켓 정보 + 이미지(스크롤) */}
-          {ticketPostData && (
-            <div className="p-4 border rounded space-y-4">
-              <h2 className="font-semibold text-lg">티켓 정보</h2>
-              <p>공연명: {ticketPostData.ticket.title}</p>
-              <p>좌석: {ticketPostData.ticket.seat}</p>
-              <p>가격: {ticketPostData.ticket.price}</p>
+          {/* 중간: 스크롤 영역 (메시지, 티켓 정보, 버튼 등) */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {/* 메시지 목록 */}
+            <div className="space-y-2">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className="chat-message text-sm p-2 bg-gray-100 rounded"
+                >
+                  {message}
+                </div>
+              ))}
+            </div>
 
-              {/* 좌석 이미지 (스크롤) */}
-              <div className="max-h-60 overflow-y-auto">
+            {/* 티켓 정보 + 이미지(스크롤) */}
+            {ticketPostData && (
+              <div className="p-4 border rounded space-y-2">
+                <h2 className="font-semibold text-lg">티켓 정보</h2>
+                <p>공연명: {ticketPostData.ticket.title}</p>
+                <p>좌석: {ticketPostData.ticket.seat}</p>
+                <p>가격: {ticketPostData.ticket.price}</p>
+
                 {fixedSeatImageUrl && (
                   <img
                     src={fixedSeatImageUrl}
@@ -262,115 +260,114 @@ const ChatRoom = () => {
                   />
                 )}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* transaction_step에 따라 버튼/입금 정보/이미지 등 표시 */}
-          <div className="space-y-4">
-            {/* Buyer: 양수 의사 확정 버튼 (step 0) */}
-            {conversationData &&
-              conversationData.user_role === "buyer" &&
-              conversationData.transaction_step === 0 && (
-                <button
-                  className="bg-black text-white px-4 py-2 rounded-md"
-                  onClick={() =>
-                    handleModalOpen("양수 의사를 확정하시겠습니까?")
-                  }
-                >
-                  양수 의사 확정
-                </button>
-              )}
+            {/* transaction_step에 따라 버튼/입금 정보/이미지 등 표시 */}
+            <div className="flex justify-center space-y-4">
+              {/* Buyer: 양수 의사 확정 버튼 (step 0) */}
+              {conversationData &&
+                conversationData.user_role === "buyer" &&
+                conversationData.transaction_step === 0 && (
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded-md"
+                    onClick={() =>
+                      handleModalOpen("양수 의사를 확정하시겠습니까?")
+                    }
+                  >
+                    양수 의사 확정
+                  </button>
+                )}
 
-            {/* Seller: 양도 의사 확정 버튼 (step 1) */}
-            {conversationData &&
-              conversationData.user_role === "seller" &&
-              conversationData.transaction_step === 1 && (
-                <button
-                  className="bg-black text-white px-4 py-2 rounded-md"
-                  onClick={() =>
-                    handleModalOpen("양도 의사를 확정하시겠습니까?")
-                  }
-                >
-                  양도 의사 확정
-                </button>
-              )}
+              {/* Seller: 양도 의사 확정 버튼 (step 1) */}
+              {conversationData &&
+                conversationData.user_role === "seller" &&
+                conversationData.transaction_step === 1 && (
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded-md"
+                    onClick={() =>
+                      handleModalOpen("양도 의사를 확정하시겠습니까?")
+                    }
+                  >
+                    양도 의사 확정
+                  </button>
+                )}
 
-            {/* Buyer: step 2~3 사이 입금 정보 확인 및 입금 완료 버튼 */}
-            {conversationData &&
-              conversationData.user_role === "buyer" &&
-              conversationData.transaction_step >= 2 &&
-              conversationData.transaction_step < 4 && (
-                <div className="p-4 border rounded space-y-3">
-                  {/* 마스킹된 파일 이미지 */}
-                  {fixedSeatMaskedFileUrl && (
-                    <div className="max-h-60 overflow-y-auto">
-                      <img
-                        src={fixedSeatMaskedFileUrl}
-                        alt="Masked Booking Confirmation"
-                        className="w-full object-cover border"
-                      />
-                    </div>
-                  )}
+              {/* Buyer: step 2~3 사이 입금 정보 확인 및 입금 완료 버튼 */}
+              {conversationData &&
+                conversationData.user_role === "buyer" &&
+                conversationData.transaction_step >= 2 &&
+                conversationData.transaction_step < 4 && (
+                  <div className="p-4 border rounded space-y-3">
+                    {/* 마스킹된 파일 이미지 */}
+                    {fixedSeatMaskedFileUrl && (
+                      <div className="max-h-60 overflow-y-auto">
+                        <img
+                          src={fixedSeatMaskedFileUrl}
+                          alt="Masked Booking Confirmation"
+                          className="w-full object-cover border"
+                        />
+                      </div>
+                    )}
 
-                  {/* 입금 정보 */}
-                  <p>은행: {conversationData.bank_name}</p>
-                  <p>계좌번호: {conversationData.bank_account}</p>
-                  <p>예금주: {conversationData.account_holder}</p>
+                    {/* 입금 정보 */}
+                    <p>은행: {conversationData.bank_name}</p>
+                    <p>계좌번호: {conversationData.bank_account}</p>
+                    <p>예금주: {conversationData.account_holder}</p>
 
-                  {/* 입금 완료 버튼 (step 2에서만 노출) */}
-                  {conversationData.transaction_step === 2 && (
+                    {/* 입금 완료 버튼 (step 2에서만 노출) */}
+                    {conversationData.transaction_step === 2 && (
+                      <button
+                        className="bg-black text-white px-4 py-2 rounded-md w-full"
+                        onClick={() => handleModalOpen("입금을 완료하셨습니까?")}
+                      >
+                        입금 완료
+                      </button>
+                    )}
+                  </div>
+                )}
+
+              {/* Seller: 입금 확인 버튼 (step 3) */}
+              {conversationData &&
+                conversationData.user_role === "seller" &&
+                conversationData.transaction_step === 3 && (
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded-md"
+                    onClick={() => handleModalOpen("입금이 확인되셨습니까?")}
+                  >
+                    입금 확인
+                  </button>
+                )}
+
+              {/* Buyer: 최종 티켓 수령 (step 4 이상) */}
+              {conversationData &&
+                conversationData.transaction_step >= 4 &&
+                conversationData.user_role === "buyer" && (
+                  <div className="p-4 border rounded space-y-3">
+                    {fixedSeatFileUrl && (
+                      <div className="max-h-60 overflow-y-auto">
+                        <img
+                          src={fixedSeatFileUrl}
+                          alt="Ticket File"
+                          className="w-full object-cover border"
+                        />
+                      </div>
+                    )}
+                    <p>
+                      양도자 전화번호 뒷자리:{" "}
+                      {ticketPostData.ticket.phone_last_digits}
+                    </p>
                     <button
                       className="bg-black text-white px-4 py-2 rounded-md w-full"
-                      onClick={() => handleModalOpen("입금을 완료하셨습니까?")}
+                      onClick={() => {
+                        window.location.href = `/main/purchased`; // 새로고침 후 이동
+                      }}
                     >
-                      입금 완료
+                      티켓 정보 보러 가기
                     </button>
-                  )}
-                </div>
-              )}
-
-            {/* Seller: 입금 확인 버튼 (step 3) */}
-            {conversationData &&
-              conversationData.user_role === "seller" &&
-              conversationData.transaction_step === 3 && (
-                <button
-                  className="bg-black text-white px-4 py-2 rounded-md"
-                  onClick={() => handleModalOpen("입금이 확인되셨습니까?")}
-                >
-                  입금 확인
-                </button>
-              )}
-
-            {/* Buyer: 최종 티켓 수령 (step 4 이상) */}
-            {conversationData &&
-              conversationData.transaction_step >= 4 &&
-              conversationData.user_role === "buyer" && (
-                <div className="p-4 border rounded space-y-3">
-                  {fixedSeatFileUrl && (
-                    <div className="max-h-60 overflow-y-auto">
-                      <img
-                        src={fixedSeatFileUrl}
-                        alt="Ticket File"
-                        className="w-full object-cover border"
-                      />
-                    </div>
-                  )}
-                  <p>
-                    양도자 전화번호 뒷자리:{" "}
-                    {ticketPostData.ticket.phone_last_digits}
-                  </p>
-                  <button
-                    className="bg-black text-white px-4 py-2 rounded-md w-full"
-                    onClick={() => {
-                      window.location.href = `/main/purchased`; // 새로고침 후 이동
-                    }}
-                  >
-                    티켓 정보 보러 가기
-                  </button>
-                </div>
-              )}
+                  </div>
+                )}
+            </div>
           </div>
-        </div>
 
         {/* 하단: 대화방 나가기 버튼 (항상 아래에 고정) */}
         <div className="p-4 border-t border-gray-300">
@@ -386,15 +383,14 @@ const ChatRoom = () => {
             </button>
           ) : null}
         </div>
+        {isModalOpen && (
+          <Modal
+            message={modalMessage}
+            onClose={handleModalClose}
+            onConfirm={handleConfirm}
+          />
+        )}
       </div>
-
-      {isModalOpen && (
-        <Modal
-          message={modalMessage}
-          onClose={handleModalClose}
-          onConfirm={handleConfirm}
-        />
-      )}
     </div>
   );
 };
