@@ -105,7 +105,7 @@ export const PurchasedTickets = () => {
               <button
                 type="button"
                 className="text-gray-500 text-xl hover:text-black"
-                onClick={handleBack}
+                onClick={() => setSelectedTicket(null)}
               >
                 ×
               </button>
