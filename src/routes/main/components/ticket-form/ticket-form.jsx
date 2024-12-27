@@ -61,6 +61,17 @@ export const TicketForm = () => {
     { value: "AM", label: "AM" },
     { value: "PM", label: "PM" },
   ];
+  const base64ToFile = (base64, fileName) => {
+    const arr = base64.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], fileName, { type: mime });
+  };
 
   useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem("ticketFormData"));
@@ -79,6 +90,31 @@ export const TicketForm = () => {
       }
       if (savedData.maskedSeatImage) {
         setMaskedSeatImage(savedData.maskedSeatImage);
+      }
+      if (savedData.reservFile) {
+        const reservFile = base64ToFile(
+          savedData.reservFile,
+          "reservImage.jpg"
+        );
+        setReservFile(reservFile);
+      }
+      if (savedData.seatFile) {
+        const seatFile = base64ToFile(savedData.seatFile, "seatImage.jpg");
+        setSeatFile(seatFile);
+      }
+      if (savedData.maskedReservFile) {
+        const maskedReservFile = base64ToFile(
+          savedData.maskedReservFile,
+          "maskedReservImage.jpg"
+        );
+        setMaskedReservFile(maskedReservFile);
+      }
+      if (savedData.maskedSeatFile) {
+        const maskedSeatFile = base64ToFile(
+          savedData.maskedSeatFile,
+          "maskedSeatImage.jpg"
+        );
+        setMaskedSeatFile(maskedSeatFile);
       }
 
       setPerformanceName(savedData.performanceName || "");
@@ -100,37 +136,61 @@ export const TicketForm = () => {
       setPlace(savedData.place || false);
     }
   }, []);
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
   // 임시 저장 (localStorage에 저장)
-  const handleTempSave = () => {
+  const handleTempSave = async () => {
     console.log("Saving the following data:");
     console.log("Performance Name:", performanceName); // Check if it's correctly logged
     console.log("Last Four Digits:", lastFourDigits);
+    try {
+      const reservBase64 = reservFile ? await fileToBase64(reservFile) : null; // 예매내역서를 Base64로 변환
+      const seatBase64 = seatFile ? await fileToBase64(seatFile) : null; // 좌석 사진을 Base64로 변환
+      const maskedReservBase64 = maskedReservFile
+        ? await fileToBase64(maskedReservFile)
+        : null; // 예매내역서를 Base64로 변환
+      const maskedSeatBase64 = maskedSeatFile
+        ? await fileToBase64(maskedSeatFile)
+        : null; // 좌석 사진을 Base64로 변환
+      const formData = {
+        performanceName, // Ensure it's included here
+        reservImage,
+        seatImage,
+        selectedSite,
+        selectedDate: selectedDate ? selectedDate.toISOString() : null,
+        selectedHour,
+        selectedMin,
+        selectedAmPm,
+        seatInfo,
+        castingInfo,
+        price,
+        discountInfo,
+        termsAccepted,
+        showAdditionalFields,
+        lastFourDigits,
+        place,
+        reservationStatus,
+        maskedReservImage,
+        maskedSeatImage,
+        reservFile: reservBase64,
+        seatFile: seatBase64,
+        maskedReservFile: maskedReservBase64,
+        maskedSeatBase64: maskedSeatBase64,
+      };
 
-    const formData = {
-      performanceName, // Ensure it's included here
-      reservImage,
-      seatImage,
-      selectedSite,
-      selectedDate: selectedDate ? selectedDate.toISOString() : null,
-      selectedHour,
-      selectedMin,
-      selectedAmPm,
-      seatInfo,
-      castingInfo,
-      price,
-      discountInfo,
-      termsAccepted,
-      showAdditionalFields,
-      lastFourDigits,
-      place,
-      reservationStatus,
-      maskedReservImage,
-      maskedSeatImage,
-    };
-
-    localStorage.setItem("ticketFormData", JSON.stringify(formData)); // Ensure it's saved
-    alert("임시저장 완료!");
+      localStorage.setItem("ticketFormData", JSON.stringify(formData)); // Ensure it's saved
+      alert("임시저장 완료!");
+    } catch (error) {
+      console.error("임시저장 중 오류 발생:", error);
+      alert("임시저장 중 오류가 발생했습니다.");
+    }
   };
 
   const handleReservUpload = (event) => {
@@ -357,6 +417,17 @@ export const TicketForm = () => {
         setLoading(false);
         return;
       }
+      if (!maskedSeatFile) {
+        alert("가려진 좌석 사진을 첨부해주세요.");
+        setLoading(false);
+        return;
+      }
+      if (!maskedReservFile) {
+        alert("예매번호가 가려진 예매내역서를 첨부해주세요.");
+        setLoading(false);
+        return;
+      }
+
       if (!reservationStatus) {
         alert("예매 상태를 입력해주세요.");
         setLoading(false);
