@@ -10,6 +10,7 @@ import { ProfileSettings } from "../components/profile-settings/profile-settings
 
 const MainPage = () => {
   return (
+<<<<<<< HEAD
     <div className="w-full h-full flex justify-center items-center bg-gray-100">
       {/* 메인 컨테이너 */}
       <div className="w-full max-w-screen-xl h-full flex flex-col md:flex-row bg-white shadow-lg rounded-md">
@@ -19,6 +20,12 @@ const MainPage = () => {
         </div>
         {/* 우측 콘텐츠 */}
         <div className="flex-1 overflow-y-auto p-4">
+=======
+    <div className="w-full min-h-screen flex justify-center items-center">
+      <div className="w-main-frame h-screen flex flex-col fixed">
+        <MainIndex />
+        <div className="flex-1 p-4s">
+>>>>>>> 76709e87c210dbf4483b7492a2d314a3d110013c
           <Routes>
             <Route
               path="/"
