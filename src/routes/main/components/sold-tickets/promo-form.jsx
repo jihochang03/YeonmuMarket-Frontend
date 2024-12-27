@@ -130,22 +130,24 @@ function PromoForm({ ticket, onSave, onCancel }) {
         </button>
       </div>
       <div className="mb-4">
-        <label className="block font-semibold mb-2">좌석 사진</label>
-        {fixedSeatImageUrl ? (
-          <div>
-            <img
-              src={fixedSeatImageUrl}
-              alt="좌석 사진"
-              className="max-h-[230px] max-w-[230px] object-cover border mb-2"
-            />
-            <button
-              type="button"
-              onClick={handleDownloadSeatImage}
-              className="bg-gray-300 px-3 py-1 rounded-md text-sm"
-            >
-              좌석사진 다운로드
-            </button>
-          </div>
+      <label className="block font-semibold mb-2 text-left">
+        좌석 사진
+      </label>
+      {fixedSeatImageUrl ? (
+        <div className="flex flex-col items-center">
+          <img
+            src={fixedSeatImageUrl}
+            alt="좌석 사진"
+            className="max-h-[230px] max-w-[230px] object-cover border mb-2"
+          />
+          <button
+            type="button"
+            onClick={handleDownloadSeatImage}
+            className="bg-gray-300 px-3 py-1 rounded-md text-sm"
+          >
+            좌석사진 다운로드
+          </button>
+        </div>
         ) : (
           <span>이미지가 없습니다.</span>
         )}
@@ -173,7 +175,7 @@ function PromoForm({ ticket, onSave, onCancel }) {
           }
         />
       </div>
-      <div className="flex w-full justify-around items-center gap-2 pb-24">
+      <div className="flex w-full justify-around items-center gap-2 pb-6">
         {/* <button
           type="button"
           className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
