@@ -597,7 +597,7 @@ export const TicketForm = () => {
   return (
      <div className="min-h-main-menu-height rounded-md mt-2 mx-2 flex flex-col">
       {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           {/* 간단한 Tailwind 스피너 예시 */}
           <div className="w-12 h-12 border-4 border-white border-t-transparent border-t-4 rounded-full animate-spin"></div>
         </div>
@@ -670,6 +670,7 @@ export const TicketForm = () => {
               onChange={setSelectedSite}
               placeholder="선택"
               className="flex-1"
+              menuPlacement="auto"
             />
           </div>
 

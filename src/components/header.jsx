@@ -8,7 +8,7 @@ export const Header = () => {
   const isLogin = useSelector((state) => state.user.isLogin);
 
   return (
-    <div className="w-full max-w-main-frame h-header-height flex flex-row items-center justify-between px-4 py-3 z-30 top-0 left-0 right-0 mx-auto overflow:hidden fixed">
+    <div className="w-full max-w-main-frame h-header-height flex flex-row items-center justify-between px-4 py-3 z-10 top-0 left-0 right-0 mx-auto overflow:hidden fixed">
       <Link
         to={isLogin ? "/main" : "/"}
         className="text-xl font-bold py-[17px]"
