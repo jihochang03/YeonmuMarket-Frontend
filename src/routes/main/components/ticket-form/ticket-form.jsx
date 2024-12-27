@@ -872,10 +872,6 @@ export const TicketForm = () => {
                   Read our T&Cs
                 </a>
               </div>
-              아래는 버튼 디자인을 보다 현대적이고 세련된 스타일로 개선한
-              코드입니다. Tailwind CSS를 기반으로 버튼 크기, 모서리 둥글기, 색상
-              조합, 그리고 호버 효과를 추가했습니다. 개선된 버튼 디자인 jsx 코드
-              복사
               <div className="flex justify-around mt-6 space-x-4">
                 <button
                   type="button"
