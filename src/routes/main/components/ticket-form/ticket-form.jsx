@@ -193,8 +193,8 @@ export const TicketForm = () => {
   const handleMaskedReservUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setReservImage(URL.createObjectURL(file)); // For display
-      setReservFile(file); // For server-side upload
+      setMaskedReservImage(URL.createObjectURL(file)); // For display
+      setMaskedReservFile(file); // For server-side upload
     }
   };
 
