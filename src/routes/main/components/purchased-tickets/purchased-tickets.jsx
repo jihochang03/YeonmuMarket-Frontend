@@ -90,7 +90,7 @@ export const PurchasedTickets = () => {
   };
 
   return (
-    <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
+    <div className="min-h-main-menu-height rounded-md mt-2 mx-2 flex flex-col">
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
@@ -188,7 +188,7 @@ export const PurchasedTickets = () => {
         // Render the list of tickets
         <div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
           {tickets.length === 0 ? (
-            <div>양수한 티켓이 없습니다.</div>
+            <div className="w-full h-main-frame justify-center items-center flex flex-col font-bold text-lg"> 아직 양수한 티켓이 없습니다.</div>
           ) : (
             tickets.map((ticket) => (
               <div key={ticket.id} className="ticket-card">
