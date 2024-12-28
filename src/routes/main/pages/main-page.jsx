@@ -20,7 +20,7 @@ const MainPage = () => {
               path="/"
               element={
                 <div className="w-full h-main-height flex flex-col">
-                  <div className="w-main-frame h-main-menu-height flex flex-col justify-center items-start gap-12">
+                  <div className="w-main-frame h-main-height flex flex-col justify-center items-start gap-5">
                     <Introducement />
                     <MainSection />
                   </div>
