@@ -174,14 +174,14 @@ const AccountAuthPage = () => {
         <label className="block mb-2 font-bold">은행 선택</label>
         <button
           onClick={() => setIsBankSelection(true)}
-          className="border p-2 rounded-md mb-2 py-8"
+          className="border p-2 rounded-md mb-2 py-4"
         >
           {selectedBank ? (
             <div className="flex flex-col items-center">
               <img
                 src={selectedBank.logo}
                 alt={`${selectedBank.name} 로고`}
-                className="w-12 h-12"
+                className="w-10 h-10"
               />
               <div>{selectedBank.name}</div>
             </div>
