@@ -214,7 +214,7 @@ const ChatRoom = () => {
       <div className="w-full h-screen flex justify-center items-center">
         <div className="w-main-frame h-screen flex flex-col fixed">
           <MainIndex />
-          <div className="flex-1 overflow-y-auto px-3 pt-1">
+          <div className="flex-1 overflow-y-auto px-3 pt-1 pb-2">
             {/* 메인 컨테이너 */}
             <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
               {/* 상단: 타이틀 */}
