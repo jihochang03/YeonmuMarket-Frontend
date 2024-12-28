@@ -595,7 +595,7 @@ export const TicketForm = () => {
   };
 
   return (
-     <div className="min-h-main-menu-height rounded-md mt-2 mx-2 flex flex-col">
+    <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
       {loading && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           {/* 간단한 Tailwind 스피너 예시 */}
