@@ -668,9 +668,9 @@ export const TicketForm = () => {
               options={site}
               value={selectedSite}
               onChange={setSelectedSite}
+              menuPlacement="auto"
               placeholder="선택"
               className="flex-1"
-              menuPlacement="auto"
             />
           </div>
 
