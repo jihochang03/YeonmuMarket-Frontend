@@ -1,6 +1,6 @@
 export const MainSection = () => {
   return (
-    <div className="min-h-screen flex flex-col gap-10 px-10 py-10 bg-white rounded-lg">
+   <div className="flex flex-col gap-10 px-10 py-10 bg-white rounded-lg">
       <div className="flex flex-col gap-4">
         <h2 className="text-3xl font-semibold text-gray-800">
           연뮤덕들의 티켓 양도 플랫폼
