@@ -75,7 +75,7 @@ const AccountEditPage = () => {
   }
 
   return (
-    <div className="max-w-lg h-main-height p-1 rounded-md mx-5">
+    <div className="max-w-lg h-screen pt-header-height p-1 rounded-md mx-5">
       <h3 className="w-full flex justify-center mt-2 font-semibold">계좌 정보 수정</h3>
       <div className="w-full bg-gray-100 flex flex-col px-4 rounded-sm pb-2 mb-4">
         <label className="block mb-2 font-bold mt-4">이름</label>
