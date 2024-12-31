@@ -78,7 +78,7 @@ const AccountAuthPage = () => {
 
   if (isAccountConfirmation) {
     return (
-      <div className="max-w-lg h-main-height p-1 rounded-md mx-5 flex flex-col justify-center">
+      <div className="max-w-lg h-screen pt-header-height p-1 rounded-md mx-5 flex flex-col justify-center">
         <h3 className="w-full flex justify-center mb-8 font-semibold">
           입력된 계좌 확인
         </h3>
@@ -114,7 +114,7 @@ const AccountAuthPage = () => {
   }
 
   return (
-    <div className="max-w-lg h-main-height p-1 rounded-md mx-5">
+    <div className="max-w-lg h-screen pt-header-height p-1 rounded-md mx-5">
       <h3 className="w-full flex justify-center mt-2 font-semibold">
         안전한 거래를 위해
       </h3>
@@ -174,14 +174,14 @@ const AccountAuthPage = () => {
         <label className="block mb-2 font-bold">은행 선택</label>
         <button
           onClick={() => setIsBankSelection(true)}
-          className="border p-2 rounded-md mb-2 py-8"
+          className="border p-2 rounded-md mb-2 py-4"
         >
           {selectedBank ? (
             <div className="flex flex-col items-center">
               <img
                 src={selectedBank.logo}
                 alt={`${selectedBank.name} 로고`}
-                className="w-12 h-12"
+                className="w-10 h-10"
               />
               <div>{selectedBank.name}</div>
             </div>

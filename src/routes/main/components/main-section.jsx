@@ -1,11 +1,11 @@
 export const MainSection = () => {
   return (
-    <div className="flex flex-col gap-10 px-10 py-10 bg-white rounded-lg shadow-md">
+    <div className="flex flex-col gap-2 px-10 py-5 bg-white rounded-lg">
       <div className="flex flex-col gap-4">
-        <h2 className="text-3xl font-semibold text-gray-800">
+        <h2 className="text-xl font-semibold text-gray-800">
           연뮤덕들의 티켓 양도 플랫폼
         </h2>
-        <p className="text-lg text-gray-600">
+        <p className="text-md text-gray-600">
           자동화된 티켓 게시와 관리 프로그램으로 연극·뮤지컬 팬들의 티켓 거래를
           쉽고 안전하게 만드세요.
         </p>

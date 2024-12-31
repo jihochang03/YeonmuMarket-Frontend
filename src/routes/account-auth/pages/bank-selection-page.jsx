@@ -10,8 +10,8 @@ const BankSelectionPage = ({ banks, onSelectBank, redirectTo }) => {
   };
 
   return (
-    <div className='w-full h-main-height p-5 mx-auto'>
-      <h2 className='mt-3 mb-12 flex justify-center'>송금 받을 계좌의 은행을 선택하세요.</h2>
+    <div className='w-full h-screen pt-header-height p-5 mx-auto'>
+      <div className='mt-10 mb-12 flex justify-center font-bold text-lg'>송금 받을 계좌의 은행을 선택하세요.</div>
       <div className='grid grid-cols-3 gap-4'>
         {banks.map((bank) => (
           <button

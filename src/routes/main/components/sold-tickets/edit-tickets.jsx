@@ -85,7 +85,7 @@ const EditTicketForm = ({ ticket, onCancel, onSave }) => {
   };
 
   return (
-    <form className="flex flex-col w-full sm:w-main-frame p-4 overflow-y-auto max-h-main-menu-height">
+    <form className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height">
       <h1>양도글 수정하기</h1>
 
       <div className="mb-4">

@@ -19,9 +19,11 @@ const MainPage = () => {
             <Route
               path="/"
               element={
-                <div className="w-full h-full flex flex-col gap-6">
-                  <Introducement />
-                  <MainSection />
+                <div className="w-full h-main-height flex flex-col">
+                  <div className="w-main-frame h-main-height flex flex-col justify-center items-start gap-5">
+                    <Introducement />
+                    <MainSection />
+                  </div>
                 </div>
               }
             />
