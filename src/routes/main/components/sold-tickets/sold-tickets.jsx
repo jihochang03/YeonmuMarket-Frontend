@@ -188,7 +188,7 @@ export const SoldTickets = () => {
   };
 
   return (
-    <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
+    <div className="min-h-main-menu-height rounded-md mt-2 mx-2 flex flex-col">
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
@@ -225,9 +225,9 @@ export const SoldTickets = () => {
                 </button>
               </div>
               <div
-                className={`status-label status-${selectedTicket.status} mt-3`}
+                className={`status-label status-${selectedTicket.status_transfer} mt-3`}
               >
-                상태: {statusMapping[selectedTicket.status]}
+                상태: {statusMapping[selectedTicket.status_transfer]}
               </div>
               <label className="block my-2 font-bold">공연 이름</label>
               <label className="border p-2 mb-4 rounded-md">
@@ -351,8 +351,8 @@ export const SoldTickets = () => {
 
               {/* 상태에 따라 버튼 보이기 */}
               <div className="w-full flex items-center justify-center gap-10 mt-4">
-                {(selectedTicket.status === "waiting" ||
-                  selectedTicket.status === "transfer_pending") && (
+                {(selectedTicket.status_transfer === "waiting" ||
+                  selectedTicket.status_transfer === "transfer_pending") && (
                   <>
                     <button
                       className="bg-black text-white px-8 py-2 rounded-md"
@@ -378,12 +378,16 @@ export const SoldTickets = () => {
         // 티켓 리스트
         <div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
           {tickets.length === 0 ? (
-            <div>양도한 티켓이 없습니다.</div>
+            <div className="w-full h-main-frame justify-center items-center flex flex-col font-bold text-lg">
+              아직 양도한 티켓이 없습니다.
+            </div>
           ) : (
             tickets.map((ticket) => (
               <div key={ticket.id} className="ticket-card">
-                <div className={`status-label status-${ticket.status}`}>
-                  상태: {statusMapping[ticket.status] || ticket.status}
+                <div
+                  className={`status-label status-${ticket.status_transfer}`}
+                >
+                  상태: {statusMapping[ticket.status_transfer]}
                 </div>
                 <div className="ticket-view gap-1">
                   <div className="ticket-title">{ticket.title}</div>
@@ -393,7 +397,7 @@ export const SoldTickets = () => {
                   <div className="ticket-place">{ticket.seat}</div>
                 </div>
                 {/* 상태별 버튼 */}
-                {ticket.status === "waiting" && (
+                {ticket.status_transfer === "waiting" && (
                   <div className="ticket-button-container">
                     <button
                       className="ticket-button"
@@ -409,7 +413,7 @@ export const SoldTickets = () => {
                     </button>
                   </div>
                 )}
-                {ticket.status === "transfer_pending" && (
+                {ticket.status_transfer === "transfer_pending" && (
                   <div className="ticket-button-container">
                     <button
                       className="ticket-button"
@@ -425,7 +429,7 @@ export const SoldTickets = () => {
                     </button>
                   </div>
                 )}
-                {ticket.status === "transfer_completed" && (
+                {ticket.status_transfer === "transfer_completed" && (
                   <div className="ticket-button-container">
                     <button
                       className="ticket-button"

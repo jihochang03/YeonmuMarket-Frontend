@@ -12,6 +12,8 @@ import Auth from "./routes/login/pages/auth.jsx";
 import AccountAuthPage from "./routes/account-auth/pages/account-auth-page.jsx";
 import { useSelector } from "react-redux";
 import JoinChatRoom from "./routes/main/components/chat-room/join-chat-room.jsx";
+import ExchangeRoom from "./routes/main/components/exchange-room/exchange-room.jsx";
+import JoinExchangeRoom from "./routes/main/components/exchange-room/join-exchange-room.jsx";
 import ChatRoom from "./routes/main/components/chat-room/chat-room.jsx";
 import ProtectedRoute from "./components/protectroute.jsx"; // ProtectedRoute 임포트
 import FetchCSRFToken from "./components/fetchcsrftoken.jsx"; // FetchCSRFToken 컴포넌트 임포트
@@ -60,10 +62,26 @@ function App() {
                 }
               />
               <Route
+                path="/exchange/join/:ticket_id"
+                element={
+                  <ProtectedRoute>
+                    <JoinExchangeRoom />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/chat/:ticket_id"
                 element={
                   <ProtectedRoute>
                     <ChatRoom />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/exchange/:ticket_id"
+                element={
+                  <ProtectedRoute>
+                    <ExchangeRoom />
                   </ProtectedRoute>
                 }
               />

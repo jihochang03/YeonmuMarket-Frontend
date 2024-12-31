@@ -22,7 +22,7 @@ export const MainIndex = ({ activeTab }) => {
             isActive("/main/new") ? "bg-selected-menu" : ""
           }`}
         >
-          양도글 작성
+          양도/교환글 작성
         </button>
         <button
           onClick={() => navigate("/main/sold")}
@@ -47,6 +47,14 @@ export const MainIndex = ({ activeTab }) => {
           }`}
         >
           설정
+        </button>
+        <button
+          onClick={() => navigate("/main/exchange")}
+          className={`button ${
+            isActive("/main/exchange") ? "bg-selected-menu" : ""
+          }`}
+        >
+          교환목록
         </button>
       </div>
     </div>

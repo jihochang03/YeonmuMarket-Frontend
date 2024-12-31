@@ -11,7 +11,7 @@ export const Introducement = () => {
       </div>
       <div className="flex items-center gap-3">
         <img src={maskIcon} alt="theater mask" className="w-8 h-8" />
-        <span className="text-2xl font-semibold">연극.뮤지컬 전용</span>
+        <span className="text-2xl font-semibold">연극·뮤지컬 전용</span>
       </div>
       <div className="flex items-center gap-3">
         <img src={ticketIcon} alt="ticket" className="w-8 h-8" />

@@ -90,7 +90,7 @@ export const PurchasedTickets = () => {
   };
 
   return (
-    <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
+    <div className="min-h-main-menu-height rounded-md mt-2 mx-2 flex flex-col">
       {selectedTicket ? (
         <div
           key={selectedTicket.id}
@@ -112,9 +112,9 @@ export const PurchasedTickets = () => {
             </div>
 
             <div
-              className={`status-label status-${selectedTicket.status} mt-3`}
+              className={`status-label status-${selectedTicket.status_transfer} mt-3`}
             >
-              상태: {statusMapping[selectedTicket.status]}
+              상태: {statusMapping[selectedTicket.status_transfer]}
             </div>
             <label className="block my-2 font-bold">공연 이름</label>
             {/* 예매내역서 사진 이미지 */}
@@ -188,12 +188,17 @@ export const PurchasedTickets = () => {
         // Render the list of tickets
         <div className="flex flex-col w-full p-4 overflow-y-auto max-h-list-height">
           {tickets.length === 0 ? (
-            <div>양수한 티켓이 없습니다.</div>
+            <div className="w-full h-main-frame justify-center items-center flex flex-col font-bold text-lg">
+              {" "}
+              아직 양수한 티켓이 없습니다.
+            </div>
           ) : (
             tickets.map((ticket) => (
               <div key={ticket.id} className="ticket-card">
-                <div className={`status-label status-${ticket.status}`}>
-                  상태: {statusMapping[ticket.status] || ticket.status}
+                <div
+                  className={`status-label status-${ticket.status_transfer}`}
+                >
+                  상태: {statusMapping[ticket.status_transfer]}
                 </div>
                 <div className="ticket-view gap-1">
                   <div className="ticket-title">{ticket.title}</div>
@@ -209,7 +214,7 @@ export const PurchasedTickets = () => {
                   >
                     대화방
                   </button>
-                  {ticket.status !== "transfer_pending" && (
+                  {ticket.status_transfer !== "transfer_pending" && (
                     <button
                       className="ticket-button"
                       onClick={() => handleDetailClick(ticket.id)}
