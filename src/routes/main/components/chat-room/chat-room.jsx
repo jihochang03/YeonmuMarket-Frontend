@@ -48,22 +48,22 @@ const ChatRoom = () => {
       if (!isSilent) {
         // 첫 렌더링 시에만 messages를 한 번 생성
         const initialMessages = [];
-        if (response.conversation_data.transaction_step >= 1) {
+        if (response.conversation_data.transaction_step == 1) {
           initialMessages.push(
             `${response.conversation_data.buyer_name}님이 양수 의사를 전했습니다.`
           );
         }
-        if (response.conversation_data.transaction_step >= 2) {
+        if (response.conversation_data.transaction_step == 2) {
           initialMessages.push(
             `${response.conversation_data.seller_name}님이 양도 의사를 확정했습니다.`
           );
         }
-        if (response.conversation_data.transaction_step >= 3) {
+        if (response.conversation_data.transaction_step == 3) {
           initialMessages.push(
             `${response.conversation_data.buyer_name}님이 입금을 완료했습니다. 입금을 확인해주세요.`
           );
         }
-        if (response.conversation_data.transaction_step >= 4) {
+        if (response.conversation_data.transaction_step == 4) {
           initialMessages.push(`양수가 완료되었습니다.`);
         }
         setMessages(initialMessages);
@@ -126,7 +126,7 @@ const ChatRoom = () => {
 
     if (conversationData.user_role === "buyer") {
       if (conversationData.transaction_step === 0) {
-        confirmTransferIntent(ticket_id)
+        confirmExchangeintent(ticket_id)
           .then(() => {
             setMessages((prev) => [
               ...prev,
@@ -134,7 +134,7 @@ const ChatRoom = () => {
             ]);
             setConversationData((prev) => ({
               ...prev,
-              transaction_step: 1,
+              transaction_step: response.transaction_step,
             }));
           })
           .catch((error) => {

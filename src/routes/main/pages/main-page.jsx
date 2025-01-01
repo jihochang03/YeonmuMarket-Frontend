@@ -4,9 +4,9 @@ import { MainSection } from "../components/main-section";
 import { Introducement } from "../../../components/introduce-section";
 import { MainIndex } from "../../../components/main-index";
 import { TicketForm } from "../components/ticket-form/ticket-form";
-//import { PromoForm } from "../components/ticket-form/promo-form";
 import { SoldTickets } from "../components/sold-tickets/sold-tickets";
 import { PurchasedTickets } from "../components/purchased-tickets/purchased-tickets";
+import { ExchangeTickets } from "../components/exchange-tickets/exchange-tickets";
 import { ProfileSettings } from "../components/profile-settings/profile-settings";
 
 const MainPage = () => {
@@ -30,6 +30,7 @@ const MainPage = () => {
             <Route path="new" element={<TicketForm />} />
             <Route path="sold" element={<SoldTickets />} />
             <Route path="purchased" element={<PurchasedTickets />} />
+            <Route path="exchange" element={<ExchangeTickets />} />
             <Route path="settings" element={<ProfileSettings />} />
           </Routes>
         </div>

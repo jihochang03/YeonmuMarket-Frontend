@@ -19,6 +19,7 @@ export const TicketForm = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [isTransfer, setIsTransfer] = useState(null);
   const [performanceName, setPerformanceName] = useState(null);
   const [reservImage, setReservImage] = useState(null);
   const [seatImage, setSeatImage] = useState(null);
@@ -125,6 +126,7 @@ export const TicketForm = () => {
       setShowAdditionalFields(savedData.showAdditionalFields || false);
       setReservationStatus(savedData.reservationStatus || false);
       setPlace(savedData.place || false);
+      setIsTransfer(savedData.isTransfer || null);
     }
   }, []);
   const fileToBase64 = (file) => {
@@ -170,6 +172,7 @@ export const TicketForm = () => {
         reservationStatus,
         maskedReservImage,
         maskedSeatImage,
+        isTransfer,
         reservFile: reservBase64,
         seatFile: seatBase64,
         maskedReservFile: maskedReservBase64,
@@ -227,11 +230,9 @@ export const TicketForm = () => {
     }
 
     const formData = new FormData();
-    formData.append("performanceName", performanceName);
     formData.append("keyword", selectedSite ? selectedSite.value : "");
     formData.append("reservImage", reservFile);
     formData.append("seatImage", seatFile);
-    //formData.append("booking_page", selectedSite ? selectedSite.value : "");
 
     try {
       const responseData = await processImageUpload(formData); // Call the API function
@@ -337,6 +338,7 @@ export const TicketForm = () => {
       setShowAdditionalFields(true);
       setPlace(responseData.place || "");
       setReservationStatus(responseData.reservation_status || "");
+      setIsTransfer(isTransfer);
     } catch (error) {
       console.error("Error uploading files:", error);
       alert("파일 업로드에 실패했습니다.");
@@ -459,6 +461,7 @@ export const TicketForm = () => {
       formData.append("reservationStatus", reservationStatus);
       formData.append("maskedReservImage", maskedReservFile);
       formData.append("maskedSeatImage", maskedSeatFile);
+      formData.append("isTransfer", isTransfer);
 
       // Submit formData
       const response = await createTicket(formData, dispatch);
@@ -591,18 +594,348 @@ export const TicketForm = () => {
     setMaskedSeatImage(null);
     setMaskedReservFile(null);
     setMaskedSeatFile(null);
+    setIsTransfer(null);
     alert("임시저장이 취소되었습니다."); // 알림 표시
   };
 
-  return (
-    <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
-      {loading && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
-          {/* 간단한 Tailwind 스피너 예시 */}
-          <div className="w-12 h-12 border-4 border-white border-t-transparent border-t-4 rounded-full animate-spin"></div>
+  if (isTransfer === null) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <h1 className="text-2xl mb-4">티켓 거래 방식을 선택해주세요</h1>
+        <div className="flex space-x-4">
+          <button
+            onClick={() => setIsTransfer(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            양도하기
+          </button>
+          <button
+            onClick={() => setIsTransfer(false)}
+            className="bg-green-500 text-white px-4 py-2 rounded"
+          >
+            교환하기
+          </button>
         </div>
-      )}
-      {!isPromoViewVisible ? (
+      </div>
+    );
+  }
+  if (isTransfer === false) {
+    return (
+      <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
+        {loading && (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+            {/* 간단한 Tailwind 스피너 예시 */}
+            <div className="w-12 h-12 border-4 border-white border-t-transparent border-t-4 rounded-full animate-spin"></div>
+          </div>
+        )}
+        <form className="flex flex-col rounded-md w-full p-4 overflow-y-auto max-h-main-menu-height">
+          <h1>교환글 작성</h1>
+          <h3 className="text-gray-500 mb-6">
+            교환할 티켓의 정보를 입력해주세요.
+          </h3>
+
+          <label className="block mb-2 font-bold">공연 이름</label>
+          <input
+            type="text"
+            placeholder="공연 이름"
+            className="border p-2 mb-4 rounded-md"
+            value={performanceName || ""} // Ensure a fallback empty string for controlled input
+            onChange={(e) => setPerformanceName(e.target.value)} // Make sure this correctly updates state
+          />
+
+          <div className="mb-4">
+            <label className="block mb-2 font-bold">예매내역서</label>
+            <div className="upload-container">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleReservUpload}
+                style={{ display: "none" }}
+                id="upload1"
+              />
+              <label htmlFor="upload1" className="cursor-pointer upload-box">
+                {reservImage && (
+                  <img
+                    src={reservImage}
+                    alt="예매내역서"
+                    className="max-h-[230px] max-w-[230px] object-cover"
+                  />
+                )}
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-2 font-bold">좌석 사진</label>
+            <div className="upload-container">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleSeatUpload}
+                style={{ display: "none" }}
+                id="upload2"
+              />
+              <label htmlFor="upload2" className="cursor-pointer upload-box">
+                {seatImage && (
+                  <img
+                    src={seatImage}
+                    alt="좌석 사진"
+                    className="max-h-[230px] max-w-[230px] object-cover"
+                  />
+                )}
+              </label>
+            </div>
+          </div>
+
+          <label className="block mb-2 font-bold">예매처</label>
+          <div className="flex gap-2 mb-4">
+            <Select
+              options={site}
+              value={selectedSite}
+              onChange={setSelectedSite}
+              placeholder="선택"
+              className="flex-1"
+              menuPlacement="auto"
+            />
+          </div>
+
+          {!showAdditionalFields && (
+            <button
+              type="button"
+              className="bg-gray-800 text-white mx-24 my-3 px-4 py-2 rounded-md mb-4"
+              onClick={handleUploadComplete}
+            >
+              업로드 완료
+            </button>
+          )}
+
+          {showAdditionalFields && (
+            <>
+              <div className="mb-4">
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-md shadow-md">
+                  <h3 className="text-gray-800 text-lg font-semibold flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-yellow-400 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                      />
+                    </svg>
+                    사진이 잘 가려졌는지 확인해주세요. 가려지지 않은 경우 직접
+                    파일을 지워서 넣어주세요.
+                  </h3>
+                </div>
+                <label className="block mb-2 font-bold">
+                  가려진 예매내역서
+                </label>
+                <div className="upload-container">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMaskedReservUpload}
+                    style={{ display: "none" }}
+                    id="upload3"
+                  />
+                  <label
+                    htmlFor="upload3"
+                    className="cursor-pointer upload-box"
+                  >
+                    {maskedReservImage && (
+                      <img
+                        src={maskedReservImage}
+                        alt="예매내역서"
+                        className="max-h-[230px] max-w-[230px] object-cover"
+                      />
+                    )}
+                  </label>
+                </div>
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2 font-bold">가려진 좌석 사진</label>
+                <div className="upload-container">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleMaskedSeatUpload}
+                    style={{ display: "none" }}
+                    id="upload4"
+                  />
+                  <label
+                    htmlFor="upload4"
+                    className="cursor-pointer upload-box"
+                  >
+                    {maskedSeatImage && (
+                      <img
+                        src={maskedSeatImage}
+                        alt="좌석 사진"
+                        className="max-h-[230px] max-w-[230px] object-cover"
+                      />
+                    )}
+                  </label>
+                </div>
+              </div>
+              <label className="block mb-2 font-bold">공연 날짜</label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="yyyy년 MM월 dd일"
+                locale={ko}
+                dropdownMode="select"
+                placeholderText="날짜 선택"
+                className="border p-2 w-full mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">공연 시간</label>
+              <div className="flex gap-2 mb-4">
+                <Select
+                  options={hours}
+                  value={hours.find((option) => option.value === selectedHour)} // hours 배열에서 현재 선택된 hour를 찾음
+                  onChange={(option) => setSelectedHour(option.value)} // 선택된 객체에서 값을 추출하여 설정
+                  placeholder="시간"
+                  className="flex-1"
+                />
+
+                <Select
+                  options={minutes}
+                  value={
+                    minutes.find((option) => option.value === selectedMin) || {
+                      value: 0,
+                      label: "0분",
+                    }
+                  } // 0을 명시적으로 처리
+                  onChange={(option) => setSelectedMin(option.value)}
+                  placeholder="분"
+                  className="flex-1"
+                />
+
+                <Select
+                  options={amPmOptions}
+                  value={amPmOptions.find(
+                    (option) => option.value === selectedAmPm
+                  )} // amPmOptions에서 현재 선택된 AM/PM을 찾음
+                  onChange={(option) => setSelectedAmPm(option.value)} // 선택된 객체에서 값을 추출하여 설정
+                  placeholder="AM/PM"
+                  className="flex-1"
+                />
+              </div>
+              <label className="block mb-2 font-bold">예매상태</label>
+              <input
+                type="text"
+                value={reservationStatus}
+                onChange={(e) => setReservationStatus(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">장소</label>
+              <input
+                type="text"
+                value={place}
+                onChange={(e) => setPlace(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">좌석 정보</label>
+              <input
+                type="text"
+                value={seatInfo}
+                onChange={(e) => setSeatInfo(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">캐스팅 정보</label>
+              <input
+                type="text"
+                value={castingInfo}
+                onChange={(e) => setCastingInfo(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">가격(원가)</label>
+              <input
+                type="text"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">할인 정보</label>
+              <input
+                type="text"
+                value={discountInfo}
+                onChange={(e) => setDiscountInfo(e.target.value)}
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+              />
+              <label className="block mb-2 font-bold">
+                예매자 전화번호 마지막 4자리
+              </label>
+              <input
+                type="text"
+                placeholder="Value"
+                className="border p-2 mb-4 rounded-md"
+                value={lastFourDigits} // 상태와 연결
+                onChange={(e) => setLastFourDigits(e.target.value)} // 입력 값을 상태로 설정
+              />
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={termsAccepted}
+                  onChange={handleTermsChange}
+                  className="mr-2"
+                />
+                <label htmlFor="terms">I accept the terms</label>
+                <a
+                  href="/terms"
+                  className="ml-2 text-gray-400 underline underline-offset-4"
+                >
+                  Read our T&Cs
+                </a>
+              </div>
+              <div className="flex justify-around mt-6 space-x-4">
+                <button
+                  type="button"
+                  className="px-6 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all"
+                  onClick={handleTempSave}
+                >
+                  임시저장
+                </button>
+                <button
+                  type="button"
+                  className="px-6 py-2 text-sm font-medium text-white bg-red-500 rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-all"
+                  onClick={handleTempCancel}
+                >
+                  임시저장 취소
+                </button>
+                <button
+                  type="button"
+                  className="px-6 py-2 text-sm font-medium text-white bg-green-500 rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 transition-all"
+                  onClick={handleSubmit}
+                >
+                  작성 완료
+                </button>
+              </div>
+            </>
+          )}
+        </form>
+      </div>
+    );
+  }
+  if (isTransfer === true) {
+    return (
+      <div className="border-2 border-gray-300 min-h-main-menu-height rounded-md mt-4 mx-6 flex flex-col">
+        {loading && (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+            {/* 간단한 Tailwind 스피너 예시 */}
+            <div className="w-12 h-12 border-4 border-white border-t-transparent border-t-4 rounded-full animate-spin"></div>
+          </div>
+        )}
         <form className="flex flex-col rounded-md w-full p-4 overflow-y-auto max-h-main-menu-height">
           <h1>양도글 작성</h1>
           <h3 className="text-gray-500 mb-6">
@@ -899,78 +1232,7 @@ export const TicketForm = () => {
             </>
           )}
         </form>
-      ) : (
-        <div className="max-w-lg border-2 border-gray-300 rounded-md mx-5 mt-4">
-          <form
-            className="flex flex-col w-full p-4 overflow-y-auto max-h-main-menu-height"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <div className="flex flex-col justify-center min-h-main-menu-height w-full p-8">
-              <h3 className="py-2 font-bold">홍보글 작성(선택)</h3>
-              {maskedSeatImageUrl && (
-                <div className="mb-4">
-                  <img
-                    src={maskedSeatImageUrl}
-                    alt="마스킹된 좌석 이미지"
-                    className="max-w-full h-auto"
-                  />
-                  <button
-                    onClick={handleDownloadMaskedSeatImage}
-                    className="bg-black text-white px-4 py-2 rounded-md mt-2"
-                  >
-                    이미지 저장
-                  </button>
-                </div>
-              )}
-              <textarea
-                className="border p-2 mb-4 rounded-md w-full h-160"
-                style={{ resize: "none", overflowY: "hidden" }}
-                defaultValue={(() => {
-                  const formattedDate = selectedDate
-                    ? `${selectedDate.getFullYear()}.${String(
-                        selectedDate.getMonth() + 1
-                      ).padStart(2, "0")}.${String(
-                        selectedDate.getDate()
-                      ).padStart(2, "0")}`
-                    : "날짜 정보 없음";
-
-                  const formattedTime =
-                    selectedHour !== null && selectedMin !== null
-                      ? `${String(selectedHour).padStart(2, "0")}:${String(
-                          selectedMin
-                        ).padStart(2, "0")}`
-                      : "시간 정보 없음";
-
-                  const text = `${performanceName || "공연 이름 없음"} 양도
-${formattedDate} ${selectedAmPm || ""} ${formattedTime}
-캐스팅: ${castingInfo || "캐스팅 정보 없음"}
-가격: ${price || "가격 정보 없음"}
-좌석 정보: ${seatInfo || "좌석 정보 없음"}
-<연뮤마켓> 통해서 안전 거래`;
-
-                  return text.trim(); // 앞뒤 공백 제거
-                })()}
-              />
-              <div className="flex w-full justify-around items-center gap-2 pb-24">
-                {/* <button
-                  type="button"
-                  className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-                  onClick={handlePublishToX}
-                >
-                  <img src={XIcon} alt="X 로고" className="w-5 h-5" />에 게시
-                </button> */}
-                <button
-                  type="button"
-                  className="flex items-center gap-1 bg-black text-white px-4 py-2 rounded-md"
-                  onClick={handleCopyUrl}
-                >
-                  URL 복사
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
 };

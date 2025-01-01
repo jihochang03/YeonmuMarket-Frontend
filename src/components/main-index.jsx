@@ -18,15 +18,15 @@ export const MainIndex = ({ activeTab }) => {
       <div className="w-full max-w-screen-sm flex justify-around items-center pt-0">
         <button
           onClick={() => navigate("/main/new")}
-          className={`button ${
+          className={`button text-sm sm:text-base lg:text-lg whitespace-nowrap ${
             isActive("/main/new") ? "bg-selected-menu" : ""
           }`}
         >
-          양도글 작성
+          양도/교환글 작성
         </button>
         <button
           onClick={() => navigate("/main/sold")}
-          className={`button ${
+          className={`button text-sm sm:text-base lg:text-lg whitespace-nowrap ${
             isActive("/main/sold") ? "bg-selected-menu" : ""
           }`}
         >
@@ -34,19 +34,19 @@ export const MainIndex = ({ activeTab }) => {
         </button>
         <button
           onClick={() => navigate("/main/purchased")}
-          className={`button ${
+          className={`button text-sm sm:text-base lg:text-lg whitespace-nowrap ${
             isActive("/main/purchased") ? "bg-selected-menu" : ""
           }`}
         >
           양수목록
         </button>
         <button
-          onClick={() => navigate("/main/settings")}
-          className={`button ${
-            isActive("/main/settings") ? "bg-selected-menu" : ""
+          onClick={() => navigate("/main/exchange")}
+          className={`button text-sm sm:text-base lg:text-lg whitespace-nowrap ${
+            isActive("/main/exchange") ? "bg-selected-menu" : ""
           }`}
         >
-          설정
+          교환목록
         </button>
       </div>
     </div>
