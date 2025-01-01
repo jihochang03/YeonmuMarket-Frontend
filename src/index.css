@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+  height: 100%; /* 상위 요소가 전체 높이를 차지 */
+  margin: 0; /* 여백 제거 */
+  padding: 0;
+  display: flex; /* 자식 요소를 flex로 정렬 */
+  flex-direction: column;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -38,7 +48,9 @@ h3 {
 .upload-container {
   position: relative;
   width: 70%;
-  height: 15rem;
+  height: 15rem; /* 기존 고정 높이 */
+  height: auto; /* 콘텐츠 기반 자동 크기 */
+  min-height: 10rem; /* 최소 높이 */
   background-color: #f3f3f3;
   border: 1px solid #d3d3d3;
   border-radius: 3px;
@@ -82,13 +94,27 @@ h3 {
 .status-waiting {
   @apply bg-status-wait;
 }
-
 .status-transfer_intent {
   @apply bg-status-ing;
 }
 
 .status-transfer_pending {
   @apply bg-status-ing;
+}
+.status-1 {
+  @apply bg-status-ing;
+}
+.status-2 {
+  @apply bg-status-ing;
+}
+.status-3 {
+  @apply bg-status-ing;
+}
+.status-4 {
+  @apply bg-status-ing;
+}
+.status-5 {
+  @apply bg-status-done;
 }
 
 .status-transfer_completed {
@@ -166,4 +192,10 @@ h3 {
 .custom__menu {
   max-height: 100px; /* 메뉴의 최대 높이 */
   overflow-y: auto; /* 스크롤 활성화 */
+}
+.min-h-screen {
+  min-height: 100vh; /* 화면 전체 높이 */
+}
+.flex-1 {
+  flex: 1; /* 남은 공간을 채우도록 설정 */
 }

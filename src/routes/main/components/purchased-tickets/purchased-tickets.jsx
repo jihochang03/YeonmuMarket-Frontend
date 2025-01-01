@@ -16,17 +16,20 @@ export const PurchasedTickets = () => {
     const loadTickets = async () => {
       try {
         // Fetch all tickets where the user is the transferee
+        console.log("Fetching tickets...");
         const data = await fetchPurchasedTickets();
+        console.log("Fetched tickets:", data);
+
         const sortedData = data.sort((a, b) => {
           if (
-            a.status === "transfer_pending" &&
-            b.status !== "transfer_pending"
+            a.status_transfer === "transfer_pending" &&
+            b.status_transfer !== "transfer_pending"
           ) {
             return -1;
           }
           if (
-            b.status === "transfer_pending" &&
-            a.status !== "transfer_pending"
+            b.status_transfer === "transfer_pending" &&
+            a.status_transfer !== "transfer_pending"
           ) {
             return 1;
           }

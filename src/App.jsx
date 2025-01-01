@@ -23,70 +23,72 @@ function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
 
   return (
-    <div className="min-h-screen bg-darker flex flex-col">
+    <div className="min-h-screen bg-darker flex flex-col items-center">
       <BrowserRouter>
         <FetchCSRFToken /> {/* CSRF 토큰 초기화를 위한 컴포넌트 */}
-        <div className="w-main-frame bg-white flex flex-col flex-grow">
+        <div className="w-main-frame bg-white">
           <Header isLogin={isLogin} />
-          <div className="flex flex-col flex-grow">
-            <Routes>
-              {/* 로그인 페이지는 누구나 접근 가능 */}
-              <Route path="/" element={<LoginPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/account-auth" element={<AccountAuthPage />} />
+          <div className="flex flex-col">
+            <div className="flex-1">
+              <Routes>
+                {/* 로그인 페이지는 누구나 접근 가능 */}
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/account-auth" element={<AccountAuthPage />} />
 
-              {/* 인증이 필요한 라우트는 ProtectedRoute로 감싸줍니다 */}
-              <Route
-                path="/main/*"
-                element={
-                  <ProtectedRoute>
-                    <MainPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/main/new/:ticket_id"
-                element={
-                  <ProtectedRoute>
-                    <PromoForm />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/chat/join/:ticket_id"
-                element={
-                  <ProtectedRoute>
-                    <JoinChatRoom />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/exchange/join/:ticket_id"
-                element={
-                  <ProtectedRoute>
-                    <JoinExchangeRoom />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/chat/:ticket_id"
-                element={
-                  <ProtectedRoute>
-                    <ChatRoom />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/exchange/:ticket_id"
-                element={
-                  <ProtectedRoute>
-                    <ExchangeRoom />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/account-edit" element={<AccountEditPage />} />
-            </Routes>
+                {/* 인증이 필요한 라우트는 ProtectedRoute로 감싸줍니다 */}
+                <Route
+                  path="/main/*"
+                  element={
+                    <ProtectedRoute>
+                      <MainPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/main/new/:ticket_id"
+                  element={
+                    <ProtectedRoute>
+                      <PromoForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/chat/join/:ticket_id"
+                  element={
+                    <ProtectedRoute>
+                      <JoinChatRoom />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/exchange/join/:ticket_id"
+                  element={
+                    <ProtectedRoute>
+                      <JoinExchangeRoom />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/chat/:ticket_id"
+                  element={
+                    <ProtectedRoute>
+                      <ChatRoom />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/exchange/:ticket_id"
+                  element={
+                    <ProtectedRoute>
+                      <ExchangeRoom />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/account-edit" element={<AccountEditPage />} />
+              </Routes>
+            </div>
           </div>
         </div>
       </BrowserRouter>

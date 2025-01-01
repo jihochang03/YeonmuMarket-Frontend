@@ -176,9 +176,7 @@ export const chatTickets = async (ticket_id) => {
 
 export const exchangeTickets = async (ticket_id) => {
   try {
-    const response = await instanceWithToken.get(
-      `/exchange/${ticket_id}/`
-    );
+    const response = await instanceWithToken.get(`/exchange/${ticket_id}/`);
     return response.data;
   } catch (error) {
     console.error(
@@ -255,6 +253,26 @@ export const confirmExchangeIntent = async (conversationId, userRole) => {
       `/exchange/${conversationId}/transfer-intent/`,
       {
         user_role: userRole,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error confirming transfer intent:", error);
+    throw error;
+  }
+};
+export const confirmDifference = async (
+  conversationId,
+  differenceAmount,
+  payDirection
+) => {
+  try {
+    // user_role: "buyer" 또는 "seller"
+    const response = await instanceWithToken.post(
+      `/exchange/${conversationId}/confirm-difference/`,
+      {
+        differenceAmount: differenceAmount,
+        payDirection: payDirection,
       }
     );
     return response.data;
@@ -369,6 +387,7 @@ export const joinConversation = async (ticketId) => {
 export const joinExchange = async (ticketId, payload) => {
   try {
     // payload: { my_ticket_number: string }
+    console.log(payload);
     const response = await instanceWithToken.post(
       `/exchange/join/${ticketId}/`,
       payload // my_ticket_number 포함
